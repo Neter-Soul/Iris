@@ -1,125 +1,171 @@
+import streamlit as st
 import cv2
 import numpy as np
 from PIL import Image
-import streamlit as st
+from datetime import datetime
 
-st.set_page_config(page_title="Análise Iridológica", layout="wide")
+st.set_page_config(page_title="Sistema de Análise Iridológica", layout="wide")
 
-st.title("🔬 Análise e Topografia Iridológica")
-st.caption(
-    "Calibração geométrica, realce de estroma e projeção polar de Daugman."
-)
+st.title("🔬 Estação de Análise e Topografia Iridológica")
+st.caption("Calibração geométrica, realce de estroma, projeção polar de Daugman e laudo automatizado.")
 
-olho_lado = st.radio(
-    "Selecione o olho:",
-    ("Olho Direito (OD)", "Olho Esquerdo (OE)"),
-    horizontal=True,
-)
-arquivo_foto = st.file_uploader(
-    "Carregar foto da íris (Câmera ou Galeria)", type=["jpg", "jpeg", "png"]
-)
+with st.expander("📋 Dados do Avaliado (Para o Relatório)", expanded=True):
+    col_p1, col_p2 = st.columns(2)
+    nome_paciente = col_p1.text_input("Nome do Avaliado:", placeholder="Ex: Maria Cristina")
+    notas_clinicas = col_p2.text_input("Queixa Principal / Observações:", placeholder="Ex: Fadiga, tensão ocular...")
 
-if arquivo_foto is not None:
-  img_bytes = arquivo_foto.read()
-  img_bgr = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
-  h_orig, w_orig = img_bgr.shape[:2]
+aba_od, aba_oe, aba_relatorio = st.tabs([
+    "👁️ Olho Direito (OD)", 
+    "👁️ Olho Esquerdo (OE)", 
+    "📄 Relatório Geral"
+])
 
-  largura_max = 800
-  if w_orig > largura_max:
-    escala = largura_max / w_orig
-    img_bgr = cv2.resize(
-        img_bgr,
-        (largura_max, int(h_orig * escala)),
-        interpolation=cv2.INTER_AREA,
-    )
+def processar_olho(arquivo, prefixo, lado_str):
+    img_bytes = arquivo.getvalue()
+    img_bgr = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+    if img_bgr is None:
+        st.error("Não foi possível ler a imagem. Tente outro ficheiro JPG ou PNG.")
+        return None
 
-  h, w = img_bgr.shape[:2]
-  img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-  img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+    h_orig, w_orig = img_bgr.shape[:2]
+    largura_max = 700
+    if w_orig > largura_max:
+        escala = largura_max / w_orig
+        img_bgr = cv2.resize(img_bgr, (largura_max, int(h_orig * escala)), interpolation=cv2.INTER_AREA)
 
-  st.subheader("Calibração Geométrica")
-  cx = st.slider("Centro X", 0, w, int(w / 2), 1)
-  cy = st.slider("Centro Y", 0, h, int(h / 2), 1)
-  r_pupila = st.slider(
-      "Raio Pupila (Interno)", 10, int(w / 3), int(w * 0.12), 1
-  )
-  r_iris = st.slider(
-      "Raio Limbo (Externo)", r_pupila + 10, int(w / 2), int(w * 0.35), 1
-  )
+    h, w = img_bgr.shape[:2]
+    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
 
-  col_opt1, col_opt2 = st.columns(2)
-  with col_opt1:
-    exibir_grade = st.checkbox("Raios de 30°", value=True)
-    exibir_zonas = st.checkbox("7 Anéis de Jensen", value=True)
-  with col_opt2:
-    aplicar_clahe = st.checkbox("Realce de Fibras (CLAHE)", value=True)
+    st.subheader(f"Calibração Geométrica — {lado_str}")
+    c1, c2 = st.columns(2)
+    cx = c1.slider("Centro X", 0, w, int(w / 2), 1, key=f"{prefixo}_cx")
+    cy = c2.slider("Centro Y", 0, h, int(h / 2), 1, key=f"{prefixo}_cy")
+    r_pupila = c1.slider("Raio Pupila (Interno)", 10, int(w / 3), int(w * 0.12), 1, key=f"{prefixo}_rp")
+    r_iris = c2.slider("Raio Limbo (Externo)", r_pupila + 10, int(w / 2), int(w * 0.35), 1, key=f"{prefixo}_ri")
 
-  def normalizacao_polar(
-      img_base, cx, cy, r_in, r_out, largura=360, altura=70
-  ):
-    tira = np.zeros((altura, largura), dtype=np.uint8)
-    thetas = np.linspace(0, 2 * np.pi, largura, endpoint=False)
-    raios = np.linspace(0, 1, altura)
+    co1, co2, co3 = st.columns(3)
+    exibir_grade = co1.checkbox("Raios 30°", value=True, key=f"{prefixo}_gr")
+    exibir_zonas = co2.checkbox("7 Anéis de Jensen", value=True, key=f"{prefixo}_zn")
+    aplicar_clahe = co3.checkbox("Realce de Fibras", value=True, key=f"{prefixo}_cl")
+
+    img_proc = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8)).apply(img_gray) if aplicar_clahe else img_gray.copy()
+
+    canvas = img_rgb.copy()
+    cv2.circle(canvas, (cx, cy), r_pupila, (255, 220, 0), 2)
+    cv2.circle(canvas, (cx, cy), r_iris, (0, 255, 120), 2)
+
+    if exibir_zonas:
+        passo_raio = (r_iris - r_pupila) / 7.0
+        for z in range(1, 7):
+            rz = int(r_pupila + z * passo_raio)
+            cv2.circle(canvas, (cx, cy), rz, (180, 180, 255), 1, lineType=cv2.LINE_AA)
+
+    if exibir_grade:
+        for ang in range(0, 360, 30):
+            rad = np.deg2rad(ang)
+            x1 = int(cx + r_pupila * np.cos(rad))
+            y1 = int(cy + r_pupila * np.sin(rad))
+            x2 = int(cx + r_iris * np.cos(rad))
+            y2 = int(cy + r_iris * np.sin(rad))
+            cv2.line(canvas, (x1, y1), (x2, y2), (255, 80, 80), 1, lineType=cv2.LINE_AA)
+
+    largura_p, altura_p = 360, 70
+    tira = np.zeros((altura_p, largura_p), dtype=np.uint8)
+    thetas = np.linspace(0, 2 * np.pi, largura_p, endpoint=False)
+    raios = np.linspace(0, 1, altura_p)
     for i, r_ratio in enumerate(raios):
-      r = r_in + r_ratio * (r_out - r_in)
-      xs = np.clip(np.round(cx + r * np.cos(thetas)).astype(int), 0, w - 1)
-      ys = np.clip(np.round(cy + r * np.sin(thetas)).astype(int), 0, h - 1)
-      tira[i, :] = img_base[ys, xs]
-    return tira
+        r = r_pupila + r_ratio * (r_iris - r_pupila)
+        xs = np.clip(np.round(cx + r * np.cos(thetas)).astype(int), 0, w - 1)
+        ys = np.clip(np.round(cy + r * np.sin(thetas)).astype(int), 0, h - 1)
+        tira[i, :] = img_proc[ys, xs]
 
-  img_processamento = (
-      cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8)).apply(img_gray)
-      if aplicar_clahe
-      else img_gray.copy()
-  )
+    st.image(canvas, use_container_width=True, caption=f"{lado_str} Mapeado")
+    st.image(tira, use_container_width=True, caption="Projeção Polar de Daugman (0° a 360°)")
 
-  canvas = img_rgb.copy()
-  cv2.circle(canvas, (cx, cy), r_pupila, (255, 220, 0), 2)
-  cv2.circle(canvas, (cx, cy), r_iris, (0, 255, 120), 2)
+    prop_pupila = (r_pupila / r_iris) * 100
+    score_var = cv2.Laplacian(tira, cv2.CV_64F).var()
+    
+    if score_var < 150:
+        densidade = "Grau 1 (Seda - Compacta)"
+    elif score_var < 350:
+        densidade = "Grau 2 (Seda/Linho - Boa)"
+    elif score_var < 700:
+        densidade = "Grau 3 (Linho - Comum)"
+    elif score_var < 1200:
+        densidade = "Grau 4 (Algodão - Aberta)"
+    else:
+        densidade = "Grau 5 (Rede - Fragilidade Conjuntiva)"
 
-  if exibir_zonas:
-    passo_raio = (r_iris - r_pupila) / 7.0
-    for zona_idx in range(1, 7):
-      rz = int(r_pupila + zona_idx * passo_raio)
-      cv2.circle(canvas, (cx, cy), rz, (180, 180, 255), 1, lineType=cv2.LINE_AA)
+    tonus_sna = "Equilíbrio Autonómico"
+    if prop_pupila > 33:
+        tonus_sna = "Tendência Simpaticotónica (Midríase Relativa)"
+    elif prop_pupila < 20:
+        tonus_sna = "Tendência Parassimpaticotónica (Miose Relativa)"
 
-  if exibir_grade:
-    for ang in range(0, 360, 30):
-      rad = np.deg2rad(ang)
-      x1 = int(cx + r_pupila * np.cos(rad))
-      y1 = int(cy + r_pupila * np.sin(rad))
-      x2 = int(cx + r_iris * np.cos(rad))
-      y2 = int(cy + r_iris * np.sin(rad))
-      cv2.line(
-          canvas, (x1, y1), (x2, y2), (255, 80, 80), 1, lineType=cv2.LINE_AA
-      )
-      cv2.putText(
-          canvas,
-          f"{ang}°",
-          (x2 + 2, y2 + 2),
-          cv2.FONT_HERSHEY_SIMPLEX,
-          0.35,
-          (255, 255, 255),
-          1,
-      )
+    m1, m2 = st.columns(2)
+    m1.metric("Relação Pupila / Íris", f"{prop_pupila:.1f}%")
+    m2.metric("Índice de Trama (Laplaciano)", f"{score_var:.1f}")
+    st.info(f"**Constituição Tecidual:** {densidade} | **Dinâmica Pupilar:** {tonus_sna}")
 
-  tira_polar = normalizacao_polar(img_processamento, cx, cy, r_pupila, r_iris)
+    return {
+        "lado": lado_str,
+        "prop_pupila": prop_pupila,
+        "score_var": score_var,
+        "densidade": densidade,
+        "tonus_sna": tonus_sna
+    }
 
-  st.image(canvas, use_container_width=True, caption=f"{olho_lado} calibrado")
-  st.subheader("Íris Retificada (Projeção Polar)")
-  st.image(
-      tira_polar,
-      use_container_width=True,
-      caption="Eixo X: 0° a 360° | Eixo Y: Pupila até Limbo",
-  )
+dados_od = None
+dados_oe = None
 
-  st.subheader("Indicadores")
-  col_m1, col_m2 = st.columns(2)
-  prop_pupila = (r_pupila / r_iris) * 100
-  col_m1.metric("Pupila / Íris", f"{prop_pupila:.1f}%")
-  score_var = cv2.Laplacian(tira_polar, cv2.CV_64F).var()
-  col_m2.metric("Trama de Fibras", f"{score_var:.1f}")
-else:
-  st.info(
-      "Envie uma foto da íris para calibrar os anéis e gerar a projeção polar."
-  )
+with aba_od:
+    modo_od = st.radio("Origem da imagem (OD):", ["📁 Galeria / Ficheiro", "📸 Câmara Direta"], horizontal=True, key="m_od")
+    foto_od = st.file_uploader("Carregar foto do Olho Direito (OD)", key="up_od") if modo_od == "📁 Galeria / Ficheiro" else st.camera_input("Tirar foto (OD)", key="cam_od")
+    if foto_od:
+        dados_od = processar_olho(foto_od, "od", "Olho Direito (OD)")
+
+with aba_oe:
+    modo_oe = st.radio("Origem da imagem (OE):", ["📁 Galeria / Ficheiro", "📸 Câmara Direta"], horizontal=True, key="m_oe")
+    foto_oe = st.file_uploader("Carregar foto do Olho Esquerdo (OE)", key="up_oe") if modo_oe == "📁 Galeria / Ficheiro" else st.camera_input("Tirar foto (OE)", key="cam_oe")
+    if foto_oe:
+        dados_oe = processar_olho(foto_oe, "oe", "Olho Esquerdo (OE)")
+
+with aba_relatorio:
+    st.subheader("📑 Síntese e Relatório Iridológico")
+    if not dados_od and not dados_oe:
+        st.warning("Carregue pelo menos uma imagem nos separadores OD ou OE para gerar os relatórios.")
+    else:
+        data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
+        texto_relatorio = f"""# LAUDO DE ANÁLISE TOPOGRÁFICA IRIDOLÓGICA
+**Avaliado(a):** {nome_paciente or 'Não informado'}
+**Data da Análise:** {data_atual}
+**Observações Iniciais:** {notas_clinicas or 'Nenhuma'}
+
+---
+"""
+        for d in [dados_od, dados_oe]:
+            if d:
+                texto_relatorio += f"""### {d['lado']}
+* **Relação Pupila / Limbo:** {d['prop_pupila']:.1f}% ({d['tonus_sna']})
+* **Score Morfológico de Textura:** {d['score_var']:.1f}
+* **Densidade Constitucional Estimada:** {d['densidade']}
+
+"""
+        texto_relatorio += """---
+### Referência das 7 Zonas Anulares de Jensen
+1. **Zona 1 (Gástrica):** Assimilação digestiva primária.
+2. **Zona 2 (Intestinal):** Absorção, peristaltismo e microbiota.
+3. **Zona 3 (Colarete / BPA):** Sistema Nervoso Autónomo, eixo neuroendócrino.
+4. **Zona 4 (Órgãos Internos):** Glândulas e parênquimas vitais.
+5. **Zona 5 (Sustentação):** Estrutura óssea, muscular e visceral.
+6. **Zona 6 (Linfática e Circulatória):** Drenagem linfática e microcirculação.
+7. **Zona 7 (Cutânea / Periférica):** Eliminação epitelial e metabolismo lipídico/mineral.
+"""
+        st.markdown(texto_relatorio)
+        st.download_button(
+            label="📥 Descarregar Laudo Completo (.MD)",
+            data=texto_relatorio,
+            file_name=f"laudo_iridologico_{nome_paciente or 'paciente'}.md",
+            mime="text/markdown"
+        )
