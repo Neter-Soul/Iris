@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Estação Iridológica Integrada — Completa</title>
+<title>Estação Iridológica — Tipologia Rayid & Psicossomática</title>
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 10px; background: #f8fafc; color: #0f172a; user-select: none; -webkit-user-select: none; }
   h2 { margin: 0 0 2px 0; font-size: 19px; color: #0369a1; }
@@ -43,8 +43,8 @@
 </head>
 <body>
 
-<h2>🔬 Estação Iridológica — Completa Integrada</h2>
-<div class="sub">Biometria • Anti-Flash • Jensen • Scanner 360° • Psicossomática</div>
+<h2>🔬 Estação Iridológica — Tipologia Rayid & Psicossomática</h2>
+<div class="sub">Biometria • Anti-Flash • Jensen • Scanner 360° • Tipologia Rayid</div>
 
 <div class="box">
   <div class="row">
@@ -106,7 +106,7 @@
   </div>
 
   <div class="psy-card">
-    <div class="psy-title">🧠 Síntese Psicossomática e Comportamental (SNA & Rayid)</div>
+    <div class="psy-title">🧠 Tipologia Ocular Rayid & Psicossomática</div>
     <div id="psyTexto">Aguardando calibração dos anéis para leitura comportamental...</div>
   </div>
 
@@ -645,22 +645,40 @@ function analisar() {
 
   let dn = v < 110 ? "Grau 1 (Seda - Compacta / Alta Sensibilidade)" : v < 250 ? "Grau 2 (Seda/Linho - Boa Adaptação)" : v < 520 ? "Grau 3 (Linho - Padrão Comum)" : v < 850 ? "Grau 4 (Algodão - Alta Reatividade)" : "Grau 5 (Rede - Alta Vulnerabilidade Tecidual)";
   let sn = "Equilíbrio Autonômico";
-  let psySna = "Sistema Nervoso em equilíbrio homeostático. Boa capacidade de alternância entre ação e repouso.";
 
-  if (pr > 33) {
-    sn = "Simpaticotonia (Midríase Relativa)";
-    psySna = "Tendência à hipervigilância, hiperatividade mental, desgaste por exigência excessiva e propensão a quadros de exaustão nervosa (ansiedade/estresse crônico).";
-  } else if (pr < 20) {
-    sn = "Parassimpaticotonia (Miose Relativa)";
-    psySna = "Tendência à fadiga crônica, lentidão metabólica, introversão profunda, propensão a guardar emoções e baixa reatividade energética.";
+  // Módulo 3: Tipologia Rayid & Psicossomática Integrada
+  let tipologiaRayid = "Padrão Equilibrado / Misto";
+  let psyComportamento = "Boa flexibilidade adaptativa entre pensamento e ação.";
+
+  if (v < 220) {
+    tipologiaRayid = "Arquétipo Flor (Sensibilidade & Empatia)";
+    psyComportamento = "Tendência à alta sensibilidade emocional, criatividade e forte conexão relacional. Processa o estresse através da introversão e necessidade de harmonia ambiental.";
+  } else if (v >= 220 && v < 550) {
+    tipologiaRayid = "Arquétipo Joia (Estratégia & Foco Mental)";
+    psyComportamento = "Tendência analítica, mental e focada em objetivos estratégicos. Tende a intelectualizar as emoções e pode somatizar o estresse na rigidez mental ou muscular.";
+  } else if (v >= 550 && v < 850) {
+    tipologiaRayid = "Arquétipo Corrente (Suporte & Ação Prática)";
+    psyComportamento = "Perfil voltado para a ação comunitária, toque, presença física e suporte direto aos outros. Pode acumular tarefas e sofrer fadiga por excesso de doação.";
+  } else {
+    tipologiaRayid = "Arquétipo Estroma Fibroso (Dinamismo & Independência)";
+    psyComportamento = "Energia vital expansiva, forte independência e necessidade de autonomia. Reage rapidamente aos desafios, exigindo cuidado com a impulsividade.";
   }
 
-  psicossomaticaResumo = `• Dinâmica do SNA (${sn}): ${psySna}\n• Padrão Tensional (Anéis): ${statusAnelTensao}\n• Constituição Tecidual (${dn}): Indica o ritmo biológico de resposta aos estímulos ambientais e emocionais.`;
+  let psySna = "Sistema Nervoso em homeostase.";
+  if (pr > 33) {
+    sn = "Simpaticotonia (Midríase Relativa)";
+    psySna = "Hipervigilância mental, tendência ao esgotamento por sobrecarga de exigências e ansiedade antecipatória.";
+  } else if (pr < 20) {
+    sn = "Parassimpaticotonia (Miose Relativa)";
+    psySna = "Tendência à lentidão metabólica, fadiga crônica, guardando emoções e baixa reatividade energética.";
+  }
+
+  psicossomaticaResumo = `• Tipologia Rayid: ${tipologiaRayid}\n  ↳ ${psyComportamento}\n• Dinâmica do SNA (${sn}): ${psySna}\n• Padrão Tensional (Anéis): ${statusAnelTensao}`;
 
   document.getElementById('psyTexto').innerText = psicossomaticaResumo;
 
   document.getElementById('vDiag').innerHTML = 
-    `<b>Constituição:</b> ${dn}<br><b>SNA:</b> ${sn}<br><b>Tensão:</b> ${statusAnelTensao}<br><span style="font-size:11px; color:#0369a1;">✨ Flash filtrado: ${pctReflexo}%</span>`;
+    `<b>Constituição:</b> ${dn}<br><b>SNA:</b> ${sn}<br><b>Tipologia:</b> ${tipologiaRayid}<br><span style="font-size:11px; color:#0369a1;">✨ Flash filtrado: ${pctReflexo}%</span>`;
 
   const nome = document.getElementById('pacNome').value || "Paciente";
   const olho = document.getElementById('pacOlho').value || "OE";
@@ -670,7 +688,7 @@ function analisar() {
     : "  Nenhum sinal focal específico registrado.";
 
   laudoTxt = `=================================================\n` +
-             `LAUDO IRIDOLÓGICO INTEGRATIVO & PSICOSSOMÁTICO\n` +
+             `LAUDO IRIDOLÓGICO INTEGRATIVO & COMPORTAMENTAL\n` +
              `=================================================\n` +
              `Avaliado(a): ${nome}\n` +
              `Olho Analisado: ${olho}\n` +
@@ -679,7 +697,7 @@ function analisar() {
              `   - Relação Pupila / Limbo: ${pr.toFixed(1)}% (${sn})\n` +
              `   - Índice de Fibras (Sem Flash): ${v.toFixed(0)} — ${dn}\n` +
              `   - Anéis de Tensão / Rigidez: ${statusAnelTensao}\n\n` +
-             `2. SÍNTESE PSICOSSOMÁTICA E COMPORTAMENTAL:\n` +
+             `2. TIPOLOGIA OCULAR (RAYID) E PSICOSSOMÁTICA:\n` +
              `${psicossomaticaResumo}\n\n` +
              `3. SINAIS TOPOGRÁFICOS DETECTADOS (MAPA DE JENSEN):\n` +
              `${listaTxt}\n`;
