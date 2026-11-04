@@ -3,520 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Estação Iridológica Integrada — Completa</title>
+<title>Estação Iridológica — Leitor Direto</title>
 <style>
-  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 10px; background: #f8fafc; color: #0f172a; user-select: none; -webkit-user-select: none; }
+  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 12px; background: #f8fafc; color: #0f172a; }
   h2 { margin: 0 0 2px 0; font-size: 19px; color: #0369a1; }
-  .sub { font-size: 12px; color: #64748b; margin-bottom: 10px; }
-  .box { background: #fff; padding: 10px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 10px; }
+  .sub { font-size: 12px; color: #64748b; margin-bottom: 12px; }
+  .box { background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 12px; }
   .row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
   input[type="text"], select { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
-  .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 10px; }
+  .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 12px; }
   input[type="file"] { display: none; }
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
-  .btn { padding: 10px 6px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-weight: 600; font-size: 13px; text-align: center; cursor: pointer; }
-  .btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
-  .btn.map-active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-  .action-row { display: flex; gap: 6px; margin-bottom: 8px; }
-  .btn-auto { flex: 1; background: #0f766e; color: #fff; padding: 10px 6px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; }
-  .btn-scan { flex: 1.2; background: #ea580c; color: #fff; padding: 10px 6px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; }
-  .chk-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; font-size: 12px; margin-bottom: 8px; font-weight: 500; }
   .canvas-box { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #000; touch-action: none; }
   canvas { width: 100%; display: block; touch-action: none; }
-  .organ-panel { background: #f3e8ff; border: 2px solid #9333ea; border-radius: 10px; padding: 10px; margin-top: 8px; }
-  .organ-title { font-size: 11px; font-weight: 800; color: #6b21a8; text-transform: uppercase; }
-  .organ-name { font-size: 16px; font-weight: 800; color: #3b0764; margin: 2px 0; }
-  .organ-sub { font-size: 12px; color: #581c87; }
-  .btn-pin { width: 100%; margin-top: 8px; padding: 9px; background: #9333ea; color: #fff; border: none; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; }
-  .pin-list { font-size: 12px; margin-top: 8px; color: #334155; }
-  .pin-item { background: #fff; padding: 7px 8px; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #9333ea; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-  .pin-item.auto-pin { border-left-color: #ea580c; background: #fff7ed; }
-  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-  .m-card { background: #f1f5f9; padding: 10px; border-radius: 8px; border-left: 4px solid #0284c7; }
-  .m-lbl { font-size: 11px; color: #64748b; font-weight: bold; }
-  .m-val { font-size: 17px; font-weight: 800; margin-top: 2px; }
-  .diag { grid-column: span 2; background: #e0f2fe; padding: 10px; border-radius: 8px; font-size: 13px; line-height: 1.4; }
-  .psy-card { background: #fdf4ff; border: 2px solid #d946ef; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 13px; line-height: 1.4; }
-  .psy-title { font-weight: 800; color: #86198f; font-size: 12px; text-transform: uppercase; margin-bottom: 4px; }
-  .btn-dl { width: 100%; margin-top: 12px; padding: 12px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .ctrl-btn { background: #e2e8f0; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; color: #334155; }
+  .ctrl-btn.primary { background: #0f766e; color: #fff; grid-column: span 2; }
+  .diag { background: #e0f2fe; padding: 10px; border-radius: 8px; font-size: 13px; line-height: 1.4; margin-top: 10px; }
 </style>
 </head>
 <body>
 
-<h2>🔬 Estação Iridológica — Completa Integrada</h2>
-<div class="sub">Biometria • Anti-Flash • Jensen • Scanner 360° • Psicossomática</div>
+<h2>🔬 Estação Iridológica — Leitor Direto</h2>
+<div class="sub">Carregamento Simples • Ajuste de Anéis por Toque</div>
 
 <div class="box">
   <div class="row">
     <input type="text" id="pacNome" placeholder="Nome do Avaliado" value="Lavinia">
-    <select id="pacOlho" style="max-width:135px; font-weight:bold;" onchange="atualizarOrgaoSelecionado(); render(); analisar();">
-      <option value="OE">👁️ Olho Esq. (OE)</option>
-      <option value="OD">👁️ Olho Dir. (OD)</option>
+    <select id="pacOlho" style="max-width:130px; font-weight:bold;">
+      <option value="OE">👁️ Olho Esq (OE)</option>
+      <option value="OD">👁️ Olho Dir (OD)</option>
     </select>
-  </div>
-  <div class="row" style="margin-bottom:0;">
-    <input type="text" id="pacQueixa" placeholder="Queixa Principal / Observações" value="Depressão">
   </div>
 </div>
 
 <label class="btn-up">
-  📸 Carregar Foto da Íris (Galeria ou Câmera)
+  📁 Toque Aqui para Escolher a Imagem da Íris
   <input type="file" id="fIn" accept="image/*">
 </label>
 
 <div id="appArea" style="display:none;">
-  <div class="tabs">
-    <div id="bMove" class="btn active" onclick="setM('move')">✥ Mover Conjunto</div>
-    <div id="bMap" class="btn" onclick="setM('map')">🗺️ Inspecionar Órgão</div>
-    <div id="bIris" class="btn" onclick="setM('iris')">🟢 Ajustar Íris</div>
-    <div id="bPup" class="btn" onclick="setM('pup')">🟡 Ajustar Pupila</div>
-  </div>
-
-  <div class="action-row">
-    <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Auto-Calibrar Pupila</button>
-    <button class="btn-scan" onclick="executarScannerAutomatico()">🔍 Scanner Automático 360°</button>
-  </div>
-
-  <div class="chk-row">
-    <label><input type="checkbox" id="cJen" checked onchange="render()"> 7 Anéis</label>
-    <label><input type="checkbox" id="cRel" checked onchange="render()"> Relógio 12h</label>
-    <label><input type="checkbox" id="cFlsh" checked onchange="render(); analisar();"> ✨ Sem Flash</label>
-    <label><input type="checkbox" id="cZom" onchange="render()"> 🔍 Lupa 2x</label>
-  </div>
-
   <div class="canvas-box">
     <canvas id="cv" width="500" height="500"></canvas>
   </div>
+  <div style="text-align:center; font-size:11px; color:#64748b; margin-top:4px;">Arraste com o dedo para mover os anéis sobre a pupila e a íris</div>
 
-  <div class="organ-panel">
-    <div class="organ-title" id="orgCoord">🗺️ INSPEÇÃO TOPOGRÁFICA E SINAIS DETECTADOS</div>
-    <div class="organ-name" id="orgNome">Toque na íris ou rode o Scanner Automático 360°</div>
-    <div class="organ-sub" id="orgZona">Os achados automáticos e manuais alimentam o relatório integrativo.</div>
-    <div class="row" style="margin-top:8px; margin-bottom:0;">
-      <select id="tipoSinal" style="font-size:13px; padding:6px;">
-        <option value="Lacuna / Cripta (Fragilidade Tecidual)">🔹 Lacuna / Cripta (Fragilidade)</option>
-        <option value="Raio Solar (Tensão Neurovegetativa)">⚡ Raio Solar (Tensão / Esgotamento)</option>
-        <option value="Mancha / Psora (Sobrecarga Toxínica)">🟤 Mancha / Psora (Sobrecarga)</option>
-        <option value="Anel de Tensão (Espasmo / Estresse)">⭕ Anel de Tensão (Estresse)</option>
-        <option value="Fibras Abertas / Hiperatividade">🔸 Fibras Abertas / Irritação</option>
-      </select>
-    </div>
-    <button class="btn-pin" onclick="adicionarAchadoManual()">➕ Anotar Ponto Selecionado no Laudo</button>
-    <div id="listaAchados" class="pin-list"></div>
+  <div class="controls">
+    <button class="ctrl-btn primary" onclick="centralizarAneis()">🎯 Centrar Anéis na Imagem</button>
+    <button class="ctrl-btn" onclick="mudarRaioPupila(-5)">🟡 Pupila -</button>
+    <button class="ctrl-btn" onclick="mudarRaioPupila(5)">🟡 Pupila +</button>
+    <button class="ctrl-btn" onclick="mudarRaioIris(-8)">🟢 Íris -</button>
+    <button class="ctrl-btn" onclick="mudarRaioIris(8)">🟢 Íris +</button>
   </div>
 
-  <div class="psy-card">
-    <div class="psy-title">🧠 Síntese Psicossomática e Comportamental (SNA & Rayid)</div>
-    <div id="psyTexto">Aguardando calibração dos anéis para leitura comportamental...</div>
+  <div class="diag" id="vDiag">
+    <b>Estado:</b> Imagem carregada com sucesso. Ajuste os anéis e verifique a proporção.
   </div>
-
-  <div class="box" style="margin-top:10px; padding:8px;">
-    <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">Projeção Polar de Daugman (12h → 3h → 6h → 9h → 12h)</div>
-    <canvas id="pCv" width="360" height="65" style="height:65px; border-radius:4px;"></canvas>
-  </div>
-
-  <div class="metrics">
-    <div class="m-card"><div class="m-lbl">PUPILA / ÍRIS</div><div class="m-val" id="vProp">--%</div></div>
-    <div class="m-card"><div class="m-lbl">TRAMA (SEM FLASH)</div><div class="m-val" id="vTex">--</div></div>
-    <div class="diag" id="vDiag">Carregue e ajuste os anéis sobre a íris.</div>
-  </div>
-
-  <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Relatório Integrativo Completo (.TXT)</button>
 </div>
 
 <script>
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-const pCv = document.getElementById('pCv'), pCtx = pCv.getContext('2d');
 let img = new Image(), loaded = false;
-let cx = 250, cy = 250, rP = 55, rI = 170, mode = 'move';
-let drag = false, sx = 0, sy = 0, scx = 0, scy = 0, srP = 0, srI = 0, pinch0 = null;
-let cleanPixels = null;
-let polarGray = new Float32Array(360 * 65);
-let polarFlashMask = new Uint8Array(360 * 65);
-let laudoTxt = "";
+let cx = 250, cy = 250, rP = 55, rI = 170;
+let isDragging = false, startX = 0, startY = 0, scx = 250, scy = 250;
 
-let probeX = null, probeY = null;
-let ultimoOrgaoInfo = null;
-let achadosClinicos = [];
-let statusAnelTensao = "Ausente / Normal";
-let psicossomaticaResumo = "";
-
-const ZONAS_JENSEN = [
-  "Zona 1 (Estômago / Digestão Primária)",
-  "Zona 2 (Intestino Delgado e Grosso / Absorção)",
-  "Zona 3 (Colarete / SNA / Eixo Neuroendócrino e Suprarrenais)",
-  "Zona 4 (Ductos, Brônquios e Glândulas Vitais)",
-  "Zona 5 (Parênquima dos Órgãos e Estrutura Muscular/Óssea)",
-  "Zona 6 (Sistema Linfático, Circulatório e Imunitário)",
-  "Zona 7 (Pele, Eliminação Periférica e Barreira Epitelial)"
-];
-
-function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
-  if (zonaIdx === 0) return "Estômago (Zona Gástrica Central)";
-  if (zonaIdx === 1) {
-    if (olho === "OD") {
-      if (horaFloat >= 1 && horaFloat <= 5.5) return "Intestino Delgado (Duodeno / Íleo)";
-      if (horaFloat > 5.5 && horaFloat <= 7.5) return "Ceco e Apêndice";
-      if (horaFloat > 7.5 && horaFloat <= 10.5) return "Cólon Ascendente e Ângulo Hepático";
-      return "Cólon Transverso";
-    } else {
-      if (horaFloat >= 1 && horaFloat <= 2.5) return "Cólon Transverso e Ângulo Esplênico";
-      if (horaFloat > 2.5 && horaFloat <= 5.0) return "Cólon Descendente";
-      if (horaFloat > 5.0 && horaFloat <= 7.0) return "Cólon Sigmoide e Reto";
-      return "Intestino Delgado (Jejuno / Íleo)";
-    }
-  }
-  if (zonaIdx === 2) return "Banda do Sistema Nervoso Autônomo (Colarete) / Plexo Solar";
-  if (zonaIdx === 6) return "Pele, Sudorese e Microcirculação Periférica";
-
-  const h = horaFloat;
-  if (olho === "OD") {
-    if (h >= 11.5 || h < 0.5) return "Cérebro Direito / Vitalidade Mental / Hipófise e Pineal";
-    if (h >= 0.5 && h < 1.3) return "Córtex Sensório-Motor / Têmpora e Mastóide";
-    if (h >= 1.3 && h < 2.2) return "Olho Direito, Seios da Face (Sinus) e Fronte";
-    if (h >= 2.2 && h < 3.0) return "Laringe, Faringe, Língua e Mandíbula";
-    if (h >= 3.0 && h < 3.8) return "Tireoide, Paratireoide, Cordas Vocais e Esôfago";
-    if (h >= 3.8 && h < 4.5) return "Coluna (Cervical/Torácica/Lombar) e Costelas";
-    if (h >= 4.5 && h < 5.3) return "Bexiga, Útero / Próstata e Região Pélvica";
-    if (h >= 5.3 && h < 6.0) return "Rim Direito e Glândula Suprarrenal Direita";
-    if (h >= 6.0 && h < 6.6) return "Perna, Joelho, Pé e Virilha Direita";
-    if (h >= 6.6 && h < 7.3) return "Ovário / Testículo Direito e Parede Abdominal";
-    if (h >= 7.3 && h < 8.2) return "Fígado, Vesícula Biliar e Pâncreas (Cabeça)";
-    if (h >= 8.2 && h < 9.0) return "Diafragma, Mama e Pleura Direita";
-    if (h >= 9.0 && h < 10.2) return "Pulmão Direito e Árvore Brônquica";
-    if (h >= 10.2 && h < 11.0) return "Pescoço, Ombro e Ouvido Direito";
-    return "Medula Bulbar, Cerebelo e Equilíbrio";
-  } else {
-    if (h >= 11.5 || h < 0.5) return "Cérebro Esquerdo / Centro Emocional / Hipófise";
-    if (h >= 0.5 && h < 1.3) return "Medula, Cerebelo e Equilíbrio Neurovegetativo";
-    if (h >= 1.3 && h < 2.2) return "Pescoço, Ombro e Ouvido Esquerdo";
-    if (h >= 2.2 && h < 3.5) return "Pulmão Esquerdo, Brônquios e Coração (Zona 3h)";
-    if (h >= 3.5 && h < 4.4) return "Mama, Pleura, Costelas e Baço (4h-4h30)";
-    if (h >= 4.4 && h < 5.3) return "Ovário / Testículo Esquerdo, Pâncreas (Cauda) e Pelve";
-    if (h >= 5.3 && h < 6.0) return "Perna, Joelho e Pé Esquerdo";
-    if (h >= 6.0 && h < 6.7) return "Rim Esquerdo e Glândula Suprarrenal Esquerda";
-    if (h >= 6.7 && h < 7.5) return "Bexiga, Útero / Próstata, Reto e Região Lombar";
-    if (h >= 7.5 && h < 8.5) return "Coluna Vertebral (Lombar/Torácica/Cervical)";
-    if (h >= 8.5 && h < 9.4) return "Tireoide, Esôfago, Traqueia e Cordas Vocais";
-    if (h >= 9.4 && h < 10.3) return "Faringe, Amígdalas, Maxilar e Nariz";
-    if (h >= 10.3 && h < 11.5) return "Olho Esquerdo, Seios da Face e Área Temporal";
-    return "Cérebro Esquerdo / Eixo Límbico";
-  }
-}
-
-function setM(m) {
-  mode = m;
-  document.getElementById('bMove').className = 'btn' + (m==='move'?' active':'');
-  document.getElementById('bMap').className = 'btn' + (m==='map'?' map-active':'');
-  document.getElementById('bIris').className = 'btn' + (m==='iris'?' active':'');
-  document.getElementById('bPup').className = 'btn' + (m==='pup'?' active':'');
-  render();
-}
-
-document.getElementById('fIn').onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = ev => {
-    img.onload = () => {
+document.getElementById('fIn').onchange = function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    img.onload = function() {
       loaded = true;
-      achadosClinicos = [];
-      atualizarListaAchados();
       document.getElementById('appArea').style.display = 'block';
-      prepararBufferImagem();
-      autoDetectarPupila();
+      centralizarAneis();
     };
-    img.src = ev.target.result;
+    img.src = evt.target.result;
   };
-  r.readAsDataURL(f);
+  reader.readAsDataURL(file);
 };
 
-function prepararBufferImagem() {
-  const off = document.createElement('canvas');
-  off.width = 500; off.height = 500;
-  const oCtx = off.getContext('2d');
-  const sc = Math.max(500 / img.width, 500 / img.height);
-  oCtx.drawImage(img, (500 - img.width*sc)/2, (500 - img.height*sc)/2, img.width*sc, img.height*sc);
-  cleanPixels = oCtx.getImageData(0, 0, 500, 500).data;
-}
-
-function autoDetectarPupila() {
-  if (!cleanPixels) return;
-  let minLum = 255;
-  for (let y = 130; y < 370; y += 3) {
-    for (let x = 130; x < 370; x += 3) {
-      let i = (y * 500 + x) * 4;
-      let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
-      if (lum < minLum && lum > 5) minLum = lum;
-    }
-  }
-  let thresh = minLum + 28, sumX = 0, sumY = 0, count = 0;
-  for (let y = 120; y < 380; y += 2) {
-    for (let x = 120; x < 380; x += 2) {
-      let i = (y * 500 + x) * 4;
-      let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
-      if (lum <= thresh) { sumX += x; sumY += y; count++; }
-    }
-  }
-  if (count > 40) { cx = Math.round(sumX / count); cy = Math.round(sumY / count); }
-  else { cx = 250; cy = 250; }
-
-  let bestRP = 50, maxGrad = 0;
-  for (let r = 20; r < 115; r += 2) {
-    let lumIn = 0, lumOut = 0, valid = 0;
-    for (let a = 0; a < 360; a += 15) {
-      let rad = a * Math.PI / 180;
-      let x1 = Math.round(cx + (r - 3) * Math.cos(rad)), y1 = Math.round(cy + (r - 3) * Math.sin(rad));
-      let x2 = Math.round(cx + (r + 3) * Math.cos(rad)), y2 = Math.round(cy + (r + 3) * Math.sin(rad));
-      if (x2 >= 0 && x2 < 500 && y2 >= 0 && y2 < 500) {
-        let i1 = (y1 * 500 + x1) * 4, i2 = (y2 * 500 + x2) * 4;
-        let l1 = 0.299*cleanPixels[i1] + 0.587*cleanPixels[i1+1] + 0.114*cleanPixels[i1+2];
-        let l2 = 0.299*cleanPixels[i2] + 0.587*cleanPixels[i2+1] + 0.114*cleanPixels[i2+2];
-        if (l1 < 225 && l2 < 225) { lumIn += l1; lumOut += l2; valid++; }
-      }
-    }
-    if (valid > 8 && ((lumOut - lumIn) / valid) > maxGrad) {
-      maxGrad = (lumOut - lumIn) / valid; bestRP = r;
-    }
-  }
-  rP = bestRP;
-  rI = Math.min(235, Math.round(rP * 3.1));
-  probeX = cx; probeY = cy - Math.round((rP + rI) / 2);
-  atualizarOrgaoSelecionado();
-  analisar();
+function centralizarAneis() {
+  if (!loaded) return;
+  cx = 250;
+  cy = 250;
+  rP = Math.round(Math.min(img.width, img.height) * 0.12);
+  rI = Math.round(Math.min(img.width, img.height) * 0.35);
   render();
 }
 
-function executarScannerAutomatico() {
-  if (!loaded || !cleanPixels) return;
-  analisar();
-
-  const pw = 360, ph = 65;
-  const olho = document.getElementById('pacOlho').value;
-  achadosClinicos = achadosClinicos.filter(a => !a.auto);
-
-  let candidatosRaios = [];
-  for (let deg = 0; deg < 360; deg += 3) {
-    let somaCol = 0, somaViz = 0, valid = 0;
-    for (let y = 8; y < 48; y++) {
-      let idx = y * pw + deg;
-      let idxL = y * pw + ((deg - 6 + 360) % 360);
-      let idxR = y * pw + ((deg + 6) % 360);
-      if (polarFlashMask[idx] || polarFlashMask[idxL] || polarFlashMask[idxR]) continue;
-      somaCol += polarGray[idx];
-      somaViz += (polarGray[idxL] + polarGray[idxR]) * 0.5;
-      valid++;
-    }
-    if (valid > 28) {
-      let queda = (somaViz - somaCol) / valid;
-      if (queda > 11.5) candidatosRaios.push({ deg, score: queda });
-    }
-  }
-  candidatosRaios.sort((a, b) => b.score - a.score);
-  let raiosEscolhidos = [];
-  for (let c of candidatosRaios) {
-    if (raiosEscolhidos.length >= 3) break;
-    if (raiosEscolhidos.every(r => Math.min(Math.abs(r.deg - c.deg), 360 - Math.abs(r.deg - c.deg)) > 18)) {
-      raiosEscolhidos.push(c);
-      adicionarSinalPolar(olho, c.deg, 2, "Raio Solar (Tensão Neurovegetativa)", "raio");
-    }
-  }
-
-  let candidatosLacunas = [];
-  for (let deg = 18; deg < 342; deg += 6) {
-    if (deg > 162 && deg < 198) continue;
-    for (let z = 1; z <= 4; z++) {
-      let yStart = Math.floor((z / 7) * ph);
-      let yEnd = Math.floor(((z + 1) / 7) * ph);
-      let somaBloco = 0, somaEntorno = 0, cnt = 0;
-      for (let y = yStart; y < yEnd; y++) {
-        for (let dx = -2; dx <= 2; dx++) {
-          let x = (deg + dx + 360) % 360;
-          let idx = y * pw + x;
-          let idxE1 = y * pw + ((deg - 12 + 360) % 360);
-          let idxE2 = y * pw + ((deg + 12) % 360);
-          if (polarFlashMask[idx] || polarFlashMask[idxE1] || polarFlashMask[idxE2]) continue;
-          somaBloco += polarGray[idx];
-          somaEntorno += (polarGray[idxE1] + polarGray[idxE2]) * 0.5;
-          cnt++;
-        }
-      }
-      if (cnt > 15) {
-        let diff = (somaEntorno - somaBloco) / cnt;
-        if (diff > 14.0) candidatosLacunas.push({ deg, zonaIdx: z, score: diff });
-      }
-    }
-  }
-  candidatosLacunas.sort((a, b) => b.score - a.score);
-  let lacunasEscolhidas = [];
-  for (let l of candidatosLacunas) {
-    if (lacunasEscolhidas.length >= 4) break;
-    if (lacunasEscolhidas.every(e => Math.min(Math.abs(e.deg - l.deg), 360 - Math.abs(e.deg - l.deg)) > 20)) {
-      lacunasEscolhidas.push(l);
-      let tipo = l.score > 22 ? "Cripta / Mancha Escura (Sobrecarga)" : "Lacuna Aberta (Fragilidade Local)";
-      adicionarSinalPolar(olho, l.deg, l.zonaIdx, tipo, "lacuna");
-    }
-  }
-
-  let scoreAnel = 0;
-  for (let y = 38; y < 56; y++) {
-    let diffLinha = 0, cnt = 0;
-    for (let x = 20; x < 340; x += 2) {
-      if (x > 160 && x < 200) continue;
-      let idx = y * pw + x;
-      if (polarFlashMask[idx]) continue;
-      let vDiff = Math.abs(polarGray[idx] - 0.5 * (polarGray[(y-3)*pw + x] + polarGray[(y+3)*pw + x]));
-      let hDiff = Math.abs(polarGray[idx] - polarGray[y*pw + x - 2]);
-      if (vDiff > hDiff * 1.35 && vDiff > 7) diffLinha++;
-      cnt++;
-    }
-    if (cnt > 40 && (diffLinha / cnt) > 0.32) scoreAnel++;
-  }
-  statusAnelTensao = scoreAnel >= 2
-    ? "Presentes nas Zonas 5-6 (Indicativo de Tensão / Rigidez Somática)"
-    : "Discretos ou Ausentes (Sem espasmo circular periférico marcado)";
-
-  atualizarListaAchados();
-  analisar();
+function mudarRaioPupila(val) {
+  rP = Math.max(10, rP + val);
   render();
 }
 
-function adicionarSinalPolar(olho, deg, zonaIdx, descricaoSinal, subtipo) {
-  let horaFloat = deg / 30.0;
-  let hInt = Math.floor(horaFloat);
-  let mInt = Math.round((horaFloat - hInt) * 60);
-  if (hInt === 0) hInt = 12;
-  let horaStr = `${hInt}h${mInt < 10 ? '0'+mInt : mInt}`;
-  let rMeio = rP + ((zonaIdx + 0.5) / 7.0) * (rI - rP);
-  let rad = (deg - 90) * Math.PI / 180;
-  let px = Math.round(cx + rMeio * Math.cos(rad));
-  let py = Math.round(cy + rMeio * Math.sin(rad));
-  let nomeOrgao = obterOrgaoJensen(olho, horaFloat, zonaIdx);
-
-  achadosClinicos.push({
-    hora: horaStr, zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, sinal: descricaoSinal, x: px, y: py, rad: rad, auto: true, subtipo: subtipo
-  });
-}
-
-function pos(t) {
-  const b = cv.getBoundingClientRect();
-  let x = (t.clientX - b.left)*(cv.width/b.width);
-  let y = (t.clientY - b.top)*(cv.height/b.height);
-  if (document.getElementById('cZom').checked) {
-    x = (x - 250) / 2 + cx;
-    y = (y - 250) / 2 + cy;
-  }
-  return { x, y };
-}
-
-function atualizarOrgaoSelecionado() {
-  if (probeX === null || probeY === null) return;
-  const dx = probeX - cx, dy = probeY - cy;
-  const dist = Math.hypot(dx, dy);
-  const olho = document.getElementById('pacOlho').value;
-
-  let deg = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
-  let horaFloat = deg / 30.0;
-  let hInt = Math.floor(horaFloat);
-  let mInt = Math.round((horaFloat - hInt) * 60);
-  if (hInt === 0) hInt = 12;
-  let horaStr = `${hInt}h${mInt < 10 ? '0'+mInt : mInt}`;
-
-  if (dist <= rP) {
-    document.getElementById('orgCoord').innerText = `⚫ ÁREA PUPILAR (${horaStr})`;
-    document.getElementById('orgNome').innerText = "Pupila — Tônus do Sistema Nervoso Autônomo";
-    document.getElementById('orgZona').innerText = "Borda Pupilar Interna (Eixo Neurogástrico)";
-    ultimoOrgaoInfo = { hora: horaStr, zona: "Borda Pupilar", orgao: "Tônus Pupilar / BPI", x: probeX, y: probeY };
-    return;
-  }
-
-  let ratio = (dist - rP) / (rI - rP);
-  let zonaIdx = Math.min(6, Math.max(0, Math.floor(ratio * 7)));
-  let nomeOrgao = obterOrgaoJensen(olho, horaFloat, zonaIdx);
-  let nomeZona = ZONAS_JENSEN[zonaIdx];
-
-  document.getElementById('orgCoord').innerText = `📍 ${olho} • POSIÇÃO ${horaStr} • ANEL ${zonaIdx + 1} DE 7`;
-  document.getElementById('orgNome').innerText = nomeOrgao;
-  document.getElementById('orgZona').innerText = nomeZona;
-  ultimoOrgaoInfo = { hora: horaStr, zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, x: probeX, y: probeY };
-}
-
-function adicionarAchadoManual() {
-  if (!ultimoOrgaoInfo) return;
-  const sinal = document.getElementById('tipoSinal').value;
-  achadosClinicos.push({ ...ultimoOrgaoInfo, sinal, auto: false });
-  atualizarListaAchados();
-  analisar();
+function mudarRaioIris(val) {
+  rI = Math.max(rP + 10, rI + val);
   render();
 }
 
-function removerAchado(idx) {
-  achadosClinicos.splice(idx, 1);
-  atualizarListaAchados();
-  analisar();
-  render();
-}
-
-function atualizarListaAchados() {
-  const box = document.getElementById('listaAchados');
-  if (achadosClinicos.length === 0) { box.innerHTML = ""; return; }
-  box.innerHTML = achadosClinicos.map((a, i) => `
-    <div class="pin-item ${a.auto ? 'auto-pin' : ''}">
-      <span>${a.auto ? '🔍' : '📌'} <b>${a.hora} (${a.zona}):</b> ${a.orgao} — <i>${a.sinal}</i></span>
-      <button onclick="removerAchado(${i})" style="background:none;border:none;color:#dc2626;font-weight:bold;cursor:pointer;">✕</button>
-    </div>
-  `).join('');
-}
-
-cv.addEventListener('touchstart', e => {
+cv.addEventListener('touchstart', function(e) {
   e.preventDefault();
-  if (e.touches.length === 2) {
-    pinch0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    srI = rI; srP = rP;
-  } else if (e.touches.length === 1) {
-    drag = true; const p = pos(e.touches[0]);
-    if (mode === 'map') { probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render(); }
-    else { sx = p.x; sy = p.y; scx = cx; scy = cy; srI = rI; srP = rP; }
+  if (e.touches.length === 1) {
+    isDragging = true;
+    const b = cv.getBoundingClientRect();
+    startX = (e.touches[0].clientX - b.left) * (cv.width / b.width);
+    startY = (e.touches[0].clientY - b.top) * (cv.height / b.height);
+    scx = cx; scy = cy;
   }
 }, {passive:false});
 
-cv.addEventListener('touchmove', e => {
+cv.addEventListener('touchmove', function(e) {
   e.preventDefault();
-  if (e.touches.length === 2 && pinch0) {
-    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    const k = d / pinch0;
-    if (mode === 'pup') rP = Math.max(10, Math.min(rI - 10, srP * k));
-    else rI = Math.max(rP + 15, Math.min(245, srI * k));
-    render();
-  } else if (e.touches.length === 1 && drag) {
-    const p = pos(e.touches[0]);
-    if (mode === 'map') { probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render(); return; }
-    const dx = p.x - sx, dy = p.y - sy;
-    if (mode === 'move') { cx = Math.max(30, Math.min(470, scx + dx)); cy = Math.max(30, Math.min(470, scy + dy)); }
-    else if (mode === 'iris') rI = Math.max(rP + 15, Math.min(245, srI + dx * 0.8));
-    else if (mode === 'pup') rP = Math.max(10, Math.min(rI - 10, srP + dx * 0.8));
+  if (isDragging && e.touches.length === 1) {
+    const b = cv.getBoundingClientRect();
+    const x = (e.touches[0].clientX - b.left) * (cv.width / b.width);
+    const y = (e.touches[0].clientY - b.top) * (cv.height / b.height);
+    cx = Math.max(20, Math.min(480, scx + (x - startX)));
+    cy = Math.max(20, Math.min(480, scy + (y - startY)));
     render();
   }
 }, {passive:false});
 
-cv.addEventListener('touchend', () => { drag = false; pinch0 = null; analisar(); });
+cv.addEventListener('touchend', function() { isDragging = false; });
 
 function render() {
   if (!loaded) return;
   ctx.clearRect(0, 0, 500, 500);
-  ctx.save();
-  if (document.getElementById('cZom').checked) {
-    ctx.translate(250, 250); ctx.scale(2, 2); ctx.translate(-cx, -cy);
-  }
+  
   const sc = Math.max(500 / img.width, 500 / img.height);
   const iw = img.width * sc, ih = img.height * sc;
   ctx.drawImage(img, (500 - iw)/2, (500 - ih)/2, iw, ih);
 
-  if (document.getElementById('cFlsh').checked && cleanPixels) {
-    ctx.fillStyle = 'rgba(0, 220, 255, 0.35)';
-    for (let y = Math.max(0, Math.floor(cy - rI)); y < Math.min(500, Math.ceil(cy + rI)); y += 3) {
-      for (let x = Math.max(0, Math.floor(cx - rI)); x < Math.min(500, Math.ceil(cx + rI)); x += 3) {
-        let dist = Math.hypot(x - cx, y - cy);
-        if (dist > rP && dist < rI) {
-          let i = (y * 500 + x) * 4;
-          let lum = 0.299*cleanPixels[i] + 0.58
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.lineWidth = 1;
+  for (let a = 0; a < 360; a += 30) {
+    let rad = a * Math.PI / 180;
+    ctx.beginPath();
+    ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad));
+    ctx.lineTo(cx + rI * Math.cos(rad), cy + rI * Math.sin(rad));
+    ctx.stroke();
+  }
+
+  let st = (rI - rP) / 7;
+  for (let i = 1; i < 7; i++) {
+    ctx.strokeStyle = (i === 3) ? 'rgba(251, 191, 36, 0.9)' : 'rgba(190, 210, 255, 0.6)';
+    ctx.lineWidth = (i === 3) ? 1.5 : 1;
+    ctx.beginPath(); ctx.arc(cx, cy, rP + i * st, 0, 2 * Math.PI); ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#facc15'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(cx, cy, rP, 0, 2 * Math.PI); ctx.stroke();
+
+  ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2 * Math.PI); ctx.stroke();
+
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx-6, cy); ctx.lineTo(cx+6, cy);
+  ctx.moveTo(cx, cy-6); ctx.lineTo(cx, cy+6); ctx.stroke();
+
+  let prop = ((rP / rI) * 100).toFixed(1);
+  document.getElementById('vDiag').innerHTML = `<b>Proporção Pupila/Íris:</b> ${prop}%<br><b>Centro:</b> X=${Math.round(cx)}, Y=${Math.round(cy)}`;
+}
+</script>
+</body>
+</html>
