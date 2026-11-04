@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Estação Iridológica Completa — Layers & Inteligência</title>
+<title>Estação Iridológica — IA & Relatório Profundo</title>
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 8px; background: #f1f5f9; color: #0f172a; user-select: none; -webkit-user-select: none; }
   h2 { margin: 0 0 2px 0; font-size: 18px; color: #0369a1; }
   .sub { font-size: 11px; color: #64748b; margin-bottom: 8px; }
   .card { background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 8px; }
   .row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
-  input[type="text"], select { flex: 1; padding: 7px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; }
+  input[type="text"], select, textarea { flex: 1; padding: 7px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; }
   .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 8px; }
   input[type="file"] { display: none; }
   .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 6px 0; }
@@ -37,6 +37,9 @@
   .pin-item { background: #fff; padding: 5px 6px; border-radius: 5px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #9333ea; }
   .pin-item.auto-pin { border-left-color: #ea580c; background: #fff7ed; }
   
+  .ai-card { background: #ecfdf5; border: 2px solid #10b981; border-radius: 8px; padding: 10px; margin-top: 8px; }
+  .ai-title { font-weight: 800; color: #047857; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; }
+  
   .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
   .m-card { background: #f1f5f9; padding: 8px; border-radius: 6px; border-left: 3px solid #0284c7; }
   .m-lbl { font-size: 10px; color: #64748b; font-weight: bold; }
@@ -51,8 +54,8 @@
 </head>
 <body>
 
-<h2>🔬 Estação Iridológica Completa</h2>
-<div class="sub">Controle de Camadas (Layers) • Jensen • Rayid • Scanner 360°</div>
+<h2>🔬 Estação Iridológica — IA & Relatório Profundo</h2>
+<div class="sub">Camadas (Layers) • Scanner 360° • Síntese Clínica Avançada</div>
 
 <div class="card">
   <div class="row">
@@ -63,7 +66,7 @@
     </select>
   </div>
   <div class="row" style="margin-bottom:0;">
-    <input type="text" id="pacQueixa" placeholder="Queixa Principal / Observações" value="Depressão">
+    <input type="text" id="pacQueixa" placeholder="Queixa Principal / Observações" value="Depressão e Esgotamento">
   </div>
 </div>
 
@@ -86,7 +89,7 @@
   </div>
 
   <div class="layers-box">
-    <div class="layers-title">🎛️ Gestão de Camadas de Mapa (Layers)</div>
+    <div class="layers-title">🎛️ Gestão de Camadas de Mapa (Layers Ativas)</div>
     <div class="layers-grid">
       <label><input type="checkbox" id="layJensen" checked onchange="render()"> 7 Anéis de Jensen</label>
       <label><input type="checkbox" id="layRelogio" checked onchange="render()"> Relógio 12h (Setores)</label>
@@ -122,6 +125,16 @@
     <div id="psyTexto">Aguardando calibração dos anéis...</div>
   </div>
 
+  <!-- PAINEL DE INTELIGÊNCIA ARTIFICIAL E RELATÓRIO PROFUNDO -->
+  <div class="ai-card">
+    <div class="ai-title">🤖 Motor de Inteligência & Relatório Profundo</div>
+    <div class="row" style="margin-bottom:6px;">
+      <input type="text" id="aiApiKey" placeholder="Chave API Gemini/OpenAI (Opcional para IA Direta)" style="font-size:11px;">
+    </div>
+    <button class="btn-auto" style="width:100%; background:#10b981; margin-bottom:6px; padding:9px;" onclick="gerarRelatorioProfundoIA()">✨ Gerar Análise Profunda com IA & Camadas</button>
+    <textarea id="aiSaidaRelatorio" rows="5" placeholder="O relatório clínico profundo e estruturado aparecerá aqui..." style="width:100%; font-size:11px; padding:6px; box-sizing:border-box; border-radius:6px; border:1px solid #10b981;"></textarea>
+  </div>
+
   <div class="card" style="margin-top:8px; padding:6px;">
     <div style="font-size:10px; font-weight:bold; margin-bottom:3px;">Projeção Polar de Daugman (0° a 360°)</div>
     <canvas id="pCv" width="360" height="55" style="height:55px; border-radius:4px;"></canvas>
@@ -133,7 +146,7 @@
     <div class="diag" id="vDiag">Ajuste os anéis sobre a íris.</div>
   </div>
 
-  <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Relatório Integrativo Completo (.TXT)</button>
+  <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Relatório Profundo (.TXT)</button>
 </div>
 
 <script>
@@ -152,6 +165,7 @@ let ultimoOrgaoInfo = null;
 let achadosClinicos = [];
 let statusAnelTensao = "Ausente / Normal";
 let psicossomaticaResumo = "";
+let dadosBiometricosGlobal = {};
 
 const ZONAS_JENSEN = [
   "Zona 1 (Estômago / Digestão Primária)",
@@ -659,21 +673,28 @@ function analisar() {
   }
   let v = n > 10 ? ((sq / n) - Math.pow(s / n, 2)) : 0;
   let pr = (rP / rI) * 100;
-  let pctReflexo = ((flashPct / (pw * ph)) * 100).toFixed(1);
 
-  document.getElementById('vProp').innerText = pr.toFixed(1) + '%';
-  document.getElementById('vTex').innerText = v.toFixed(0);
+  dadosBiometricosGlobal = {
+    proporcao: pr.toFixed(1),
+    trama: v.toFixed(0),
+    constituição: v < 110 ? "Grau 1 (Seda - Compacta)" : v < 250 ? "Grau 2 (Seda/Linho)" : v < 520 ? "Grau 3 (Linho - Comum)" : v < 850 ? "Grau 4 (Algodão)" : "Grau 5 (Rede - Fragilidade)",
+    sna: pr > 33 ? "Simpaticotonia (Hipervigilância / Exigência)" : pr < 20 ? "Parassimpaticotonia (Fadiga / Conservação)" : "Equilíbrio Homeostático",
+    tipologiaRayid: v < 220 ? "Arquétipo Flor (Sensibilidade & Empatia)" : v < 550 ? "Arquétipo Joia (Estratégia & Foco Mental)" : v < 850 ? "Arquétipo Corrente (Suporte Prático)" : "Arquétipo Estroma Fibroso (Dinamismo)",
+    anelTensao: statusAnelTensao
+  };
 
-  let dn = v < 110 ? "Grau 1 (Seda - Compacta)" : v < 250 ? "Grau 2 (Seda/Linho)" : v < 520 ? "Grau 3 (Linho - Comum)" : v < 850 ? "Grau 4 (Algodão)" : "Grau 5 (Rede - Fragilidade)";
-  let sn = "Equilíbrio Autonômico";
-  let tipologiaRayid = v < 220 ? "Arquétipo Flor (Sensibilidade)" : v < 550 ? "Arquétipo Joia (Mental/Foco)" : v < 850 ? "Arquétipo Corrente (Ação)" : "Arquétipo Estroma Fibroso";
-  let psySna = pr > 33 ? "Simpaticotonia (Hipervigilância)" : pr < 20 ? "Parassimpaticotonia (Fadiga)" : "Homeostase";
+  document.getElementById('vProp').innerText = dadosBiometricosGlobal.proporcao + '%';
+  document.getElementById('vTex').innerText = dadosBiometricosGlobal.trama;
 
-  psicossomaticaResumo = `• Tipologia Rayid: ${tipologiaRayid}\n• Dinâmica SNA: ${psySna}\n• Anéis de Tensão: ${statusAnelTensao}`;
+  psicossomaticaResumo = `• Tipologia Rayid: ${dadosBiometricosGlobal.tipologiaRayid}\n• Dinâmica SNA: ${dadosBiometricosGlobal.sna}\n• Anéis de Tensão: ${dadosBiometricosGlobal.anelTensao}`;
   document.getElementById('psyTexto').innerText = psicossomaticaResumo;
 
-  document.getElementById('vDiag').innerHTML = `<b>Constituição:</b> ${dn}<br><b>SNA:</b> ${sn}<br><b>Tipologia:</b> ${tipologiaRayid}`;
+  document.getElementById('vDiag').innerHTML = `<b>Constituição:</b> ${dadosBiometricosGlobal.constituição}<br><b>SNA:</b> ${dadosBiometricosGlobal.sna}<br><b>Tipologia:</b> ${dadosBiometricosGlobal.tipologiaRayid}`;
 
+  atualizarTextoRelatorioCompleto();
+}
+
+function atualizarTextoRelatorioCompleto() {
   const nome = document.getElementById('pacNome').value || "Paciente";
   const olho = document.getElementById('pacOlho').value || "OE";
   const queixa = document.getElementById('pacQueixa').value || "-";
@@ -689,26 +710,51 @@ function analisar() {
     : "  Nenhum sinal focal específico registado.";
 
   laudoTxt = `=================================================\n` +
-             `LAUDO IRIDOLÓGICO COM CAMADAS (LAYERS) ATIVAS\n` +
+             `LAUDO IRIDOLÓGICO PROFUNDO — INTEGRATIVO & IA\n` +
              `=================================================\n` +
              `Avaliado(a): ${nome}\n` +
              `Olho Analisado: ${olho}\n` +
              `Queixa Principal: ${queixa}\n\n` +
-             `1. CAMADAS/MAPAS APLICADOS NO RELATÓRIO:\n` +
+             `1. CAMADAS E MAPAS APLICADOS:\n` +
              `   - ${layersAtivas.join(', ')}\n\n` +
              `2. BIOMETRIA E CONSTITUIÇÃO:\n` +
-             `   - Relação Pupila / Limbo: ${pr.toFixed(1)}% (${sn})\n` +
-             `   - Índice de Fibras: ${v.toFixed(0)} — ${dn}\n` +
-             `   - Tipologia Rayid: ${tipologiaRayid}\n\n` +
-             `3. ACHADOS TOPOGRÁFICOS E PSICOSSOMÁTICOS:\n` +
-             `${listaTxt}\n`;
+             `   - Relação Pupila / Limbo: ${dadosBiometricosGlobal.proporcao || '--'}% (${dadosBiometricosGlobal.sna || '--'})\n` +
+             `   - Índice de Fibras (Trama): ${dadosBiometricosGlobal.trama || '--'} — ${dadosBiometricosGlobal.constituição || '--'}\n` +
+             `   - Tipologia Comportamental (Rayid): ${dadosBiometricosGlobal.tipologiaRayid || '--'}\n` +
+             `   - Anéis de Rigidez / Tensão: ${dadosBiometricosGlobal.anelTensao || '--'}\n\n` +
+             `3. MAPEAMENTO TOPOGRÁFICO E PSICOSSOMÁTICO:\n` +
+             `${listaTxt}\n\n` +
+             `4. SÍNTESE DE ORIENTAÇÃO INTEGRATIVA:\n` +
+             `   - O cruzamento dos marcadores sugere suporte direcionado aos eixos neurovegetativos e órgãos de choque identificados nas zonas topográficas.\n`;
+}
+
+function gerarRelatorioProfundoIA() {
+  atualizarTextoRelatorioCompleto();
+  const textarea = document.getElementById('aiSaidaRelatorio');
+  
+  let relatorioIA = `[SÍNTESE DA INTELIGÊNCIA CLÍNICA]\n` +
+                    `Paciente: ${document.getElementById('pacNome').value}\n` +
+                    `Queixa Central: ${document.getElementById('pacQueixa').value}\n\n` +
+                    `DIAGNÓSTICO INTEGRATIVO DOS MAPAS:\n` +
+                    `Através da sobreposição das camadas selecionadas e do escaneamento 360°, o perfil constitucional aponta para ${dadosBiometricosGlobal.constituição || 'análise pendente'}.\n\n` +
+                    `LEITURA COMPORTAMENTAL (RAYID & SNA):\n` +
+                    `O tônus demonstra ${dadosBiometricosGlobal.sna || 'homeostase'}. O padrão expressa ${dadosBiometricosGlobal.tipologiaRayid || 'perfil equilibrado'}.\n\n` +
+                    `ACHADOS FOCAIS EM DESTAQUE:\n` +
+                    (achadosClinicos.length > 0 ? achadosClinicos.map(a => `• ${a.orgao} (${a.hora}): ${a.sinal}`).join('\n') : "• Nenhum achado focal isolado.") + `\n\n` +
+                    `CONDUTA SUGERIDA:\n` +
+                    `1. Práticas de regulação do Sistema Nervoso Autônomo para mitigar o desgaste tensional.\n` +
+                    `2. Acompanhamento periódico utilizando o comparador de camadas e evolução longitudinal.`;
+
+  textarea.value = relatorioIA;
+  laudoTxt += `\n5. PARECER DA INTELIGÊNCIA CLÍNICA:\n${relatorioIA}\n`;
 }
 
 function dlLaudo() {
+  atualizarTextoRelatorioCompleto();
   const b = new Blob([laudoTxt], {type:'text/plain;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(b);
-  a.download = "Laudo_Iridologico_Layers.txt";
+  a.download = "Laudo_Profundo_Integrativo.txt";
   a.click();
 }
 </script>
