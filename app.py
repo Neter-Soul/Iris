@@ -1,251 +1,337 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import cv2
-import numpy as np
-import base64
-from datetime import datetime
 
-st.set_page_config(page_title="Sistema de Análise Iridológica", layout="wide")
+st.set_page_config(page_title="Análise Iridológica Touch", layout="wide")
 
-st.title("🔬 Estação de Análise e Topografia Iridológica")
-st.caption("Calibração geométrica, realce de estroma, projeção polar de Daugman e laudo automatizado.")
+st.markdown("""
+<style>
+    .block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+    h1 { font-size: 1.5rem !important; margin-bottom: 0.2rem !important; }
+</style>
+""", unsafe_allow_html=True)
 
-with st.expander("📋 Dados do Avaliado (Para o Relatório)", expanded=True):
-    col_p1, col_p2 = st.columns(2)
-    nome_paciente = col_p1.text_input("Nome do Avaliado:", placeholder="Ex: Lavinia")
-    notas_clinicas = col_p2.text_input("Queixa Principal / Observações:", placeholder="Ex: Depressão, fadiga...")
+st.title("🔬 Estação Iridológica Touch")
+st.caption("Toque e arraste os anéis diretamente com o dedo sobre a íris.")
 
-aba_od, aba_oe, aba_relatorio = st.tabs([
-    "👁️ Olho Direito (OD)", 
-    "👁️ Olho Esquerdo (OE)", 
-    "📄 Relatório Geral"
-])
-
-def carregador_universal_android(prefixo, titulo):
-    st.markdown(f"**{titulo}**")
-    metodo = st.radio(
-        "Método de carregamento:",
-        ["⚡ Carregador Anti-Erro (Recomendado no Telemóvel)", "📸 Câmara Direta", "📁 Carregador Padrão"],
-        key=f"met_{prefixo}"
-    )
-
-    if metodo == "⚡ Carregador Anti-Erro (Recomendado no Telemóvel)":
-        html_code = f"""
-        <div style="background:#f8fafc; padding:14px; border-radius:10px; border:2px dashed #0284c7; font-family:sans-serif;">
-            <div style="font-weight:bold; font-size:14px; color:#0f172a; margin-bottom:8px;">
-                1️⃣ Toque abaixo para escolher a foto da Galeria:
-            </div>
-            <input type="file" id="f_{prefixo}" accept="image/*" style="font-size:14px; width:100%; margin-bottom:10px;">
-            <div id="msg_{prefixo}" style="font-size:13px; color:#0369a1; font-weight:bold; margin-bottom:8px;"></div>
-            <button id="b_{prefixo}" onclick="copiar_{prefixo}()" style="display:none; width:100%; background:#16a34a; color:white; border:none; padding:10px; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">
-                2️⃣ TOCAR AQUI PARA COPIAR A FOTO PRONTA
-            </button>
-            <textarea id="t_{prefixo}" style="width:100%; height:1px; opacity:0.01;" readonly></textarea>
-        </div>
-        <script>
-        document.getElementById('f_{prefixo}').addEventListener('change', function(e) {{
-            const file = e.target.files[0];
-            if (!file) return;
-            document.getElementById('msg_{prefixo}').innerText = '⏳ A preparar imagem no telemóvel...';
-            const reader = new FileReader();
-            reader.onload = function(ev) {{
-                const img = new Image();
-                img.onload = function() {{
-                    const canvas = document.createElement('canvas');
-                    const max_w = 700;
-                    let w = img.width, h = img.height;
-                    if (w > max_w) {{ h = Math.round(h * (max_w / w)); w = max_w; }}
-                    canvas.width = w; canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    document.getElementById('t_{prefixo}').value = canvas.toDataURL('image/jpeg', 0.82);
-                    document.getElementById('b_{prefixo}').style.display = 'block';
-                    document.getElementById('msg_{prefixo}').innerText = '✅ Foto pronta! Toque no botão verde abaixo:';
-                }};
-                img.src = ev.target.result;
-            }};
-            reader.readAsDataURL(file);
-        }});
-        function copiar_{prefixo}() {{
-            const t = document.getElementById('t_{prefixo}');
-            t.select();
-            t.setSelectionRange(0, 999999);
-            navigator.clipboard.writeText(t.value).then(function() {{
-                document.getElementById('msg_{prefixo}').innerText = '✅ COPIADO! Agora cole na caixa "3️⃣ Colar aqui" logo abaixo:';
-                document.getElementById('b_{prefixo}').style.background = '#15803d';
-                document.getElementById('b_{prefixo}').innerText = '✔ COPIADO! COLE NA CAIXA ABAIXO';
-            }}).catch(function() {{
-                document.execCommand('copy');
-                document.getElementById('msg_{prefixo}').innerText = '✅ COPIADO! Agora cole na caixa "3️⃣ Colar aqui" logo abaixo:';
-            }});
-        }}
-        </script>
-        """
-        components.html(html_code, height=165)
-        b64_txt = st.text_input("3️⃣ Segure o dedo aqui, toque em COLAR e prima Enter:", key=f"in_{prefixo}", placeholder="Cole aqui o código da foto...")
-        if b64_txt and len(b64_txt) > 50:
-            try:
-                if "," in b64_txt:
-                    b64_txt = b64_txt.split(",")[1]
-                img_bytes = base64.b64decode(b64_txt.strip())
-                return cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
-            except Exception as e:
-                st.error(f"Erro ao descodificar imagem: {e}")
-        return None
-
-    elif metodo == "📸 Câmara Direta":
-        f_cam = st.camera_input("Tirar foto da íris", key=f"cam_{prefixo}")
-        if f_cam is not None:
-            return cv2.imdecode(np.frombuffer(f_cam.getvalue(), np.uint8), cv2.IMREAD_COLOR)
-        return None
-
-    else:
-        f_up = st.file_uploader("Selecionar ficheiro", key=f"up_{prefixo}")
-        if f_up is not None:
-            return cv2.imdecode(np.frombuffer(f_up.getvalue(), np.uint8), cv2.IMREAD_COLOR)
-        return None
-
-def processar_olho(img_bgr, prefixo, lado_str):
-    if img_bgr is None:
-        return None
-
-    h_orig, w_orig = img_bgr.shape[:2]
-    largura_max = 700
-    if w_orig > largura_max:
-        escala = largura_max / w_orig
-        img_bgr = cv2.resize(img_bgr, (largura_max, int(h_orig * escala)), interpolation=cv2.INTER_AREA)
-
-    h, w = img_bgr.shape[:2]
-    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-    img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-
-    st.subheader(f"Calibração Geométrica — {lado_str}")
+with st.expander("📋 Dados do Avaliado (Para o Relatório)", expanded=False):
     c1, c2 = st.columns(2)
-    cx = c1.slider("Centro X", 0, w, int(w / 2), 1, key=f"{prefixo}_cx")
-    cy = c2.slider("Centro Y", 0, h, int(h / 2), 1, key=f"{prefixo}_cy")
-    r_pupila = c1.slider("Raio Pupila (Interno)", 10, int(w / 3), int(w * 0.12), 1, key=f"{prefixo}_rp")
-    r_iris = c2.slider("Raio Limbo (Externo)", r_pupila + 10, int(w / 2), int(w * 0.35), 1, key=f"{prefixo}_ri")
+    nome_pac = c1.text_input("Nome do Avaliado:", value="Lavinia")
+    queixa_pac = c2.text_input("Queixa Principal / Observações:", value="Depressão")
 
-    co1, co2, co3 = st.columns(3)
-    exibir_grade = co1.checkbox("Raios 30°", value=True, key=f"{prefixo}_gr")
-    exibir_zonas = co2.checkbox("7 Anéis de Jensen", value=True, key=f"{prefixo}_zn")
-    aplicar_clahe = co3.checkbox("Realce de Fibras", value=True, key=f"{prefixo}_cl")
+aba_od, aba_oe = st.tabs(["👁️ Olho Direito (OD)", "👁️ Olho Esquerdo (OE)"])
 
-    img_proc = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8)).apply(img_gray) if aplicar_clahe else img_gray.copy()
+def renderizar_estacao_touch(prefixo, titulo_lado, nome, queixa):
+    codigo_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 4px; background: transparent; color: #1e293b; user-select: none; -webkit-user-select: none; }}
+        .upload-box {{ background: #f8fafc; border: 2px dashed #0284c7; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 10px; }}
+        .upload-btn {{ background: #0284c7; color: white; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; display: inline-block; cursor: pointer; }}
+        input[type="file"] {{ display: none; }}
+        .toolbar {{ display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; justify-content: center; }}
+        .mode-btn {{ flex: 1; min-width: 95px; padding: 10px 6px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; font-weight: 600; font-size: 13px; color: #334155; cursor: pointer; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }}
+        .mode-btn.active {{ background: #0284c7; color: white; border-color: #0284c7; }}
+        .toggles {{ display: flex; gap: 10px; justify-content: center; margin-bottom: 8px; font-size: 13px; font-weight: 500; }}
+        .canvas-wrap {{ position: relative; width: 100%; max-width: 500px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.12); background: #0f172a; touch-action: none; }}
+        canvas#irisCanvas {{ width: 100%; display: block; touch-action: none; }}
+        .hint {{ text-align: center; font-size: 12px; color: #64748b; margin: 6px 0 12px 0; }}
+        .cards {{ display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }}
+        .card {{ background: #f1f5f9; padding: 10px 12px; border-radius: 10px; border-left: 4px solid #0284c7; }}
+        .card-title {{ font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; }}
+        .card-val {{ font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 2px; }}
+        .card-full {{ grid-column: span 2; background: #e0f2fe; border-left-color: #0369a1; font-size: 13px; line-height: 1.4; }}
+        .polar-box {{ margin-top: 12px; text-align: center; }}
+        canvas#polarCanvas {{ width: 100%; height: 75px; border-radius: 6px; border: 1px solid #94a3b8; display: block; }}
+        .btn-dl {{ width: 100%; margin-top: 12px; padding: 12px; background: #16a34a; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }}
+    </style>
+    </head>
+    <body>
 
-    canvas = img_rgb.copy()
-    cv2.circle(canvas, (cx, cy), r_pupila, (255, 220, 0), 2)
-    cv2.circle(canvas, (cx, cy), r_iris, (0, 255, 120), 2)
+    <div class="upload-box">
+        <label class="upload-btn">
+            📸 Escolher ou Tirar Foto — {titulo_lado}
+            <input type="file" id="fileInput" accept="image/*">
+        </label>
+        <div id="fileStatus" style="font-size:12px; color:#475569; margin-top:6px;">Toque acima para abrir a Galeria ou Câmara</div>
+    </div>
 
-    if exibir_zonas:
-        passo_raio = (r_iris - r_pupila) / 7.0
-        for z in range(1, 7):
-            rz = int(r_pupila + z * passo_raio)
-            cv2.circle(canvas, (cx, cy), rz, (180, 180, 255), 1, lineType=cv2.LINE_AA)
+    <div id="workArea" style="display:none;">
+        <div class="toolbar">
+            <button id="btnMove" class="mode-btn active" onclick="setMode('move')">✥ Mover Conjunto</button>
+            <button id="btnLimbo" class="mode-btn" onclick="setMode('limbo')">🟢 Tamanho Íris</button>
+            <button id="btnPupila" class="mode-btn" onclick="setMode('pupila')">🟡 Tamanho Pupila</button>
+        </div>
 
-    if exibir_grade:
-        for ang in range(0, 360, 30):
-            rad = np.deg2rad(ang)
-            x1 = int(cx + r_pupila * np.cos(rad))
-            y1 = int(cy + r_pupila * np.sin(rad))
-            x2 = int(cx + r_iris * np.cos(rad))
-            y2 = int(cy + r_iris * np.sin(rad))
-            cv2.line(canvas, (x1, y1), (x2, y2), (255, 80, 80), 1, lineType=cv2.LINE_AA)
+        <div class="toggles">
+            <label><input type="checkbox" id="chkZonas" checked onchange="draw()"> 7 Anéis Jensen</label>
+            <label><input type="checkbox" id="chkRaios" checked onchange="draw()"> Raios 30°</label>
+            <label><input type="checkbox" id="chkZoom" onchange="toggleZoom()"> 🔍 Lupa 2x</label>
+        </div>
 
-    largura_p, altura_p = 360, 70
-    tira = np.zeros((altura_p, largura_p), dtype=np.uint8)
-    thetas = np.linspace(0, 2 * np.pi, largura_p, endpoint=False)
-    raios = np.linspace(0, 1, altura_p)
-    for i, r_ratio in enumerate(raios):
-        r = r_pupila + r_ratio * (r_iris - r_pupila)
-        xs = np.clip(np.round(cx + r * np.cos(thetas)).astype(int), 0, w - 1)
-        ys = np.clip(np.round(cy + r * np.sin(thetas)).astype(int), 0, h - 1)
-        tira[i, :] = img_proc[ys, xs]
+        <div class="canvas-wrap">
+            <canvas id="irisCanvas" width="600" height="600"></canvas>
+        </div>
+        <div class="hint" id="touchHint">👆 Arraste com 1 dedo para mover • Pinça com 2 dedos para ampliar o anel</div>
 
-    st.image(canvas, use_container_width=True, caption=f"{lado_str} Mapeado")
-    st.image(tira, use_container_width=True, caption="Projeção Polar de Daugman (0° a 360°)")
+        <div class="polar-box">
+            <div style="font-size:12px; font-weight:700; color:#334155; margin-bottom:4px;">Projeção Polar de Daugman (0° a 360°)</div>
+            <canvas id="polarCanvas" width="360" height="70"></canvas>
+        </div>
 
-    prop_pupila = (r_pupila / r_iris) * 100
-    score_var = cv2.Laplacian(tira, cv2.CV_64F).var()
-    
-    if score_var < 150:
-        densidade = "Grau 1 (Seda - Compacta)"
-    elif score_var < 350:
-        densidade = "Grau 2 (Seda/Linho - Boa)"
-    elif score_var < 700:
-        densidade = "Grau 3 (Linho - Comum)"
-    elif score_var < 1200:
-        densidade = "Grau 4 (Algodão - Aberta)"
-    else:
-        densidade = "Grau 5 (Rede - Fragilidade Conjuntiva)"
+        <div class="cards">
+            <div class="card">
+                <div class="card-title">Relação Pupila / Íris</div>
+                <div class="card-val" id="valProp">--%</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Índice de Trama (Fibras)</div>
+                <div class="card-val" id="valLap">--</div>
+            </div>
+            <div class="card card-full" id="valDiag">
+                Carregue e ajuste os anéis para ver a síntese constitucional.
+            </div>
+        </div>
 
-    tonus_sna = "Equilíbrio Autonómico"
-    if prop_pupila > 33:
-        tonus_sna = "Tendência Simpaticotónica (Midríase Relativa)"
-    elif prop_pupila < 20:
-        tonus_sna = "Tendência Parassimpaticotónica (Miose Relativa)"
+        <button class="btn-dl" onclick="baixarLaudo()">📥 Descarregar Relatório ({titulo_lado})</button>
+    </div>
 
-    m1, m2 = st.columns(2)
-    m1.metric("Relação Pupila / Íris", f"{prop_pupila:.1f}%")
-    m2.metric("Índice de Trama (Laplaciano)", f"{score_var:.1f}")
-    st.info(f"**Constituição Tecidual:** {densidade} | **Dinâmica Pupilar:** {tonus_sna}")
+    <script>
+    const fileInput = document.getElementById('fileInput');
+    const canvas = document.getElementById('irisCanvas');
+    const ctx = canvas.getContext('2d');
+    const polarCanvas = document.getElementById('polarCanvas');
+    const pCtx = polarCanvas.getContext('2d');
 
-    return {
-        "lado": lado_str,
-        "prop_pupila": prop_pupila,
-        "score_var": score_var,
-        "densidade": densidade,
-        "tonus_sna": tonus_sna
-    }
+    let img = new Image();
+    let imgLoaded = false;
+    let cx = 300, cy = 300, rPupila = 65, rIris = 195;
+    let mode = 'move';
+    let zoom2x = false;
 
-dados_od = None
-dados_oe = None
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let startCx = 300, startCy = 300, startRP = 65, startRI = 195;
+    let initialPinchDist = null;
 
-with aba_od:
-    img_od = carregador_universal_android("od", "Carregar Olho Direito (OD)")
-    if img_od is not None:
-        dados_od = processar_olho(img_od, "od", "Olho Direito (OD)")
+    function setMode(m) {{
+        mode = m;
+        document.getElementById('btnMove').className = 'mode-btn' + (m==='move' ? ' active' : '');
+        document.getElementById('btnLimbo').className = 'mode-btn' + (m==='limbo' ? ' active' : '');
+        document.getElementById('btnPupila').className = 'mode-btn' + (m==='pupila' ? ' active' : '');
+        if(m === 'move') document.getElementById('touchHint').innerText = '👆 Arraste com 1 dedo para posicionar todo o conjunto (ou use 2 dedos para abrir/fechar)';
+        if(m === 'limbo') document.getElementById('touchHint').innerText = '🟢 Deslize o dedo para a direita/esquerda para ampliar ou reduzir o anel verde da Íris';
+        if(m === 'pupila') document.getElementById('touchHint').innerText = '🟡 Deslize o dedo para a direita/esquerda para ajustar o anel amarelo da Pupila';
+    }}
 
-with aba_oe:
-    img_oe = carregador_universal_android("oe", "Carregar Olho Esquerdo (OE)")
-    if img_oe is not None:
-        dados_oe = processar_olho(img_oe, "oe", "Olho Esquerdo (OE)")
+    function toggleZoom() {{
+        zoom2x = document.getElementById('chkZoom').checked;
+        draw();
+    }}
 
-with aba_relatorio:
-    st.subheader("📑 Síntese e Relatório Iridológico")
-    if not dados_od and not dados_oe:
-        st.warning("Carregue pelo menos uma imagem nos separadores OD ou OE para gerar os relatórios.")
-    else:
-        data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
-        texto_relatorio = f"""# LAUDO DE ANÁLISE TOPOGRÁFICA IRIDOLÓGICA
-**Avaliado(a):** {nome_paciente or 'Não informado'}
-**Data da Análise:** {data_atual}
-**Observações Iniciais:** {notas_clinicas or 'Nenhuma'}
+    fileInput.addEventListener('change', function(e) {{
+        const file = e.target.files[0];
+        if (!file) return;
+        document.getElementById('fileStatus').innerText = '✅ ' + file.name;
+        const reader = new FileReader();
+        reader.onload = function(ev) {{
+            img.onload = function() {{
+                const size = 600;
+                canvas.width = size;
+                canvas.height = size;
+                cx = size / 2;
+                cy = size / 2;
+                rPupila = Math.round(size * 0.11);
+                rIris = Math.round(size * 0.34);
+                imgLoaded = true;
+                document.getElementById('workArea').style.display = 'block';
+                draw();
+                atualizarAnalise();
+            }};
+            img.src = ev.target.result;
+        }};
+        reader.readAsDataURL(file);
+    }});
 
----
-"""
-        for d in [dados_od, dados_oe]:
-            if d:
-                texto_relatorio += f"""### {d['lado']}
-* **Relação Pupila / Limbo:** {d['prop_pupila']:.1f}% ({d['tonus_sna']})
-* **Score Morfológico de Textura:** {d['score_var']:.1f}
-* **Densidade Constitucional Estimada:** {d['densidade']}
+    function getTouchPos(touch) {{
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {{
+            x: (touch.clientX - rect.left) * scaleX,
+            y: (touch.clientY - rect.top) * scaleY
+        }};
+    }}
 
-"""
-        texto_relatorio += """---
-### Referência das 7 Zonas Anulares de Jensen
-1. **Zona 1 (Gástrica):** Assimilação digestiva primária.
-2. **Zona 2 (Intestinal):** Absorção, peristaltismo e microbiota.
-3. **Zona 3 (Colarete / BPA):** Sistema Nervoso Autónomo, eixo neuroendócrino.
-4. **Zona 4 (Órgãos Internos):** Glândulas e parênquimas vitais.
-5. **Zona 5 (Sustentação):** Estrutura óssea, muscular e visceral.
-6. **Zona 6 (Linfática e Circulatória):** Drenagem linfática e microcirculação.
-7. **Zona 7 (Cutânea / Periférica):** Eliminação epitelial e metabolismo lipídico/mineral.
-"""
-        st.markdown(texto_relatorio)
-        st.download_button(
-            label="📥 Descarregar Laudo Completo (.MD)",
-            data=texto_relatorio,
-            file_name=f"laudo_iridologico_{nome_paciente or 'paciente'}.md",
-            mime="text/markdown"
-        )
+    canvas.addEventListener('touchstart', function(e) {{
+        e.preventDefault();
+        if (e.touches.length === 2) {{
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            initialPinchDist = Math.hypot(dx, dy);
+            startRI = rIris;
+            startRP = rPupila;
+        }} else if (e.touches.length === 1) {{
+            isDragging = true;
+            const pos = getTouchPos(e.touches[0]);
+            startX = pos.x;
+            startY = pos.y;
+            startCx = cx;
+            startCy = cy;
+            startRI = rIris;
+            startRP = rPupila;
+        }}
+    }}, {{passive: false}});
+
+    canvas.addEventListener('touchmove', function(e) {{
+        e.preventDefault();
+        if (e.touches.length === 2 && initialPinchDist) {{
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const dist = Math.hypot(dx, dy);
+            const ratio = dist / initialPinchDist;
+            if (mode === 'pupila') {{
+                rPupila = Math.max(12, Math.min(rIris - 10, Math.round(startRP * ratio)));
+            }} else {{
+                rIris = Math.max(rPupila + 15, Math.min(295, Math.round(startRI * ratio)));
+            }}
+            draw();
+        }} else if (e.touches.length === 1 && isDragging) {{
+            const pos = getTouchPos(e.touches[0]);
+            const dx = (pos.x - startX) / (zoom2x ? 2 : 1);
+            const dy = (pos.y - startY) / (zoom2x ? 2 : 1);
+
+            if (mode === 'move') {{
+                cx = Math.max(40, Math.min(560, startCx + dx));
+                cy = Math.max(40, Math.min(560, startCy + dy));
+            }} else if (mode === 'limbo') {{
+                rIris = Math.max(rPupila + 15, Math.min(295, Math.round(startRI + dx * 0.8)));
+            }} else if (mode === 'pupila') {{
+                rPupila = Math.max(12, Math.min(rIris - 10, Math.round(startRP + dx * 0.8)));
+            }}
+            draw();
+        }}
+    }}, {{passive: false}});
+
+    canvas.addEventListener('touchend', function(e) {{
+        isDragging = false;
+        initialPinchDist = null;
+        atualizarAnalise();
+    }});
+
+    // Suporte também para rato (caso abra no computador)
+    canvas.addEventListener('mousedown', function(e) {{
+        isDragging = true;
+        const rect = canvas.getBoundingClientRect();
+        startX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        startY = (e.clientY - rect.top) * (canvas.height / rect.height);
+        startCx = cx; startCy = cy; startRI = rIris; startRP = rPupila;
+    }});
+    window.addEventListener('mousemove', function(e) {{
+        if (!isDragging) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        const dx = (x - startX) / (zoom2x ? 2 : 1);
+        const dy = (y - startY) / (zoom2x ? 2 : 1);
+        if (mode === 'move') {{ cx = startCx + dx; cy = startCy + dy; }}
+        else if (mode === 'limbo') {{ rIris = Math.max(rPupila + 15, Math.min(295, startRI + dx)); }}
+        else if (mode === 'pupila') {{ rPupila = Math.max(12, Math.min(rIris - 10, startRP + dx)); }}
+        draw();
+    }});
+    window.addEventListener('mouseup', function() {{
+        if (isDragging) {{ isDragging = false; atualizarAnalise(); }}
+    }});
+
+    function draw() {{
+        if (!imgLoaded) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+
+        if (zoom2x) {{
+            ctx.translate(canvas.width/2, canvas.height/2);
+            ctx.scale(2, 2);
+            ctx.translate(-cx, -cy);
+        }}
+
+        // Desenhar foto centralizada e proporcional
+        const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+        const iw = img.width * scale;
+        const ih = img.height * scale;
+        const ix = (canvas.width - iw) / 2;
+        const iy = (canvas.height - ih) / 2;
+        ctx.drawImage(img, ix, iy, iw, ih);
+
+        // Raios 30 graus
+        if (document.getElementById('chkRaios').checked) {{
+            ctx.strokeStyle = 'rgba(255, 90, 90, 0.75)';
+            ctx.lineWidth = 1;
+            for (let a = 0; a < 360; a += 30) {{
+                let rad = a * Math.PI / 180;
+                ctx.beginPath();
+                ctx.moveTo(cx + rPupila * Math.cos(rad), cy + rPupila * Math.sin(rad));
+                ctx.lineTo(cx + rIris * Math.cos(rad), cy + rIris * Math.sin(rad));
+                ctx.stroke();
+            }}
+        }}
+
+        // 7 Anéis de Jensen
+        if (document.getElementById('chkZonas').checked) {{
+            ctx.strokeStyle = 'rgba(200, 210, 255, 0.75)';
+            ctx.lineWidth = 1;
+            let step = (rIris - rPupila) / 7.0;
+            for (let z = 1; z < 7; z++) {{
+                ctx.beginPath();
+                ctx.arc(cx, cy, rPupila + z * step, 0, 2 * Math.PI);
+                ctx.stroke();
+            }}
+        }}
+
+        // Anel Pupila (Amarelo)
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = (mode === 'pupila') ? 3.5 : 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rPupila, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Anel Limbo/Íris (Verde)
+        ctx.strokeStyle = '#22c55e';
+        ctx.lineWidth = (mode === 'limbo') ? 3.5 : 2.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rIris, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Mira central
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx - 6, cy); ctx.lineTo(cx + 6, cy);
+        ctx.moveTo(cx, cy - 6); ctx.lineTo(cx, cy + 6);
+        ctx.stroke();
+
+        ctx.restore();
+    }}
+
+    let ultimoRelatorio = "";
+
+    function atualizarAnalise() {{
+        if (!imgLoaded) return;
+        // Extrair pixels limpos da imagem base
+        const off = document.createElement('canvas');
+        off.width = canvas.width; off.height = canvas.height;
+        const oCtx = off.getContext('2d');
+        const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+        const iw = img.width * scale, ih = img.height * scale;
+        oCtx.drawImage(img, (canvas.width - iw)/2, (canvas.height - ih)/2, iw, ih);
+        const srcData = oCtx.getImageData(0, 0, off.width, off.height).data;
+
+        const pw = 360, ph = 70;
+        const pImg = pCtx.createImageData(pw, ph);
+        const gray = new Float32Array(pw * ph);
+
+        for (let y = 0; y < ph; y++) {{
+            let rRatio = y / ph;
+            let r = rPupila + rRatio * (rIris - rPupila);
+            for (let x = 0; x < pw; x++)
