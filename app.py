@@ -1,7 +1,8 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import cv2
 import numpy as np
-from PIL import Image
+import base64
 from datetime import datetime
 
 st.set_page_config(page_title="Sistema de Análise Iridológica", layout="wide")
@@ -11,8 +12,8 @@ st.caption("Calibração geométrica, realce de estroma, projeção polar de Dau
 
 with st.expander("📋 Dados do Avaliado (Para o Relatório)", expanded=True):
     col_p1, col_p2 = st.columns(2)
-    nome_paciente = col_p1.text_input("Nome do Avaliado:", placeholder="Ex: Maria Cristina")
-    notas_clinicas = col_p2.text_input("Queixa Principal / Observações:", placeholder="Ex: Fadiga, tensão ocular...")
+    nome_paciente = col_p1.text_input("Nome do Avaliado:", placeholder="Ex: Lavinia")
+    notas_clinicas = col_p2.text_input("Queixa Principal / Observações:", placeholder="Ex: Depressão, fadiga...")
 
 aba_od, aba_oe, aba_relatorio = st.tabs([
     "👁️ Olho Direito (OD)", 
@@ -20,11 +21,92 @@ aba_od, aba_oe, aba_relatorio = st.tabs([
     "📄 Relatório Geral"
 ])
 
-def processar_olho(arquivo, prefixo, lado_str):
-    img_bytes = arquivo.getvalue()
-    img_bgr = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+def carregador_universal_android(prefixo, titulo):
+    st.markdown(f"**{titulo}**")
+    metodo = st.radio(
+        "Método de carregamento:",
+        ["⚡ Carregador Anti-Erro (Recomendado no Telemóvel)", "📸 Câmara Direta", "📁 Carregador Padrão"],
+        key=f"met_{prefixo}"
+    )
+
+    if metodo == "⚡ Carregador Anti-Erro (Recomendado no Telemóvel)":
+        html_code = f"""
+        <div style="background:#f8fafc; padding:14px; border-radius:10px; border:2px dashed #0284c7; font-family:sans-serif;">
+            <div style="font-weight:bold; font-size:14px; color:#0f172a; margin-bottom:8px;">
+                1️⃣ Toque abaixo para escolher a foto da Galeria:
+            </div>
+            <input type="file" id="f_{prefixo}" accept="image/*" style="font-size:14px; width:100%; margin-bottom:10px;">
+            <div id="msg_{prefixo}" style="font-size:13px; color:#0369a1; font-weight:bold; margin-bottom:8px;"></div>
+            <button id="b_{prefixo}" onclick="copiar_{prefixo}()" style="display:none; width:100%; background:#16a34a; color:white; border:none; padding:10px; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">
+                2️⃣ TOCAR AQUI PARA COPIAR A FOTO PRONTA
+            </button>
+            <textarea id="t_{prefixo}" style="width:100%; height:1px; opacity:0.01;" readonly></textarea>
+        </div>
+        <script>
+        document.getElementById('f_{prefixo}').addEventListener('change', function(e) {{
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('msg_{prefixo}').innerText = '⏳ A preparar imagem no telemóvel...';
+            const reader = new FileReader();
+            reader.onload = function(ev) {{
+                const img = new Image();
+                img.onload = function() {{
+                    const canvas = document.createElement('canvas');
+                    const max_w = 700;
+                    let w = img.width, h = img.height;
+                    if (w > max_w) {{ h = Math.round(h * (max_w / w)); w = max_w; }}
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    document.getElementById('t_{prefixo}').value = canvas.toDataURL('image/jpeg', 0.82);
+                    document.getElementById('b_{prefixo}').style.display = 'block';
+                    document.getElementById('msg_{prefixo}').innerText = '✅ Foto pronta! Toque no botão verde abaixo:';
+                }};
+                img.src = ev.target.result;
+            }};
+            reader.readAsDataURL(file);
+        }});
+        function copiar_{prefixo}() {{
+            const t = document.getElementById('t_{prefixo}');
+            t.select();
+            t.setSelectionRange(0, 999999);
+            navigator.clipboard.writeText(t.value).then(function() {{
+                document.getElementById('msg_{prefixo}').innerText = '✅ COPIADO! Agora cole na caixa "3️⃣ Colar aqui" logo abaixo:';
+                document.getElementById('b_{prefixo}').style.background = '#15803d';
+                document.getElementById('b_{prefixo}').innerText = '✔ COPIADO! COLE NA CAIXA ABAIXO';
+            }}).catch(function() {{
+                document.execCommand('copy');
+                document.getElementById('msg_{prefixo}').innerText = '✅ COPIADO! Agora cole na caixa "3️⃣ Colar aqui" logo abaixo:';
+            }});
+        }}
+        </script>
+        """
+        components.html(html_code, height=165)
+        b64_txt = st.text_input("3️⃣ Segure o dedo aqui, toque em COLAR e prima Enter:", key=f"in_{prefixo}", placeholder="Cole aqui o código da foto...")
+        if b64_txt and len(b64_txt) > 50:
+            try:
+                if "," in b64_txt:
+                    b64_txt = b64_txt.split(",")[1]
+                img_bytes = base64.b64decode(b64_txt.strip())
+                return cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+            except Exception as e:
+                st.error(f"Erro ao descodificar imagem: {e}")
+        return None
+
+    elif metodo == "📸 Câmara Direta":
+        f_cam = st.camera_input("Tirar foto da íris", key=f"cam_{prefixo}")
+        if f_cam is not None:
+            return cv2.imdecode(np.frombuffer(f_cam.getvalue(), np.uint8), cv2.IMREAD_COLOR)
+        return None
+
+    else:
+        f_up = st.file_uploader("Selecionar ficheiro", key=f"up_{prefixo}")
+        if f_up is not None:
+            return cv2.imdecode(np.frombuffer(f_up.getvalue(), np.uint8), cv2.IMREAD_COLOR)
+        return None
+
+def processar_olho(img_bgr, prefixo, lado_str):
     if img_bgr is None:
-        st.error("Não foi possível ler a imagem. Tente outro ficheiro JPG ou PNG.")
         return None
 
     h_orig, w_orig = img_bgr.shape[:2]
@@ -120,16 +202,14 @@ dados_od = None
 dados_oe = None
 
 with aba_od:
-    modo_od = st.radio("Origem da imagem (OD):", ["📁 Galeria / Ficheiro", "📸 Câmara Direta"], horizontal=True, key="m_od")
-    foto_od = st.file_uploader("Carregar foto do Olho Direito (OD)", key="up_od") if modo_od == "📁 Galeria / Ficheiro" else st.camera_input("Tirar foto (OD)", key="cam_od")
-    if foto_od:
-        dados_od = processar_olho(foto_od, "od", "Olho Direito (OD)")
+    img_od = carregador_universal_android("od", "Carregar Olho Direito (OD)")
+    if img_od is not None:
+        dados_od = processar_olho(img_od, "od", "Olho Direito (OD)")
 
 with aba_oe:
-    modo_oe = st.radio("Origem da imagem (OE):", ["📁 Galeria / Ficheiro", "📸 Câmara Direta"], horizontal=True, key="m_oe")
-    foto_oe = st.file_uploader("Carregar foto do Olho Esquerdo (OE)", key="up_oe") if modo_oe == "📁 Galeria / Ficheiro" else st.camera_input("Tirar foto (OE)", key="cam_oe")
-    if foto_oe:
-        dados_oe = processar_olho(foto_oe, "oe", "Olho Esquerdo (OE)")
+    img_oe = carregador_universal_android("oe", "Carregar Olho Esquerdo (OE)")
+    if img_oe is not None:
+        dados_oe = processar_olho(img_oe, "oe", "Olho Esquerdo (OE)")
 
 with aba_relatorio:
     st.subheader("📑 Síntese e Relatório Iridológico")
