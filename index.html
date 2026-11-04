@@ -2,15 +2,16 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Estação Iridológica — IA & Relatório Profundo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estação Iridológica — Leitura Integrativa</title>
 <style>
-  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 8px; background: #f1f5f9; color: #0f172a; user-select: none; -webkit-user-select: none; }
+  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 8px; background: #f1f5f9; color: #0f172a; }
   h2 { margin: 0 0 2px 0; font-size: 18px; color: #0369a1; }
   .sub { font-size: 11px; color: #64748b; margin-bottom: 8px; }
+  .note { font-size: 10px; color: #64748b; margin-top: 4px; line-height: 1.35; }
   .card { background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 8px; }
   .row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
-  input[type="text"], select, textarea { flex: 1; padding: 7px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; }
+  input[type="text"], input[type="password"], select, textarea { flex: 1; padding: 7px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; min-width: 0; }
   .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 8px; }
   input[type="file"] { display: none; }
   .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 6px 0; }
@@ -20,53 +21,67 @@
   .action-row { display: flex; gap: 4px; margin-bottom: 6px; }
   .btn-auto { flex: 1; background: #0f766e; color: #fff; padding: 8px 4px; border-radius: 6px; font-weight: bold; font-size: 11px; border: none; cursor: pointer; }
   .btn-scan { flex: 1.2; background: #ea580c; color: #fff; padding: 8px 4px; border-radius: 6px; font-weight: bold; font-size: 11px; border: none; cursor: pointer; }
-  
+  button:disabled { opacity: .6; cursor: wait; }
+
   .layers-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 8px; }
   .layers-title { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; }
   .layers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 12px; font-weight: 500; }
 
-  .canvas-box { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 10px; overflow: hidden; background: #000; touch-action: none; }
+  .canvas-box { position: relative; width: 100%; max-width: 560px; margin: 0 auto; border-radius: 10px; overflow: hidden; background: #000; touch-action: none; user-select: none; -webkit-user-select: none; }
   canvas { width: 100%; display: block; touch-action: none; }
-  
+
   .organ-panel { background: #f3e8ff; border: 2px solid #9333ea; border-radius: 8px; padding: 8px; margin-top: 6px; }
   .organ-title { font-size: 10px; font-weight: 800; color: #6b21a8; text-transform: uppercase; }
   .organ-name { font-size: 15px; font-weight: 800; color: #3b0764; margin: 2px 0; }
   .organ-sub { font-size: 11px; color: #581c87; }
   .btn-pin { width: 100%; margin-top: 6px; padding: 7px; background: #9333ea; color: #fff; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
-  .pin-list { font-size: 11px; margin-top: 6px; color: #334155; max-height: 100px; overflow-y: auto; }
-  .pin-item { background: #fff; padding: 5px 6px; border-radius: 5px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #9333ea; }
+  .pin-list { font-size: 11px; margin-top: 6px; color: #334155; max-height: 170px; overflow-y: auto; }
+  .pin-item { background: #fff; padding: 5px 6px; border-radius: 5px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; gap: 6px; border-left: 3px solid #9333ea; }
   .pin-item.auto-pin { border-left-color: #ea580c; background: #fff7ed; }
-  
+  .pin-item.pending { border-left: 3px dashed #ea580c; background: #fffbeb; }
+  .btn-ok { background: none; border: none; color: #16a34a; font-weight: bold; font-size: 15px; cursor: pointer; }
+  .btn-x { background: none; border: none; color: #dc2626; font-weight: bold; cursor: pointer; }
+
   .ai-card { background: #ecfdf5; border: 2px solid #10b981; border-radius: 8px; padding: 10px; margin-top: 8px; }
   .ai-title { font-weight: 800; color: #047857; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; }
-  
+
   .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
   .m-card { background: #f1f5f9; padding: 8px; border-radius: 6px; border-left: 3px solid #0284c7; }
   .m-lbl { font-size: 10px; color: #64748b; font-weight: bold; }
   .m-val { font-size: 15px; font-weight: 800; margin-top: 2px; }
-  .diag { grid-column: span 2; background: #e0f2fe; padding: 8px; border-radius: 6px; font-size: 12px; line-height: 1.3; }
-  
-  .psy-card { background: #fdf4ff; border: 1.5px solid #d946ef; border-radius: 8px; padding: 8px; margin-top: 8px; font-size: 12px; line-height: 1.3; }
+  .diag { grid-column: span 2; background: #e0f2fe; padding: 8px; border-radius: 6px; font-size: 12px; line-height: 1.35; }
+
+  .psy-card { background: #fdf4ff; border: 1.5px solid #d946ef; border-radius: 8px; padding: 8px; margin-top: 8px; font-size: 12px; line-height: 1.35; white-space: pre-line; }
   .psy-title { font-weight: 800; color: #86198f; font-size: 11px; text-transform: uppercase; margin-bottom: 3px; }
-  
+
   .btn-dl { width: 100%; margin-top: 10px; padding: 10px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
 </style>
 </head>
 <body>
 
-<h2>🔬 Estação Iridológica — IA & Relatório Profundo</h2>
-<div class="sub">Camadas (Layers) • Scanner 360° • Síntese Clínica Avançada</div>
+<h2>🔬 Estação Iridológica — Leitura Integrativa</h2>
+<div class="sub">Camadas • Scanner 360° (sugestões) • Leitura simbólica com IA</div>
 
 <div class="card">
   <div class="row">
-    <input type="text" id="pacNome" placeholder="Nome do Avaliado" value="Lavinia">
-    <select id="pacOlho" style="max-width:125px; font-weight:bold;" onchange="atualizarOrgaoSelecionado(); render(); analisar();">
+    <input type="text" id="pacNome" placeholder="Nome do Avaliado">
+    <select id="pacOlho" style="max-width:125px; font-weight:bold;" onchange="trocarOlho()">
       <option value="OE">👁️ Olho Esq. (OE)</option>
       <option value="OD">👁️ Olho Dir. (OD)</option>
     </select>
   </div>
+  <div class="row">
+    <input type="text" id="pacQueixa" placeholder="Queixa Principal / Observações">
+  </div>
   <div class="row" style="margin-bottom:0;">
-    <input type="text" id="pacQueixa" placeholder="Queixa Principal / Observações" value="Depressão e Esgotamento">
+    <select id="pacTipo" onchange="analisar()">
+      <option value="">Tipologia (definir pelo terapeuta)</option>
+      <option value="Flor">Flor</option>
+      <option value="Joia">Joia</option>
+      <option value="Agitador">Agitador</option>
+      <option value="Corrente">Corrente</option>
+      <option value="Misto">Misto</option>
+    </select>
   </div>
 </div>
 
@@ -84,12 +99,13 @@
   </div>
 
   <div class="action-row">
-    <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Auto-Calibrar</button>
+    <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Auto-Calibrar (pupila + limbo)</button>
     <button class="btn-scan" onclick="executarScannerAutomatico()">🔍 Scanner 360°</button>
   </div>
+  <div class="note" id="detStatus" style="margin:0 0 6px 0;"></div>
 
   <div class="layers-box">
-    <div class="layers-title">🎛️ Gestão de Camadas de Mapa (Layers Ativas)</div>
+    <div class="layers-title">🎛️ Gestão de Camadas de Mapa</div>
     <div class="layers-grid">
       <label><input type="checkbox" id="layJensen" checked onchange="render()"> 7 Anéis de Jensen</label>
       <label><input type="checkbox" id="layRelogio" checked onchange="render()"> Relógio 12h (Setores)</label>
@@ -98,16 +114,17 @@
       <label><input type="checkbox" id="layFlash" checked onchange="render(); analisar();"> ✨ Filtro Anti-Flash</label>
       <label><input type="checkbox" id="layZoom" onchange="render()"> 🔍 Lupa 2x</label>
     </div>
+    <div class="note">Mouse: arraste para mover; roda do mouse ajusta o anel ativo. Toque: arraste e pinça.</div>
   </div>
 
   <div class="canvas-box">
-    <canvas id="cv" width="500" height="500"></canvas>
+    <canvas id="cv" width="800" height="800"></canvas>
   </div>
 
   <div class="organ-panel">
     <div class="organ-title" id="orgCoord">🗺️ SELETOR DE MAPAS & ACHADOS</div>
-    <div class="organ-name" id="orgNome">Toque na íris para mapear o órgão</div>
-    <div class="organ-sub" id="orgZona">As camadas ativas acima aparecem sobre a imagem.</div>
+    <div class="organ-name" id="orgNome">Use "Inspecionar" e toque na íris</div>
+    <div class="organ-sub" id="orgZona">As camadas ativas aparecem sobre a imagem.</div>
     <div class="row" style="margin-top:6px; margin-bottom:0;">
       <select id="tipoSinal" style="font-size:12px; padding:5px;">
         <option value="Lacuna / Cripta (Fragilidade)">🔹 Lacuna / Cripta (Fragilidade)</option>
@@ -116,8 +133,9 @@
         <option value="Anel de Tensão">⭕ Anel de Tensão</option>
       </select>
     </div>
-    <button class="btn-pin" onclick="adicionarAchadoManual()">➕ Registar no Relatório</button>
+    <button class="btn-pin" onclick="adicionarAchadoManual()">➕ Registar na Leitura</button>
     <div id="listaAchados" class="pin-list"></div>
+    <div class="note">Sugestões do scanner (tracejadas) só entram na leitura depois de confirmadas com ✓.</div>
   </div>
 
   <div class="psy-card">
@@ -125,46 +143,67 @@
     <div id="psyTexto">Aguardando calibração dos anéis...</div>
   </div>
 
-  <!-- PAINEL DE INTELIGÊNCIA ARTIFICIAL E RELATÓRIO PROFUNDO -->
   <div class="ai-card">
-    <div class="ai-title">🤖 Motor de Inteligência & Relatório Profundo</div>
+    <div class="ai-title">🤖 Leitura Integrativa com IA (Gemini)</div>
     <div class="row" style="margin-bottom:6px;">
-      <input type="text" id="aiApiKey" placeholder="Chave API Gemini/OpenAI (Opcional para IA Direta)" style="font-size:11px;">
+      <input type="password" id="aiApiKey" placeholder="Chave API Gemini" autocomplete="off" style="font-size:11px;">
+      <input type="text" id="aiModelo" value="gemini-2.5-flash" style="font-size:11px; max-width:130px;">
     </div>
-    <button class="btn-auto" style="width:100%; background:#10b981; margin-bottom:6px; padding:9px;" onclick="gerarRelatorioProfundoIA()">✨ Gerar Análise Profunda com IA & Camadas</button>
-    <textarea id="aiSaidaRelatorio" rows="5" placeholder="O relatório clínico profundo e estruturado aparecerá aqui..." style="width:100%; font-size:11px; padding:6px; box-sizing:border-box; border-radius:6px; border:1px solid #10b981;"></textarea>
+    <button class="btn-auto" id="btnIA" style="width:100%; background:#10b981; margin-bottom:6px; padding:9px;" onclick="gerarRelatorioProfundoIA()">✨ Gerar Leitura Integrativa</button>
+    <textarea id="aiSaidaRelatorio" rows="9" placeholder="A leitura aparecerá aqui. Você pode editar o texto antes de baixar." style="width:100%; font-size:11px; padding:6px; box-sizing:border-box; border-radius:6px; border:1px solid #10b981;"></textarea>
+    <div class="note">Sem chave, é gerado um texto-modelo local. A chave fica só nesta página (não é salva). O nome da pessoa não é enviado à IA.</div>
   </div>
 
   <div class="card" style="margin-top:8px; padding:6px;">
-    <div style="font-size:10px; font-weight:bold; margin-bottom:3px;">Projeção Polar de Daugman (0° a 360°)</div>
-    <canvas id="pCv" width="360" height="55" style="height:55px; border-radius:4px;"></canvas>
+    <div style="font-size:10px; font-weight:bold; margin-bottom:3px;">Projeção Polar (0° a 360°, a partir das 12h)</div>
+    <canvas id="pCv" width="360" height="65" style="height:65px; border-radius:4px;"></canvas>
   </div>
 
   <div class="metrics">
     <div class="m-card"><div class="m-lbl">PUPILA / ÍRIS</div><div class="m-val" id="vProp">--%</div></div>
-    <div class="m-card"><div class="m-lbl">TRAMA (SEM FLASH)</div><div class="m-val" id="vTex">--</div></div>
+    <div class="m-card"><div class="m-lbl">TRAMA (NORMALIZADA)</div><div class="m-val" id="vTex">--</div></div>
+    <div class="m-card"><div class="m-lbl">NITIDEZ DA FOTO</div><div class="m-val" id="vNit">--</div></div>
+    <div class="m-card"><div class="m-lbl">ACHADOS CONFIRMADOS</div><div class="m-val" id="vQtd">0</div></div>
     <div class="diag" id="vDiag">Ajuste os anéis sobre a íris.</div>
   </div>
 
-  <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Relatório Profundo (.TXT)</button>
+  <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Leitura Integrativa (.TXT)</button>
 </div>
 
 <script>
-const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-const pCv = document.getElementById('pCv'), pCtx = pCv.getContext('2d');
+const $ = id => document.getElementById(id);
+const S = 800;            // resolução interna do canvas
+const K = S / 500;        // fator de escala em relação à versão anterior
+const PW = 360, PH = 65;  // projeção polar
+const FLASH = 230;        // luminância acima disso = reflexo
+
+// Limiares ajustáveis (não calibrados — refine com o seu olhar clínico)
+const SNA_ALTO = 45;      // % pupila/íris acima disso: tendência simpaticotônica
+const SNA_BAIXO = 28;     // % pupila/íris abaixo disso: tendência parassimpática
+const LIMIARES_TRAMA = [0.16, 0.26, 0.38, 0.52];
+const GRAUS_TRAMA = [
+  "Grau 1 (Seda — trama compacta)",
+  "Grau 2 (Seda/Linho)",
+  "Grau 3 (Linho — trama intermediária)",
+  "Grau 4 (Algodão)",
+  "Grau 5 (Rede — trama aberta)"
+];
+
+const cv = $('cv'), ctx = cv.getContext('2d');
+const pCv = $('pCv'), pCtx = pCv.getContext('2d');
 let img = new Image(), loaded = false;
-let cx = 250, cy = 250, rP = 55, rI = 170, mode = 'move';
-let drag = false, sx = 0, sy = 0, scx = 250, scy = 250, pinch0 = null;
+let cx = S / 2, cy = S / 2, rP = 88, rI = 272, mode = 'move';
+let drag = false, sx = 0, sy = 0, scx = S / 2, scy = S / 2, srP = 88, srI = 272, pinch0 = null;
 let cleanPixels = null;
-let polarGray = new Float32Array(360 * 65);
-let polarFlashMask = new Uint8Array(360 * 65);
-let laudoTxt = "";
+let imgRect = { x: 0, y: 0, w: S, h: S };
+let nitidez = null;
+let polarGray = new Float32Array(PW * PH);
+let polarFlashMask = new Uint8Array(PW * PH);
 
 let probeX = null, probeY = null;
 let ultimoOrgaoInfo = null;
 let achadosClinicos = [];
-let statusAnelTensao = "Ausente / Normal";
-let psicossomaticaResumo = "";
+let statusAnelTensao = "Não avaliado";
 let dadosBiometricosGlobal = {};
 
 const ZONAS_JENSEN = [
@@ -230,112 +269,203 @@ function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
   }
 }
 
+/* ---------- utilitários ---------- */
+function fmtHora(deg) {
+  const hf = deg / 30;
+  let h = Math.floor(hf);
+  let m = Math.round((hf - h) * 60);
+  if (m === 60) { h += 1; m = 0; }
+  h = h % 12;
+  if (h === 0) h = 12;
+  return `${h}h${m < 10 ? '0' + m : m}`;
+}
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+function dentroDaImagem(x, y) {
+  return x >= imgRect.x + 2 && x < imgRect.x + imgRect.w - 2 && y >= imgRect.y + 2 && y < imgRect.y + imgRect.h - 2;
+}
+function lumAt(x, y) {
+  x = Math.round(x); y = Math.round(y);
+  if (!cleanPixels || !dentroDaImagem(x, y)) return null;
+  const i = (y * S + x) * 4;
+  return 0.299 * cleanPixels[i] + 0.587 * cleanPixels[i + 1] + 0.114 * cleanPixels[i + 2];
+}
+
 function setM(m) {
   mode = m;
-  document.getElementById('bMove').className = 'btn' + (m==='move'?' active':'');
-  document.getElementById('bMap').className = 'btn' + (m==='map'?' map-active':'');
-  document.getElementById('bIris').className = 'btn' + (m==='iris'?' active':'');
-  document.getElementById('bPup').className = 'btn' + (m==='pup'?' active':'');
+  $('bMove').className = 'btn' + (m === 'move' ? ' active' : '');
+  $('bMap').className = 'btn' + (m === 'map' ? ' map-active' : '');
+  $('bIris').className = 'btn' + (m === 'iris' ? ' active' : '');
+  $('bPup').className = 'btn' + (m === 'pup' ? ' active' : '');
   render();
 }
 
-document.getElementById('fIn').onchange = function(e) {
+function trocarOlho() {
+  achadosClinicos = achadosClinicos.filter(a => !(a.auto && !a.confirmado));
+  atualizarListaAchados();
+  atualizarOrgaoSelecionado();
+  analisar();
+  render();
+}
+
+/* ---------- carregar imagem ---------- */
+$('fIn').onchange = function (e) {
   const file = e.target.files[0];
   if (!file) return;
-  const objectURL = URL.createObjectURL(file);
-  img.onload = function() {
+  const url = URL.createObjectURL(file);
+  img = new Image();
+  img.onload = function () {
     loaded = true;
-    document.getElementById('appArea').style.display = 'block';
+    achadosClinicos = [];
+    statusAnelTensao = "Não avaliado";
+    $('appArea').style.display = 'block';
     prepararBufferImagem();
     autoDetectarPupila();
+    atualizarListaAchados();
   };
-  img.src = objectURL;
+  img.src = url;
 };
 
 function prepararBufferImagem() {
+  // "contain": a foto inteira fica visível (a versão anterior cortava as bordas)
+  const sc = Math.min(S / img.width, S / img.height);
+  const w = img.width * sc, h = img.height * sc;
+  imgRect = { x: (S - w) / 2, y: (S - h) / 2, w, h };
   const off = document.createElement('canvas');
-  off.width = 500; off.height = 500;
-  const oCtx = off.getContext('2d');
-  const sc = Math.max(500 / img.width, 500 / img.height);
-  oCtx.drawImage(img, (500 - img.width*sc)/2, (500 - img.height*sc)/2, img.width*sc, img.height*sc);
-  cleanPixels = oCtx.getImageData(0, 0, 500, 500).data;
+  off.width = S; off.height = S;
+  const oCtx = off.getContext('2d', { willReadFrequently: true });
+  oCtx.fillStyle = '#000';
+  oCtx.fillRect(0, 0, S, S);
+  oCtx.drawImage(img, imgRect.x, imgRect.y, w, h);
+  cleanPixels = oCtx.getImageData(0, 0, S, S).data;
 }
 
+/* ---------- calibração: pupila + limbo ---------- */
 function autoDetectarPupila() {
   if (!cleanPixels) return;
+  const x0 = imgRect.x + imgRect.w * 0.2, x1 = imgRect.x + imgRect.w * 0.8;
+  const y0 = imgRect.y + imgRect.h * 0.2, y1 = imgRect.y + imgRect.h * 0.8;
+
   let minLum = 255;
-  for (let y = 130; y < 370; y += 3) {
-    for (let x = 130; x < 370; x += 3) {
-      let i = (y * 500 + x) * 4;
-      let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
-      if (lum < minLum && lum > 5) minLum = lum;
+  for (let y = y0; y < y1; y += 4) {
+    for (let x = x0; x < x1; x += 4) {
+      const l = lumAt(x, y);
+      if (l !== null && l < minLum && l > 5) minLum = l;
     }
   }
-  let thresh = minLum + 28, sumX = 0, sumY = 0, count = 0;
-  for (let y = 120; y < 380; y += 2) {
-    for (let x = 120; x < 380; x += 2) {
-      let i = (y * 500 + x) * 4;
-      let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
-      if (lum <= thresh) { sumX += x; sumY += y; count++; }
+  const thresh = minLum + 28;
+  let sumX = 0, sumY = 0, count = 0;
+  for (let y = y0; y < y1; y += 3) {
+    for (let x = x0; x < x1; x += 3) {
+      const l = lumAt(x, y);
+      if (l !== null && l <= thresh) { sumX += x; sumY += y; count++; }
     }
   }
   if (count > 40) { cx = Math.round(sumX / count); cy = Math.round(sumY / count); }
-  else { cx = 250; cy = 250; }
+  else { cx = Math.round(imgRect.x + imgRect.w / 2); cy = Math.round(imgRect.y + imgRect.h / 2); }
 
-  let bestRP = 50, maxGrad = 0;
-  for (let r = 20; r < 115; r += 2) {
+  // borda da pupila: maior salto radial de luminância
+  let bestRP = 80, maxGrad = 0;
+  for (let r = 32; r < 184; r += 2) {
     let lumIn = 0, lumOut = 0, valid = 0;
     for (let a = 0; a < 360; a += 15) {
-      let rad = a * Math.PI / 180;
-      let x1 = Math.round(cx + (r - 3) * Math.cos(rad)), y1 = Math.round(cy + (r - 3) * Math.sin(rad));
-      let x2 = Math.round(cx + (r + 3) * Math.cos(rad)), y2 = Math.round(cy + (r + 3) * Math.sin(rad));
-      if (x2 >= 0 && x2 < 500 && y2 >= 0 && y2 < 500) {
-        let i1 = (y1 * 500 + x1) * 4, i2 = (y2 * 500 + x2) * 4;
-        let l1 = 0.299*cleanPixels[i1] + 0.587*cleanPixels[i1+1] + 0.114*cleanPixels[i1+2];
-        let l2 = 0.299*cleanPixels[i2] + 0.587*cleanPixels[i2+1] + 0.114*cleanPixels[i2+2];
-        if (l1 < 225 && l2 < 225) { lumIn += l1; lumOut += l2; valid++; }
-      }
+      const rad = a * Math.PI / 180;
+      const l1 = lumAt(cx + (r - 4) * Math.cos(rad), cy + (r - 4) * Math.sin(rad));
+      const l2 = lumAt(cx + (r + 4) * Math.cos(rad), cy + (r + 4) * Math.sin(rad));
+      if (l1 !== null && l2 !== null && l1 < 225 && l2 < 225) { lumIn += l1; lumOut += l2; valid++; }
     }
     if (valid > 8 && ((lumOut - lumIn) / valid) > maxGrad) {
       maxGrad = (lumOut - lumIn) / valid; bestRP = r;
     }
   }
   rP = bestRP;
-  rI = Math.min(235, Math.round(rP * 3.1));
+
+  // nitidez: fração do degrau de luminância que ocorre em ~6px na borda pupilar (1 = borda nítida)
+  let st = 0, pk = 0, n = 0;
+  for (let a = 0; a < 360; a += 15) {
+    const rad = a * Math.PI / 180, c = Math.cos(rad), s = Math.sin(rad);
+    const i2 = lumAt(cx + (rP - 9) * c, cy + (rP - 9) * s);
+    const o2 = lumAt(cx + (rP + 9) * c, cy + (rP + 9) * s);
+    const i1 = lumAt(cx + (rP - 3) * c, cy + (rP - 3) * s);
+    const o1 = lumAt(cx + (rP + 3) * c, cy + (rP + 3) * s);
+    if (i2 !== null && o2 !== null && i1 !== null && o1 !== null) { st += o2 - i2; pk += o1 - i1; n++; }
+  }
+  nitidez = (n > 6 && st / n > 8) ? clamp(pk / st, 0, 1) : null;
+
+  const achou = detectarLimbo();
+
   probeX = cx; probeY = cy - Math.round((rP + rI) / 2);
   atualizarOrgaoSelecionado();
   analisar();
   render();
+  return achou;
 }
 
+// Limbo = maior transição escuro→claro (íris→esclera) nos setores laterais (evita pálpebras)
+function detectarLimbo() {
+  const minR = Math.round(rP * 2.0);
+  const maxR = Math.round(Math.min(rP * 5, S * 0.49));
+  const angs = [];
+  for (let a = -30; a <= 30; a += 5) angs.push(a);
+  for (let a = 150; a <= 210; a += 5) angs.push(a);
+
+  const prof = {};
+  for (let r = minR - 6; r <= maxR + 6; r++) {
+    let s = 0, n = 0;
+    for (const a of angs) {
+      const rad = a * Math.PI / 180;
+      const l = lumAt(cx + r * Math.cos(rad), cy + r * Math.sin(rad));
+      if (l !== null) { s += l; n++; }
+    }
+    prof[r] = n >= 8 ? s / n : null;
+  }
+  let best = null, bd = 0;
+  for (let r = minR; r <= maxR; r++) {
+    const a = prof[r - 5], b = prof[r + 5];
+    if (a == null || b == null) continue;
+    const d = b - a;
+    if (d > bd) { bd = d; best = r; }
+  }
+  const el = $('detStatus');
+  if (best !== null && bd > 10) {
+    rI = Math.min(Math.round(S * 0.49), best);
+    el.textContent = "Pupila e limbo detectados automaticamente. Confira e ajuste (🟢 Ajustar Íris) se necessário.";
+    return true;
+  }
+  rI = Math.min(Math.round(S * 0.47), Math.round(rP * 3.1));
+  el.textContent = "Limbo não detectado com segurança: ajuste o anel verde manualmente.";
+  return false;
+}
+
+/* ---------- scanner: gera SUGESTÕES para confirmação ---------- */
 function executarScannerAutomatico() {
   if (!loaded || !cleanPixels) return;
   analisar();
 
-  const pw = 360, ph = 65;
-  const olho = document.getElementById('pacOlho').value;
-  achadosClinicos = achadosClinicos.filter(a => !a.auto);
+  const pw = PW, ph = PH;
+  const olho = $('pacOlho').value;
+  achadosClinicos = achadosClinicos.filter(a => !(a.auto && !a.confirmado));
 
-  let candidatosRaios = [];
+  const candidatosRaios = [];
   for (let deg = 0; deg < 360; deg += 3) {
     let somaCol = 0, somaViz = 0, valid = 0;
     for (let y = 8; y < 48; y++) {
-      let idx = y * pw + deg;
-      let idxL = y * pw + ((deg - 6 + 360) % 360);
-      let idxR = y * pw + ((deg + 6) % 360);
+      const idx = y * pw + deg;
+      const idxL = y * pw + ((deg - 6 + 360) % 360);
+      const idxR = y * pw + ((deg + 6) % 360);
       if (polarFlashMask[idx] || polarFlashMask[idxL] || polarFlashMask[idxR]) continue;
       somaCol += polarGray[idx];
       somaViz += (polarGray[idxL] + polarGray[idxR]) * 0.5;
       valid++;
     }
     if (valid > 28) {
-      let queda = (somaViz - somaCol) / valid;
+      const queda = (somaViz - somaCol) / valid;
       if (queda > 11.5) candidatosRaios.push({ deg, score: queda });
     }
   }
   candidatosRaios.sort((a, b) => b.score - a.score);
-  let raiosEscolhidos = [];
-  for (let c of candidatosRaios) {
+  const raiosEscolhidos = [];
+  for (const c of candidatosRaios) {
     if (raiosEscolhidos.length >= 3) break;
     if (raiosEscolhidos.every(r => Math.min(Math.abs(r.deg - c.deg), 360 - Math.abs(r.deg - c.deg)) > 18)) {
       raiosEscolhidos.push(c);
@@ -343,19 +473,19 @@ function executarScannerAutomatico() {
     }
   }
 
-  let candidatosLacunas = [];
+  const candidatosLacunas = [];
   for (let deg = 18; deg < 342; deg += 6) {
     if (deg > 162 && deg < 198) continue;
     for (let z = 1; z <= 4; z++) {
-      let yStart = Math.floor((z / 7) * ph);
-      let yEnd = Math.floor(((z + 1) / 7) * ph);
+      const yStart = Math.floor((z / 7) * ph);
+      const yEnd = Math.floor(((z + 1) / 7) * ph);
       let somaBloco = 0, somaEntorno = 0, cnt = 0;
       for (let y = yStart; y < yEnd; y++) {
         for (let dx = -2; dx <= 2; dx++) {
-          let x = (deg + dx + 360) % 360;
-          let idx = y * pw + x;
-          let idxE1 = y * pw + ((deg - 12 + 360) % 360);
-          let idxE2 = y * pw + ((deg + 12) % 360);
+          const x = (deg + dx + 360) % 360;
+          const idx = y * pw + x;
+          const idxE1 = y * pw + ((deg - 12 + 360) % 360);
+          const idxE2 = y * pw + ((deg + 12) % 360);
           if (polarFlashMask[idx] || polarFlashMask[idxE1] || polarFlashMask[idxE2]) continue;
           somaBloco += polarGray[idx];
           somaEntorno += (polarGray[idxE1] + polarGray[idxE2]) * 0.5;
@@ -363,18 +493,18 @@ function executarScannerAutomatico() {
         }
       }
       if (cnt > 15) {
-        let diff = (somaEntorno - somaBloco) / cnt;
+        const diff = (somaEntorno - somaBloco) / cnt;
         if (diff > 14.0) candidatosLacunas.push({ deg, zonaIdx: z, score: diff });
       }
     }
   }
   candidatosLacunas.sort((a, b) => b.score - a.score);
-  let lacunasEscolhidas = [];
-  for (let l of candidatosLacunas) {
+  const lacunasEscolhidas = [];
+  for (const l of candidatosLacunas) {
     if (lacunasEscolhidas.length >= 4) break;
     if (lacunasEscolhidas.every(e => Math.min(Math.abs(e.deg - l.deg), 360 - Math.abs(e.deg - l.deg)) > 20)) {
       lacunasEscolhidas.push(l);
-      let tipo = l.score > 22 ? "Cripta / Mancha Escura" : "Lacuna Aberta (Fragilidade)";
+      const tipo = l.score > 22 ? "Cripta / Mancha Escura" : "Lacuna Aberta (Fragilidade)";
       adicionarSinalPolar(olho, l.deg, l.zonaIdx, tipo, "lacuna");
     }
   }
@@ -384,16 +514,16 @@ function executarScannerAutomatico() {
     let diffLinha = 0, cnt = 0;
     for (let x = 20; x < 340; x += 2) {
       if (x > 160 && x < 200) continue;
-      let idx = y * pw + x;
+      const idx = y * pw + x;
       if (polarFlashMask[idx]) continue;
-      let vDiff = Math.abs(polarGray[idx] - 0.5 * (polarGray[(y-3)*pw + x] + polarGray[(y+3)*pw + x]));
-      let hDiff = Math.abs(polarGray[idx] - polarGray[y*pw + x - 2]);
+      const vDiff = Math.abs(polarGray[idx] - 0.5 * (polarGray[(y - 3) * pw + x] + polarGray[(y + 3) * pw + x]));
+      const hDiff = Math.abs(polarGray[idx] - polarGray[y * pw + x - 2]);
       if (vDiff > hDiff * 1.35 && vDiff > 7) diffLinha++;
       cnt++;
     }
     if (cnt > 40 && (diffLinha / cnt) > 0.32) scoreAnel++;
   }
-  statusAnelTensao = scoreAnel >= 2 ? "Presentes nas Zonas 5-6 (Tensão Somática)" : "Discretos ou Ausentes";
+  statusAnelTensao = scoreAnel >= 2 ? "Sugeridos nas Zonas 5-6 (a confirmar)" : "Discretos ou ausentes";
 
   atualizarListaAchados();
   analisar();
@@ -401,361 +531,471 @@ function executarScannerAutomatico() {
 }
 
 function adicionarSinalPolar(olho, deg, zonaIdx, descricaoSinal, subtipo) {
-  let horaFloat = deg / 30.0;
-  let hInt = Math.floor(horaFloat);
-  let mInt = Math.round((horaFloat - hInt) * 60);
-  if (hInt === 0) hInt = 12;
-  let horaStr = `${hInt}h${mInt < 10 ? '0'+mInt : mInt}`;
-  let rMeio = rP + ((zonaIdx + 0.5) / 7.0) * (rI - rP);
-  let rad = (deg - 90) * Math.PI / 180;
-  let px = Math.round(cx + rMeio * Math.cos(rad));
-  let py = Math.round(cy + rMeio * Math.sin(rad));
-  let nomeOrgao = obterOrgaoJensen(olho, horaFloat, zonaIdx);
-
+  const nomeOrgao = obterOrgaoJensen(olho, deg / 30.0, zonaIdx);
   achadosClinicos.push({
-    hora: horaStr, zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, sinal: descricaoSinal, x: px, y: py, rad: rad, auto: true, subtipo: subtipo
+    hora: fmtHora(deg), zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, sinal: descricaoSinal,
+    deg: deg, fr: (zonaIdx + 0.5) / 7.0, auto: true, confirmado: false, subtipo: subtipo
   });
 }
 
-function pos(t) {
+/* ---------- inspeção e achados ---------- */
+function zoomOn() { return $('layZoom').checked; }
+
+function posRaw(e) {
   const b = cv.getBoundingClientRect();
-  let x = (t.clientX - b.left)*(cv.width/b.width);
-  let y = (t.clientY - b.top)*(cv.height/b.height);
-  if (document.getElementById('layZoom').checked) {
-    x = (x - 250) / 2 + cx;
-    y = (y - 250) / 2 + cy;
-  }
-  return { x, y };
+  return { x: (e.clientX - b.left) * (cv.width / b.width), y: (e.clientY - b.top) * (cv.height / b.height) };
+}
+function posMapa(e) {
+  const p = posRaw(e);
+  if (zoomOn()) { p.x = (p.x - S / 2) / 2 + cx; p.y = (p.y - S / 2) / 2 + cy; }
+  return p;
 }
 
 function atualizarOrgaoSelecionado() {
   if (probeX === null || probeY === null) return;
   const dx = probeX - cx, dy = probeY - cy;
   const dist = Math.hypot(dx, dy);
-  const olho = document.getElementById('pacOlho').value;
-
-  let deg = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
-  let horaFloat = deg / 30.0;
-  let hInt = Math.floor(horaFloat);
-  let mInt = Math.round((horaFloat - hInt) * 60);
-  if (hInt === 0) hInt = 12;
-  let horaStr = `${hInt}h${mInt < 10 ? '0'+mInt : mInt}`;
+  const olho = $('pacOlho').value;
+  const deg = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
+  const horaStr = fmtHora(deg);
 
   if (dist <= rP) {
-    document.getElementById('orgCoord').innerText = `⚫ ÁREA PUPILAR (${horaStr})`;
-    document.getElementById('orgNome').innerText = "Pupila — Tônus Autonômico";
-    document.getElementById('orgZona').innerText = "Borda Pupilar Interna";
-    ultimoOrgaoInfo = { hora: horaStr, zona: "Borda Pupilar", orgao: "Tônus Pupilar / BPI", x: probeX, y: probeY };
+    $('orgCoord').innerText = `⚫ ÁREA PUPILAR (${horaStr})`;
+    $('orgNome').innerText = "Pupila — Tônus Autonômico";
+    $('orgZona').innerText = "Borda Pupilar Interna";
+    ultimoOrgaoInfo = { pupila: true };
     return;
   }
 
-  let ratio = (dist - rP) / (rI - rP);
-  let zonaIdx = Math.min(6, Math.max(0, Math.floor(ratio * 7)));
-  let nomeOrgao = obterOrgaoJensen(olho, horaFloat, zonaIdx);
-  let nomeZona = ZONAS_JENSEN[zonaIdx];
+  const ratio = Math.min(1, (dist - rP) / (rI - rP));
+  const zonaIdx = Math.min(6, Math.max(0, Math.floor(ratio * 7)));
+  const nomeOrgao = obterOrgaoJensen(olho, deg / 30.0, zonaIdx);
 
-  document.getElementById('orgCoord').innerText = `📍 ${olho} • ${horaStr} • Anel ${zonaIdx + 1}`;
-  document.getElementById('orgNome').innerText = nomeOrgao;
-  document.getElementById('orgZona').innerText = nomeZona;
-  ultimoOrgaoInfo = { hora: horaStr, zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, x: probeX, y: probeY };
+  $('orgCoord').innerText = `📍 ${olho} • ${horaStr} • Anel ${zonaIdx + 1}`;
+  $('orgNome').innerText = nomeOrgao;
+  $('orgZona').innerText = ZONAS_JENSEN[zonaIdx];
+  ultimoOrgaoInfo = { hora: horaStr, zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, deg: deg, fr: ratio };
 }
 
 function adicionarAchadoManual() {
-  if (!ultimoOrgaoInfo) return;
-  const sinal = document.getElementById('tipoSinal').value;
-  achadosClinicos.push({ ...ultimoOrgaoInfo, sinal, auto: false });
-  atualizarListaAchados();
-  analisar();
-  render();
+  if (!ultimoOrgaoInfo || ultimoOrgaoInfo.pupila) return;
+  achadosClinicos.push({ ...ultimoOrgaoInfo, sinal: $('tipoSinal').value, auto: false, confirmado: true });
+  atualizarListaAchados(); analisar(); render();
 }
-
-function removerAchado(idx) {
-  achadosClinicos.splice(idx, 1);
-  atualizarListaAchados();
-  analisar();
-  render();
+function confirmarAchado(i) {
+  if (achadosClinicos[i]) achadosClinicos[i].confirmado = true;
+  atualizarListaAchados(); analisar(); render();
+}
+function removerAchado(i) {
+  achadosClinicos.splice(i, 1);
+  atualizarListaAchados(); analisar(); render();
 }
 
 function atualizarListaAchados() {
-  const box = document.getElementById('listaAchados');
+  const box = $('listaAchados');
   if (achadosClinicos.length === 0) { box.innerHTML = ""; return; }
-  box.innerHTML = achadosClinicos.map((a, i) => `
-    <div class="pin-item ${a.auto ? 'auto-pin' : ''}">
-      <span>${a.auto ? '🔍' : '📌'} <b>${a.hora} (${a.zona}):</b> ${a.orgao} — <i>${a.sinal}</i></span>
-      <button onclick="removerAchado(${i})" style="background:none;border:none;color:#dc2626;font-weight:bold;cursor:pointer;">✕</button>
-    </div>
-  `).join('');
+  box.innerHTML = achadosClinicos.map((a, i) => {
+    const pend = a.auto && !a.confirmado;
+    const cls = a.auto ? (a.confirmado ? 'auto-pin' : 'pending') : '';
+    const ico = a.auto ? (a.confirmado ? '🔍' : '❓') : '📌';
+    return `<div class="pin-item ${cls}">
+      <span>${ico} <b>${a.hora} (${a.zona}):</b> ${a.orgao} — <i>${a.sinal}</i>${pend ? ' <b>(sugestão)</b>' : ''}</span>
+      <span>${pend ? `<button class="btn-ok" onclick="confirmarAchado(${i})">✓</button>` : ''}<button class="btn-x" onclick="removerAchado(${i})">✕</button></span>
+    </div>`;
+  }).join('');
 }
 
-cv.addEventListener('touchstart', function(e) {
+function achadosConfirmados() { return achadosClinicos.filter(a => !a.auto || a.confirmado); }
+
+/* ---------- eventos de ponteiro (mouse + toque) ---------- */
+const ptrs = new Map();
+cv.addEventListener('pointerdown', function (e) {
   e.preventDefault();
-  if (e.touches.length === 2) {
-    pinch0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    srI = rI; srP = rP;
-  } else if (e.touches.length === 1) {
+  try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (ptrs.size === 2) {
+    const [a, b] = [...ptrs.values()];
+    pinch0 = Math.hypot(a.x - b.x, a.y - b.y);
+    srI = rI; srP = rP; drag = false;
+    return;
+  }
+  if (ptrs.size === 1) {
     drag = true;
-    const p = pos(e.touches[0]);
-    if (mode === 'map') { probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render(); }
-    else { sx = p.x; sy = p.y; scx = cx; scy = cy; srI = rI; srP = rP; }
+    if (mode === 'map') {
+      const p = posMapa(e); probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render();
+    } else {
+      const p = posRaw(e); sx = p.x; sy = p.y; scx = cx; scy = cy; srI = rI; srP = rP;
+    }
   }
-}, {passive:false});
+});
 
-cv.addEventListener('touchmove', function(e) {
+cv.addEventListener('pointermove', function (e) {
+  if (!ptrs.has(e.pointerId)) return;
   e.preventDefault();
-  if (e.touches.length === 2 && pinch0) {
-    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    const k = d / pinch0;
-    if (mode === 'pup') rP = Math.max(10, Math.min(rI - 10, srP * k));
-    else rI = Math.max(rP + 15, Math.min(245, srI * k));
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (ptrs.size === 2 && pinch0) {
+    const [a, b] = [...ptrs.values()];
+    const k = Math.hypot(a.x - b.x, a.y - b.y) / pinch0;
+    if (mode === 'pup') rP = clamp(srP * k, 16, rI - 16);
+    else rI = clamp(srI * k, rP + 24, S * 0.49);
     render();
-  } else if (e.touches.length === 1 && drag) {
-    const p = pos(e.touches[0]);
-    if (mode === 'map') { probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render(); return; }
-    const dx = p.x - sx, dy = p.y - sy;
-    if (mode === 'move') { cx = Math.max(30, Math.min(470, scx + dx)); cy = Math.max(30, Math.min(470, scy + dy)); }
-    else if (mode === 'iris') rI = Math.max(rP + 15, Math.min(245, srI + dx * 0.8));
-    else if (mode === 'pup') rP = Math.max(10, Math.min(rI - 10, srP + dx * 0.8));
+  } else if (ptrs.size === 1 && drag) {
+    if (mode === 'map') {
+      const p = posMapa(e); probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render(); return;
+    }
+    const zf = zoomOn() ? 2 : 1;
+    const p = posRaw(e);
+    const dx = (p.x - sx) / zf, dy = (p.y - sy) / zf;
+    if (mode === 'move') { cx = clamp(scx + dx, 48, S - 48); cy = clamp(scy + dy, 48, S - 48); }
+    else if (mode === 'iris') rI = clamp(srI + dx * 0.8, rP + 24, S * 0.49);
+    else if (mode === 'pup') rP = clamp(srP + dx * 0.8, 16, rI - 16);
     render();
   }
-}, {passive:false});
+});
 
-cv.addEventListener('touchend', function() { drag = false; pinch0 = null; analisar(); });
+function fimPonteiro(e) {
+  ptrs.delete(e.pointerId);
+  if (ptrs.size < 2) pinch0 = null;
+  if (ptrs.size === 0) { drag = false; analisar(); }
+}
+cv.addEventListener('pointerup', fimPonteiro);
+cv.addEventListener('pointercancel', fimPonteiro);
 
+let wheelTimer = null;
+cv.addEventListener('wheel', function (e) {
+  e.preventDefault();
+  const f = e.deltaY < 0 ? 1.03 : 0.97;
+  if (mode === 'pup') rP = clamp(rP * f, 16, rI - 16);
+  else rI = clamp(rI * f, rP + 24, S * 0.49);
+  render();
+  clearTimeout(wheelTimer);
+  wheelTimer = setTimeout(analisar, 150);
+}, { passive: false });
+
+/* ---------- desenho ---------- */
 function render() {
   if (!loaded) return;
-  ctx.clearRect(0, 0, 500, 500);
+  ctx.clearRect(0, 0, S, S);
   ctx.save();
-  if (document.getElementById('layZoom').checked) {
-    ctx.translate(250, 250); ctx.scale(2, 2); ctx.translate(-cx, -cy);
-  }
-  const sc = Math.max(500 / img.width, 500 / img.height);
-  const iw = img.width * sc, ih = img.height * sc;
-  ctx.drawImage(img, (500 - iw)/2, (500 - ih)/2, iw, ih);
+  if (zoomOn()) { ctx.translate(S / 2, S / 2); ctx.scale(2, 2); ctx.translate(-cx, -cy); }
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, S, S);
+  ctx.drawImage(img, imgRect.x, imgRect.y, imgRect.w, imgRect.h);
 
-  if (document.getElementById('layFlash').checked && cleanPixels) {
+  if ($('layFlash').checked && cleanPixels) {
     ctx.fillStyle = 'rgba(0, 220, 255, 0.35)';
-    for (let y = Math.max(0, Math.floor(cy - rI)); y < Math.min(500, Math.ceil(cy + rI)); y += 3) {
-      for (let x = Math.max(0, Math.floor(cx - rI)); x < Math.min(500, Math.ceil(cx + rI)); x += 3) {
-        let dist = Math.hypot(x - cx, y - cy);
+    const x0 = Math.max(0, Math.floor(cx - rI)), x1 = Math.min(S, Math.ceil(cx + rI));
+    const y0 = Math.max(0, Math.floor(cy - rI)), y1 = Math.min(S, Math.ceil(cy + rI));
+    for (let y = y0; y < y1; y += 4) {
+      for (let x = x0; x < x1; x += 4) {
+        const dist = Math.hypot(x - cx, y - cy);
         if (dist > rP && dist < rI) {
-          let i = (y * 500 + x) * 4;
-          let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
-          if (lum > 230) ctx.fillRect(x, y, 3, 3);
+          const l = lumAt(x, y);
+          if (l !== null && l > FLASH) ctx.fillRect(x, y, 4, 4);
         }
       }
     }
   }
 
-  if (document.getElementById('layRelogio').checked) {
+  if ($('layRelogio').checked) {
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 11px sans-serif';
+    ctx.font = `bold ${Math.round(11 * K)}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.2;
     for (let h = 1; h <= 12; h++) {
-      let rad = (h * 30 - 90) * Math.PI / 180;
+      const rad = (h * 30 - 90) * Math.PI / 180;
       ctx.beginPath();
-      ctx.moveTo(cx + rP*Math.cos(rad), cy + rP*Math.sin(rad));
-      ctx.lineTo(cx + rI*Math.cos(rad), cy + rI*Math.sin(rad));
+      ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad));
+      ctx.lineTo(cx + rI * Math.cos(rad), cy + rI * Math.sin(rad));
       ctx.stroke();
-      ctx.fillText(h + 'h', cx + (rI + 12) * Math.cos(rad), cy + (rI + 12) * Math.sin(rad));
+      ctx.fillText(h + 'h', cx + (rI + 14 * K) * Math.cos(rad), cy + (rI + 14 * K) * Math.sin(rad));
     }
   }
 
-  if (document.getElementById('layRaios').checked && !document.getElementById('layRelogio').checked) {
+  if ($('layRaios').checked && !$('layRelogio').checked) {
     ctx.strokeStyle = 'rgba(255, 80, 80, 0.6)';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.2;
     for (let a = 0; a < 360; a += 30) {
-      let rad = a * Math.PI / 180;
+      const rad = a * Math.PI / 180;
       ctx.beginPath();
-      ctx.moveTo(cx + rP*Math.cos(rad), cy + rP*Math.sin(rad));
-      ctx.lineTo(cx + rI*Math.cos(rad), cy + rI*Math.sin(rad));
+      ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad));
+      ctx.lineTo(cx + rI * Math.cos(rad), cy + rI * Math.sin(rad));
       ctx.stroke();
     }
   }
 
-  if (document.getElementById('layJensen').checked) {
-    let st = (rI - rP) / 7;
+  if ($('layJensen').checked) {
+    const st = (rI - rP) / 7;
     for (let i = 1; i < 7; i++) {
       ctx.strokeStyle = (i === 3) ? 'rgba(251, 191, 36, 0.9)' : 'rgba(190, 210, 255, 0.7)';
-      ctx.lineWidth = (i === 3) ? 1.8 : 1;
-      ctx.beginPath(); ctx.arc(cx, cy, rP + i*st, 0, 2*Math.PI); ctx.stroke();
+      ctx.lineWidth = (i === 3) ? 2.4 : 1.4;
+      ctx.beginPath(); ctx.arc(cx, cy, rP + i * st, 0, 2 * Math.PI); ctx.stroke();
     }
   }
 
-  ctx.strokeStyle = '#facc15'; ctx.lineWidth = mode==='pup' ? 3.5 : 2;
-  ctx.beginPath(); ctx.arc(cx, cy, rP, 0, 2*Math.PI); ctx.stroke();
+  ctx.strokeStyle = '#facc15'; ctx.lineWidth = mode === 'pup' ? 5 : 3;
+  ctx.beginPath(); ctx.arc(cx, cy, rP, 0, 2 * Math.PI); ctx.stroke();
 
-  ctx.strokeStyle = '#22c55e'; ctx.lineWidth = mode==='iris' ? 3.5 : 2.5;
-  ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2*Math.PI); ctx.stroke();
+  ctx.strokeStyle = '#22c55e'; ctx.lineWidth = mode === 'iris' ? 5 : 3.5;
+  ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2 * Math.PI); ctx.stroke();
 
-  if (document.getElementById('layAchados').checked) {
+  if ($('layAchados').checked) {
     achadosClinicos.forEach(a => {
-      if (a.subtipo === 'raio' && a.rad !== undefined) {
+      const rad = (a.deg - 90) * Math.PI / 180;
+      const r = rP + a.fr * (rI - rP);
+      const px = cx + r * Math.cos(rad), py = cy + r * Math.sin(rad);
+      const pend = a.auto && !a.confirmado;
+      if (a.subtipo === 'raio') {
         ctx.save();
         ctx.strokeStyle = '#f97316';
-        ctx.lineWidth = 2.2;
-        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 3;
+        ctx.setLineDash([6, 4]);
         ctx.beginPath();
-        ctx.moveTo(cx + rP * Math.cos(a.rad), cy + rP * Math.sin(a.rad));
-        ctx.lineTo(cx + (rI * 0.85) * Math.cos(a.rad), cy + (rI * 0.85) * Math.sin(a.rad));
+        ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad));
+        ctx.lineTo(cx + (rI * 0.85) * Math.cos(rad), cy + (rI * 0.85) * Math.sin(rad));
         ctx.stroke();
         ctx.restore();
       }
-      ctx.fillStyle = a.auto ? '#ea580c' : '#9333ea';
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1.8;
-      ctx.beginPath(); ctx.arc(a.x, a.y, 6, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(px, py, 9, 0, 2 * Math.PI);
+      if (pend) {
+        ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = '#fb923c'; ctx.stroke(); ctx.restore();
+      } else {
+        ctx.fillStyle = a.auto ? '#ea580c' : '#9333ea';
+        ctx.strokeStyle = '#ffffff';
+        ctx.fill(); ctx.stroke();
+      }
     });
   }
 
   if (probeX !== null && probeY !== null && mode === 'map') {
     ctx.strokeStyle = '#d946ef';
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(probeX, probeY, 8, 0, 2*Math.PI); ctx.stroke();
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(probeX, probeY, 12, 0, 2 * Math.PI); ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(probeX - 12, probeY); ctx.lineTo(probeX + 12, probeY);
-    ctx.moveTo(probeX, probeY - 12); ctx.lineTo(probeX, probeY + 12);
+    ctx.moveTo(probeX - 18, probeY); ctx.lineTo(probeX + 18, probeY);
+    ctx.moveTo(probeX, probeY - 18); ctx.lineTo(probeX, probeY + 18);
     ctx.stroke();
   }
   ctx.restore();
 }
 
+/* ---------- análise ---------- */
 function analisar() {
   if (!loaded || !cleanPixels) return;
-  const d = cleanPixels;
-  const ignorarFlash = document.getElementById('layFlash').checked;
+  const ignorarFlash = $('layFlash').checked;
 
-  const pw = 360, ph = 65;
-  const pIm = pCtx.createImageData(pw, ph);
+  const pIm = pCtx.createImageData(PW, PH);
   polarFlashMask.fill(0);
-  let somaMediaEstroma = 0, qtdEstroma = 0;
+  let somaMedia = 0, qtd = 0;
 
-  for (let y = 0; y < ph; y++) {
-    let r = rP + (y / ph) * (rI - rP);
-    for (let x = 0; x < pw; x++) {
-      let rad = ((x - 90) * 2 * Math.PI) / pw;
-      let sx = Math.min(499, Math.max(0, Math.round(cx + r * Math.cos(rad))));
-      let sy = Math.min(499, Math.max(0, Math.round(cy + r * Math.sin(rad))));
-      let i = (sy * 500 + sx) * 4;
-      let l = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
-      let idx = y * pw + x;
-      if (ignorarFlash && l > 230) { polarFlashMask[idx] = 1; }
-      else { somaMediaEstroma += l; qtdEstroma++; }
+  for (let y = 0; y < PH; y++) {
+    const r = rP + (y / PH) * (rI - rP);
+    for (let x = 0; x < PW; x++) {
+      const rad = ((x - 90) * 2 * Math.PI) / PW;
+      const px = clamp(Math.round(cx + r * Math.cos(rad)), 0, S - 1);
+      const py = clamp(Math.round(cy + r * Math.sin(rad)), 0, S - 1);
+      const i = (py * S + px) * 4;
+      const l = 0.299 * cleanPixels[i] + 0.587 * cleanPixels[i + 1] + 0.114 * cleanPixels[i + 2];
+      const idx = y * PW + x;
+      if (ignorarFlash && l > FLASH) polarFlashMask[idx] = 1;
+      else { somaMedia += l; qtd++; }
       polarGray[idx] = l;
     }
   }
 
-  let mediaEstroma = qtdEstroma > 0 ? (somaMediaEstroma / qtdEstroma) : 128;
-  let flashPct = 0;
-  for (let idx = 0; idx < pw * ph; idx++) {
-    let di = idx * 4;
+  const media = qtd > 0 ? (somaMedia / qtd) : 128;
+  for (let idx = 0; idx < PW * PH; idx++) {
+    const di = idx * 4;
     if (polarFlashMask[idx] === 1) {
-      polarGray[idx] = mediaEstroma;
-      pIm.data[di] = 0; pIm.data[di+1] = 190; pIm.data[di+2] = 230; pIm.data[di+3] = 255;
-      flashPct++;
+      polarGray[idx] = media;
+      pIm.data[di] = 0; pIm.data[di + 1] = 190; pIm.data[di + 2] = 230; pIm.data[di + 3] = 255;
     } else {
-      let l = polarGray[idx];
-      pIm.data[di] = l; pIm.data[di+1] = l; pIm.data[di+2] = l; pIm.data[di+3] = 255;
+      const l = polarGray[idx];
+      pIm.data[di] = l; pIm.data[di + 1] = l; pIm.data[di + 2] = l; pIm.data[di + 3] = 255;
     }
   }
   pCtx.putImageData(pIm, 0, 0);
 
-  let s = 0, sq = 0, n = 0;
-  for (let y = 1; y < ph - 1; y++) {
-    for (let x = 1; x < pw - 1; x++) {
-      let k = y*pw + x;
-      if (polarFlashMask[k] || polarFlashMask[k-1] || polarFlashMask[k+1] || polarFlashMask[k-pw] || polarFlashMask[k+pw]) continue;
-      let lp = -4*polarGray[k] + polarGray[k-1] + polarGray[k+1] + polarGray[k-pw] + polarGray[k+pw];
-      s += lp; sq += lp*lp; n++;
+  // Trama normalizada: desvio do Laplaciano ÷ desvio de luminância (remove o efeito do contraste)
+  // ÷ nitidez da foto (compensa parcialmente o desfoque)
+  let sL = 0, sqL = 0, sB = 0, sqB = 0, n = 0;
+  for (let y = 1; y < PH - 1; y++) {
+    for (let x = 1; x < PW - 1; x++) {
+      const k = y * PW + x;
+      if (polarFlashMask[k] || polarFlashMask[k - 1] || polarFlashMask[k + 1] || polarFlashMask[k - PW] || polarFlashMask[k + PW]) continue;
+      const lp = -4 * polarGray[k] + polarGray[k - 1] + polarGray[k + 1] + polarGray[k - PW] + polarGray[k + PW];
+      sL += lp; sqL += lp * lp; sB += polarGray[k]; sqB += polarGray[k] * polarGray[k]; n++;
     }
   }
-  let v = n > 10 ? ((sq / n) - Math.pow(s / n, 2)) : 0;
-  let pr = (rP / rI) * 100;
+  let tramaNorm = 0;
+  if (n > 10) {
+    const lapStd = Math.sqrt(Math.max(0, sqL / n - Math.pow(sL / n, 2)));
+    const lumStd = Math.sqrt(Math.max(0, sqB / n - Math.pow(sB / n, 2)));
+    const nit = nitidez !== null ? Math.max(0.35, nitidez) : 1;
+    tramaNorm = lumStd > 1 ? (lapStd / lumStd) / nit : 0;
+  }
+  const pr = (rP / rI) * 100;
+  const grauIdx = LIMIARES_TRAMA.filter(t => tramaNorm > t).length;
+
+  const nitPct = nitidez !== null ? Math.round(nitidez * 100) : null;
+  const qualidade = nitidez === null ? "não medida" : nitidez < 0.5 ? "baixa — leitura da trama pouco confiável" : nitidez < 0.75 ? "razoável" : "boa";
+  const tipo = $('pacTipo').value;
 
   dadosBiometricosGlobal = {
     proporcao: pr.toFixed(1),
-    trama: v.toFixed(0),
-    constituição: v < 110 ? "Grau 1 (Seda - Compacta)" : v < 250 ? "Grau 2 (Seda/Linho)" : v < 520 ? "Grau 3 (Linho - Comum)" : v < 850 ? "Grau 4 (Algodão)" : "Grau 5 (Rede - Fragilidade)",
-    sna: pr > 33 ? "Simpaticotonia (Hipervigilância / Exigência)" : pr < 20 ? "Parassimpaticotonia (Fadiga / Conservação)" : "Equilíbrio Homeostático",
-    tipologiaRayid: v < 220 ? "Arquétipo Flor (Sensibilidade & Empatia)" : v < 550 ? "Arquétipo Joia (Estratégia & Foco Mental)" : v < 850 ? "Arquétipo Corrente (Suporte Prático)" : "Arquétipo Estroma Fibroso (Dinamismo)",
+    trama: tramaNorm.toFixed(2),
+    nitidez: nitPct !== null ? nitPct + '%' : '--',
+    qualidade: qualidade,
+    constituicao: GRAUS_TRAMA[grauIdx],
+    sna: pr > SNA_ALTO ? "Tendência simpaticotônica (hipervigilância / exigência)"
+       : pr < SNA_BAIXO ? "Tendência parassimpática (fadiga / conservação)"
+       : "Equilíbrio homeostático",
+    tipologia: tipo ? `Tipologia ${tipo} (definida pelo terapeuta)` : "Tipologia não definida",
     anelTensao: statusAnelTensao
   };
 
-  document.getElementById('vProp').innerText = dadosBiometricosGlobal.proporcao + '%';
-  document.getElementById('vTex').innerText = dadosBiometricosGlobal.trama;
+  $('vProp').innerText = dadosBiometricosGlobal.proporcao + '%';
+  $('vTex').innerText = dadosBiometricosGlobal.trama;
+  $('vNit').innerText = dadosBiometricosGlobal.nitidez;
+  $('vQtd').innerText = achadosConfirmados().length;
 
-  psicossomaticaResumo = `• Tipologia Rayid: ${dadosBiometricosGlobal.tipologiaRayid}\n• Dinâmica SNA: ${dadosBiometricosGlobal.sna}\n• Anéis de Tensão: ${dadosBiometricosGlobal.anelTensao}`;
-  document.getElementById('psyTexto').innerText = psicossomaticaResumo;
-
-  document.getElementById('vDiag').innerHTML = `<b>Constituição:</b> ${dadosBiometricosGlobal.constituição}<br><b>SNA:</b> ${dadosBiometricosGlobal.sna}<br><b>Tipologia:</b> ${dadosBiometricosGlobal.tipologiaRayid}`;
-
-  atualizarTextoRelatorioCompleto();
+  $('psyTexto').innerText = `• ${dadosBiometricosGlobal.tipologia}\n• Dinâmica SNA: ${dadosBiometricosGlobal.sna}\n• Anéis de tensão: ${dadosBiometricosGlobal.anelTensao}`;
+  $('vDiag').innerHTML = `<b>Constituição:</b> ${dadosBiometricosGlobal.constituicao}<br><b>SNA:</b> ${dadosBiometricosGlobal.sna}<br><b>Qualidade da foto:</b> ${dadosBiometricosGlobal.qualidade}<br><span style="color:#64748b">O tamanho da pupila varia com a luz da foto; leia a proporção com cautela.</span>`;
 }
 
-function atualizarTextoRelatorioCompleto() {
-  const nome = document.getElementById('pacNome').value || "Paciente";
-  const olho = document.getElementById('pacOlho').value || "OE";
-  const queixa = document.getElementById('pacQueixa').value || "-";
-  
-  let layersAtivas = [];
-  if(document.getElementById('layJensen').checked) layersAtivas.push("7 Anéis de Jensen");
-  if(document.getElementById('layRelogio').checked) layersAtivas.push("Relógio 12h");
-  if(document.getElementById('layRaios').checked) layersAtivas.push("Grade de Raios 30°");
-  if(document.getElementById('layAchados').checked) layersAtivas.push("Sinais e Marcadores");
-
-  let listaTxt = achadosClinicos.length > 0
-    ? achadosClinicos.map((a, i) => `  ${i+1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal}`).join('\n')
-    : "  Nenhum sinal focal específico registado.";
-
-  laudoTxt = `=================================================\n` +
-             `LAUDO IRIDOLÓGICO PROFUNDO — INTEGRATIVO & IA\n` +
-             `=================================================\n` +
-             `Avaliado(a): ${nome}\n` +
-             `Olho Analisado: ${olho}\n` +
-             `Queixa Principal: ${queixa}\n\n` +
-             `1. CAMADAS E MAPAS APLICADOS:\n` +
-             `   - ${layersAtivas.join(', ')}\n\n` +
-             `2. BIOMETRIA E CONSTITUIÇÃO:\n` +
-             `   - Relação Pupila / Limbo: ${dadosBiometricosGlobal.proporcao || '--'}% (${dadosBiometricosGlobal.sna || '--'})\n` +
-             `   - Índice de Fibras (Trama): ${dadosBiometricosGlobal.trama || '--'} — ${dadosBiometricosGlobal.constituição || '--'}\n` +
-             `   - Tipologia Comportamental (Rayid): ${dadosBiometricosGlobal.tipologiaRayid || '--'}\n` +
-             `   - Anéis de Rigidez / Tensão: ${dadosBiometricosGlobal.anelTensao || '--'}\n\n` +
-             `3. MAPEAMENTO TOPOGRÁFICO E PSICOSSOMÁTICO:\n` +
-             `${listaTxt}\n\n` +
-             `4. SÍNTESE DE ORIENTAÇÃO INTEGRATIVA:\n` +
-             `   - O cruzamento dos marcadores sugere suporte direcionado aos eixos neurovegetativos e órgãos de choque identificados nas zonas topográficas.\n`;
+/* ---------- leitura com IA ---------- */
+function dadosEstruturados() {
+  return {
+    olho: $('pacOlho').value === 'OD' ? 'direito' : 'esquerdo',
+    queixa: $('pacQueixa').value.trim() || 'não informada',
+    proporcao_pupila_iris_pct: dadosBiometricosGlobal.proporcao,
+    tendencia_sna: dadosBiometricosGlobal.sna,
+    constituicao_trama: dadosBiometricosGlobal.constituicao,
+    qualidade_da_foto: dadosBiometricosGlobal.qualidade,
+    tipologia: dadosBiometricosGlobal.tipologia,
+    aneis_de_tensao: dadosBiometricosGlobal.anelTensao,
+    achados_confirmados: achadosConfirmados().map(a => ({ horario: a.hora, anel: a.zona, regiao_simbolica: a.orgao, sinal: a.sinal }))
+  };
 }
 
-function gerarRelatorioProfundoIA() {
-  atualizarTextoRelatorioCompleto();
-  const textarea = document.getElementById('aiSaidaRelatorio');
-  
-  let relatorioIA = `[SÍNTESE DA INTELIGÊNCIA CLÍNICA]\n` +
-                    `Paciente: ${document.getElementById('pacNome').value}\n` +
-                    `Queixa Central: ${document.getElementById('pacQueixa').value}\n\n` +
-                    `DIAGNÓSTICO INTEGRATIVO DOS MAPAS:\n` +
-                    `Através da sobreposição das camadas selecionadas e do escaneamento 360°, o perfil constitucional aponta para ${dadosBiometricosGlobal.constituição || 'análise pendente'}.\n\n` +
-                    `LEITURA COMPORTAMENTAL (RAYID & SNA):\n` +
-                    `O tônus demonstra ${dadosBiometricosGlobal.sna || 'homeostase'}. O padrão expressa ${dadosBiometricosGlobal.tipologiaRayid || 'perfil equilibrado'}.\n\n` +
-                    `ACHADOS FOCAIS EM DESTAQUE:\n` +
-                    (achadosClinicos.length > 0 ? achadosClinicos.map(a => `• ${a.orgao} (${a.hora}): ${a.sinal}`).join('\n') : "• Nenhum achado focal isolado.") + `\n\n` +
-                    `CONDUTA SUGERIDA:\n` +
-                    `1. Práticas de regulação do Sistema Nervoso Autônomo para mitigar o desgaste tensional.\n` +
-                    `2. Acompanhamento periódico utilizando o comparador de camadas e evolução longitudinal.`;
+function montarPrompt(d) {
+  return `Você é assistente de redação de um terapeuta integrativo experiente (hipnose ericksoniana, constelação sistêmica, abordagem junguiana e somática).
+Escreva uma LEITURA INTEGRATIVA da íris, em português do Brasil, como mapa simbólico e observacional, a partir dos dados abaixo.
 
-  textarea.value = relatorioIA;
-  laudoTxt += `\n5. PARECER DA INTELIGÊNCIA CLÍNICA:\n${relatorioIA}\n`;
+Regras:
+- Linguagem de leitura simbólica: use "sugere", "pode apontar", "convida a observar", "tema a explorar". Não use "diagnóstico", "doença", "tratamento" nem "conduta".
+- Não prometa cura nem substitua avaliação clínica. Termine com uma linha discreta: "Leitura complementar, não substitui avaliação clínica."
+- Use apenas os dados fornecidos; não invente achados. Se a qualidade da foto for baixa, mencione com delicadeza que a leitura da trama é menos confiável.
+- Relacione os achados à queixa de modo acolhedor e coerente, sem alarmismo.
+- Texto único para esta pessoa, caloroso e profissional, até ~450 palavras, sem markdown pesado.
+
+Estrutura:
+1. Visão geral da leitura
+2. Constituição e tônus (trama, tendência do sistema nervoso autônomo)
+3. Eixos de atenção (a partir dos achados confirmados)
+4. Dimensão emocional e psicossomática ligada à queixa
+5. Sugestões de cuidado integrativo (práticas, hábitos, recursos terapêuticos)
+6. Perguntas para aprofundar na sessão
+
+DADOS:
+${JSON.stringify(d, null, 2)}`;
+}
+
+function modeloLocal(d) {
+  const achados = d.achados_confirmados.length
+    ? d.achados_confirmados.map(a => `• ${a.regiao_simbolica} (${a.horario}, ${a.anel}): ${a.sinal}`).join('\n')
+    : "• Nenhum achado focal confirmado.";
+  return `[LEITURA INTEGRATIVA — texto-modelo local, sem IA]\n\n` +
+    `Queixa: ${d.queixa}\n\n` +
+    `Constituição e tônus:\n${d.constituicao_trama}. ${d.tendencia_sna}. ${d.tipologia}.\n\n` +
+    `Eixos de atenção:\n${achados}\n\n` +
+    `Sugestões de cuidado integrativo:\n1. Práticas de regulação do sistema nervoso (respiração, pausas, descanso).\n2. Observar como os temas acima se relacionam à queixa e aprofundar na sessão.\n\n` +
+    `Leitura complementar, não substitui avaliação clínica.`;
+}
+
+async function gerarRelatorioProfundoIA() {
+  if (!loaded) return;
+  analisar();
+  const box = $('aiSaidaRelatorio'), btn = $('btnIA');
+  const key = $('aiApiKey').value.trim();
+  const modelo = $('aiModelo').value.trim() || 'gemini-2.5-flash';
+  const d = dadosEstruturados();
+
+  if (!key) { box.value = modeloLocal(d); return; }
+
+  const rotulo = btn.textContent;
+  btn.disabled = true; btn.textContent = '⏳ Gerando leitura...';
+  try {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: montarPrompt(d) }] }],
+        generationConfig: { temperature: 0.8, maxOutputTokens: 4000 }
+      })
+    });
+    const j = await resp.json();
+    if (!resp.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + resp.status));
+    const parts = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
+    const txt = parts.map(p => p.text || '').join('').trim();
+    if (!txt) throw new Error('resposta vazia da IA');
+    box.value = txt;
+  } catch (err) {
+    box.value = `Não foi possível gerar com a IA (${err.message}).\nVerifique a chave e o nome do modelo.\n\n` + modeloLocal(d);
+  } finally {
+    btn.disabled = false; btn.textContent = rotulo;
+  }
+}
+
+/* ---------- relatório ---------- */
+function montarLaudo() {
+  const nome = $('pacNome').value || "Avaliado(a)";
+  const olho = $('pacOlho').value || "OE";
+  const queixa = $('pacQueixa').value || "-";
+  const layers = [];
+  if ($('layJensen').checked) layers.push("7 Anéis de Jensen");
+  if ($('layRelogio').checked) layers.push("Relógio 12h");
+  if ($('layRaios').checked) layers.push("Grade de Raios 30°");
+  if ($('layAchados').checked) layers.push("Sinais e Marcadores");
+  const conf = achadosConfirmados();
+  const listaTxt = conf.length
+    ? conf.map((a, i) => `  ${i + 1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal}`).join('\n')
+    : "  Nenhum sinal focal confirmado.";
+  const dg = dadosBiometricosGlobal;
+  const ia = $('aiSaidaRelatorio').value.trim();
+
+  return `=================================================\n` +
+    `LEITURA IRIDOLÓGICA INTEGRATIVA\n` +
+    `=================================================\n` +
+    `Avaliado(a): ${nome}\n` +
+    `Olho observado: ${olho}\n` +
+    `Queixa principal: ${queixa}\n\n` +
+    `1. MAPAS APLICADOS:\n   - ${layers.join(', ') || '-'}\n\n` +
+    `2. OBSERVAÇÕES CONSTITUCIONAIS:\n` +
+    `   - Relação pupila / íris: ${dg.proporcao || '--'}% (${dg.sna || '--'})\n` +
+    `   - Trama (índice normalizado): ${dg.trama || '--'} — ${dg.constituicao || '--'}\n` +
+    `   - Qualidade da foto: ${dg.qualidade || '--'}\n` +
+    `   - ${dg.tipologia || '--'}\n` +
+    `   - Anéis de tensão: ${dg.anelTensao || '--'}\n\n` +
+    `3. MAPA SIMBÓLICO — ACHADOS CONFIRMADOS:\n${listaTxt}\n\n` +
+    `4. LEITURA INTEGRATIVA:\n${ia ? ia : '   (ainda não gerada)'}\n\n` +
+    `-------------------------------------------------\n` +
+    `Leitura simbólica complementar. Não substitui avaliação clínica.\n`;
 }
 
 function dlLaudo() {
-  atualizarTextoRelatorioCompleto();
-  const b = new Blob([laudoTxt], {type:'text/plain;charset=utf-8'});
+  if (!loaded) return;
+  analisar();
+  const b = new Blob([montarLaudo()], { type: 'text/plain;charset=utf-8' });
   const a = document.createElement('a');
+  const nome = ($('pacNome').value || 'Leitura').trim().replace(/[^\w\-]+/g, '_');
   a.href = URL.createObjectURL(b);
-  a.download = "Laudo_Profundo_Integrativo.txt";
+  a.download = `Leitura_Integrativa_${nome}.txt`;
   a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 </script>
 </body>
