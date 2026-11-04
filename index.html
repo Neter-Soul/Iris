@@ -3,53 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Estação Iridológica — Tipologia Rayid & Psicossomática</title>
+<title>Estação Iridológica — Dashboard com Layers</title>
 <style>
-  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 10px; background: #f8fafc; color: #0f172a; user-select: none; -webkit-user-select: none; }
-  h2 { margin: 0 0 2px 0; font-size: 19px; color: #0369a1; }
-  .sub { font-size: 12px; color: #64748b; margin-bottom: 10px; }
-  .box { background: #fff; padding: 10px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 10px; }
-  .row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
-  input[type="text"], select { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
-  .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 10px; }
+  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 8px; background: #f1f5f9; color: #0f172a; user-select: none; -webkit-user-select: none; }
+  h2 { margin: 0 0 2px 0; font-size: 18px; color: #0369a1; }
+  .sub { font-size: 11px; color: #64748b; margin-bottom: 8px; }
+  .card { background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 8px; }
+  .row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+  input[type="text"], select { flex: 1; padding: 7px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; }
+  .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 8px; }
   input[type="file"] { display: none; }
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
-  .btn { padding: 10px 6px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-weight: 600; font-size: 13px; text-align: center; cursor: pointer; }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 6px 0; }
+  .btn { padding: 8px 4px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-weight: 600; font-size: 12px; text-align: center; cursor: pointer; }
   .btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
   .btn.map-active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-  .action-row { display: flex; gap: 6px; margin-bottom: 8px; }
-  .btn-auto { flex: 1; background: #0f766e; color: #fff; padding: 10px 6px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; }
-  .btn-scan { flex: 1.2; background: #ea580c; color: #fff; padding: 10px 6px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; }
-  .chk-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; font-size: 12px; margin-bottom: 8px; font-weight: 500; }
-  .canvas-box { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #000; touch-action: none; }
+  .action-row { display: flex; gap: 4px; margin-bottom: 6px; }
+  .btn-auto { flex: 1; background: #0f766e; color: #fff; padding: 8px 4px; border-radius: 6px; font-weight: bold; font-size: 11px; border: none; cursor: pointer; }
+  .btn-scan { flex: 1.2; background: #ea580c; color: #fff; padding: 8px 4px; border-radius: 6px; font-weight: bold; font-size: 11px; border: none; cursor: pointer; }
+  
+  /* Seção de Layers (Camadas) */
+  .layers-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 8px; }
+  .layers-title { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; }
+  .layers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 12px; font-weight: 500; }
+
+  .canvas-box { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 10px; overflow: hidden; background: #000; touch-action: none; }
   canvas { width: 100%; display: block; touch-action: none; }
-  .organ-panel { background: #f3e8ff; border: 2px solid #9333ea; border-radius: 10px; padding: 10px; margin-top: 8px; }
-  .organ-title { font-size: 11px; font-weight: 800; color: #6b21a8; text-transform: uppercase; }
-  .organ-name { font-size: 16px; font-weight: 800; color: #3b0764; margin: 2px 0; }
-  .organ-sub { font-size: 12px; color: #581c87; }
-  .btn-pin { width: 100%; margin-top: 8px; padding: 9px; background: #9333ea; color: #fff; border: none; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; }
-  .pin-list { font-size: 12px; margin-top: 8px; color: #334155; }
-  .pin-item { background: #fff; padding: 7px 8px; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #9333ea; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+  
+  .organ-panel { background: #f3e8ff; border: 2px solid #9333ea; border-radius: 8px; padding: 8px; margin-top: 6px; }
+  .organ-title { font-size: 10px; font-weight: 800; color: #6b21a8; text-transform: uppercase; }
+  .organ-name { font-size: 15px; font-weight: 800; color: #3b0764; margin: 2px 0; }
+  .organ-sub { font-size: 11px; color: #581c87; }
+  .btn-pin { width: 100%; margin-top: 6px; padding: 7px; background: #9333ea; color: #fff; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+  .pin-list { font-size: 11px; margin-top: 6px; color: #334155; max-height: 100px; overflow-y: auto; }
+  .pin-item { background: #fff; padding: 5px 6px; border-radius: 5px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #9333ea; }
   .pin-item.auto-pin { border-left-color: #ea580c; background: #fff7ed; }
-  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-  .m-card { background: #f1f5f9; padding: 10px; border-radius: 8px; border-left: 4px solid #0284c7; }
-  .m-lbl { font-size: 11px; color: #64748b; font-weight: bold; }
-  .m-val { font-size: 17px; font-weight: 800; margin-top: 2px; }
-  .diag { grid-column: span 2; background: #e0f2fe; padding: 10px; border-radius: 8px; font-size: 13px; line-height: 1.4; }
-  .psy-card { background: #fdf4ff; border: 2px solid #d946ef; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 13px; line-height: 1.4; }
-  .psy-title { font-weight: 800; color: #86198f; font-size: 12px; text-transform: uppercase; margin-bottom: 4px; }
-  .btn-dl { width: 100%; margin-top: 12px; padding: 12px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
+  
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .m-card { background: #f1f5f9; padding: 8px; border-radius: 6px; border-left: 3px solid #0284c7; }
+  .m-lbl { font-size: 10px; color: #64748b; font-weight: bold; }
+  .m-val { font-size: 15px; font-weight: 800; margin-top: 2px; }
+  .diag { grid-column: span 2; background: #e0f2fe; padding: 8px; border-radius: 6px; font-size: 12px; line-height: 1.3; }
+  
+  .psy-card { background: #fdf4ff; border: 1.5px solid #d946ef; border-radius: 8px; padding: 8px; margin-top: 8px; font-size: 12px; line-height: 1.3; }
+  .psy-title { font-weight: 800; color: #86198f; font-size: 11px; text-transform: uppercase; margin-bottom: 3px; }
+  
+  .btn-dl { width: 100%; margin-top: 10px; padding: 10px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
 </style>
 </head>
 <body>
 
-<h2>🔬 Estação Iridológica — Tipologia Rayid & Psicossomática</h2>
-<div class="sub">Biometria • Anti-Flash • Jensen • Scanner 360° • Tipologia Rayid</div>
+<h2>🔬 Dashboard Iridológico Integrado</h2>
+<div class="sub">Controle de Camadas (Layers) • Jensen • Rayid • Psicossomática</div>
 
-<div class="box">
+<div class="card">
   <div class="row">
     <input type="text" id="pacNome" placeholder="Nome do Avaliado" value="Lavinia">
-    <select id="pacOlho" style="max-width:135px; font-weight:bold;" onchange="atualizarOrgaoSelecionado(); render(); analisar();">
+    <select id="pacOlho" style="max-width:125px; font-weight:bold;" onchange="atualizarOrgaoSelecionado(); render(); analisar();">
       <option value="OE">👁️ Olho Esq. (OE)</option>
       <option value="OD">👁️ Olho Dir. (OD)</option>
     </select>
@@ -60,28 +69,34 @@
 </div>
 
 <label class="btn-up">
-  📁 Carregar Foto da Íris (Galeria ou Câmera)
+  📁 Carregar Foto da Íris (Galeria ou Câmara)
   <input type="file" id="fIn" accept="image/*">
 </label>
 
 <div id="appArea" style="display:none;">
   <div class="tabs">
-    <div id="bMove" class="btn active" onclick="setM('move')">✥ Mover Conjunto</div>
-    <div id="bMap" class="btn" onclick="setM('map')">🗺️ Inspecionar Órgão</div>
+    <div id="bMove" class="btn active" onclick="setM('move')">✥ Mover Anéis</div>
+    <div id="bMap" class="btn" onclick="setM('map')">🗺️ Inspecionar</div>
     <div id="bIris" class="btn" onclick="setM('iris')">🟢 Ajustar Íris</div>
     <div id="bPup" class="btn" onclick="setM('pup')">🟡 Ajustar Pupila</div>
   </div>
 
   <div class="action-row">
-    <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Auto-Calibrar Pupila</button>
-    <button class="btn-scan" onclick="executarScannerAutomatico()">🔍 Scanner Automático 360°</button>
+    <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Auto-Calibrar</button>
+    <button class="btn-scan" onclick="executarScannerAutomatico()">🔍 Scanner 360°</button>
   </div>
 
-  <div class="chk-row">
-    <label><input type="checkbox" id="cJen" checked onchange="render()"> 7 Anéis</label>
-    <label><input type="checkbox" id="cRel" checked onchange="render()"> Relógio 12h</label>
-    <label><input type="checkbox" id="cFlsh" checked onchange="render(); analisar();"> ✨ Sem Flash</label>
-    <label><input type="checkbox" id="cZom" onchange="render()"> 🔍 Lupa 2x</label>
+  <!-- PAINEL DE CONTROLE DE CAMADAS (LAYERS) -->
+  <div class="layers-box">
+    <div class="layers-title">🎛️ Gestão de Camadas de Mapa (Layers)</div>
+    <div class="layers-grid">
+      <label><input type="checkbox" id="layJensen" checked onchange="render()"> 7 Anéis de Jensen</label>
+      <label><input type="checkbox" id="layRelogio" checked onchange="render()"> Relógio 12h (Setores)</label>
+      <label><input type="checkbox" id="layRaios" checked onchange="render()"> Grade de Raios 30°</label>
+      <label><input type="checkbox" id="layAchados" checked onchange="render()"> Sinais e Marcadores</label>
+      <label><input type="checkbox" id="layFlash" checked onchange="render(); analisar();"> ✨ Filtro Anti-Flash</label>
+      <label><input type="checkbox" id="layZoom" onchange="render()"> 🔍 Lupa 2x</label>
+    </div>
   </div>
 
   <div class="canvas-box">
@@ -89,36 +104,35 @@
   </div>
 
   <div class="organ-panel">
-    <div class="organ-title" id="orgCoord">🗺️ INSPEÇÃO TOPOGRÁFICA E SINAIS DETECTADOS</div>
-    <div class="organ-name" id="orgNome">Toque na íris ou rode o Scanner Automático 360°</div>
-    <div class="organ-sub" id="orgZona">Os achados automáticos e manuais alimentam o relatório integrativo.</div>
-    <div class="row" style="margin-top:8px; margin-bottom:0;">
-      <select id="tipoSinal" style="font-size:13px; padding:6px;">
-        <option value="Lacuna / Cripta (Fragilidade Tecidual)">🔹 Lacuna / Cripta (Fragilidade)</option>
-        <option value="Raio Solar (Tensão Neurovegetativa)">⚡ Raio Solar (Tensão / Esgotamento)</option>
-        <option value="Mancha / Psora (Sobrecarga Toxínica)">🟤 Mancha / Psora (Sobrecarga)</option>
-        <option value="Anel de Tensão (Espasmo / Estresse)">⭕ Anel de Tensão (Estresse)</option>
-        <option value="Fibras Abertas / Hiperatividade">🔸 Fibras Abertas / Irritação</option>
+    <div class="organ-title" id="orgCoord">🗺️ SELETOR DE MAPAS & ACHADOS</div>
+    <div class="organ-name" id="orgNome">Toque na íris para mapear o órgão</div>
+    <div class="organ-sub" id="orgZona">As camadas ativas acima aparecem sobre a imagem.</div>
+    <div class="row" style="margin-top:6px; margin-bottom:0;">
+      <select id="tipoSinal" style="font-size:12px; padding:5px;">
+        <option value="Lacuna / Cripta (Fragilidade)">🔹 Lacuna / Cripta (Fragilidade)</option>
+        <option value="Raio Solar (Tensão)">⚡ Raio Solar (Tensão)</option>
+        <option value="Mancha / Psora (Sobrecarga)">🟤 Mancha / Psora (Sobrecarga)</option>
+        <option value="Anel de Tensão">⭕ Anel de Tensão</option>
       </select>
     </div>
-    <button class="btn-pin" onclick="adicionarAchadoManual()">➕ Anotar Ponto Selecionado no Laudo</button>
+    <button class="btn-pin" onclick="adicionarAchadoManual()">➕ Registar no Relatório</button>
     <div id="listaAchados" class="pin-list"></div>
   </div>
 
   <div class="psy-card">
-    <div class="psy-title">🧠 Tipologia Ocular Rayid & Psicossomática</div>
-    <div id="psyTexto">Aguardando calibração dos anéis para leitura comportamental...</div>
+    <div class="psy-title">🧠 Síntese Tipológica & Psicossomática</div>
+    <div id="psyTexto">Aguardando calibração dos anéis...</div>
   </div>
 
-  <div class="box" style="margin-top:10px; padding:8px;">
-    <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">Projeção Polar de Daugman (12h → 3h → 6h → 9h → 12h)</div>
-    <canvas id="pCv" width="360" height="65" style="height:65px; border-radius:4px;"></canvas>
+  <div class="card" style="margin-top:8px; padding:6px;">
+    <div style="font-size:10px; font-weight:bold; margin-bottom:3px;">Projeção Polar de Daugman (0° a 360°)</div>
+    <canvas id="pCv" width="360" height="55" style="height:55px; border-radius:4px;"></canvas>
   </div>
 
   <div class="metrics">
     <div class="m-card"><div class="m-lbl">PUPILA / ÍRIS</div><div class="m-val" id="vProp">--%</div></div>
     <div class="m-card"><div class="m-lbl">TRAMA (SEM FLASH)</div><div class="m-val" id="vTex">--</div></div>
-    <div class="diag" id="vDiag">Carregue e ajuste os anéis sobre a íris.</div>
+    <div class="diag" id="vDiag">Ajuste os anéis sobre a íris.</div>
   </div>
 
   <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Relatório Integrativo Completo (.TXT)</button>
@@ -143,64 +157,64 @@ let psicossomaticaResumo = "";
 
 const ZONAS_JENSEN = [
   "Zona 1 (Estômago / Digestão Primária)",
-  "Zona 2 (Intestino Delgado e Grosso / Absorção)",
-  "Zona 3 (Colarete / SNA / Eixo Neuroendócrino e Suprarrenais)",
-  "Zona 4 (Ductos, Brônquios e Glândulas Vitais)",
-  "Zona 5 (Parênquima dos Órgãos e Estrutura Muscular/Óssea)",
-  "Zona 6 (Sistema Linfático, Circulatório e Imunitário)",
-  "Zona 7 (Pele, Eliminação Periférica e Barreira Epitelial)"
+  "Zona 2 (Intestinos / Absorção)",
+  "Zona 3 (Colarete / SNA)",
+  "Zona 4 (Órgãos Vitais / Brônquios)",
+  "Zona 5 (Parênquima e Estrutura Óssea)",
+  "Zona 6 (Sistema Linfático e Circulação)",
+  "Zona 7 (Pele e Eliminação Periférica)"
 ];
 
 function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
   if (zonaIdx === 0) return "Estômago (Zona Gástrica Central)";
   if (zonaIdx === 1) {
     if (olho === "OD") {
-      if (horaFloat >= 1 && horaFloat <= 5.5) return "Intestino Delgado (Duodeno / Íleo)";
+      if (horaFloat >= 1 && horaFloat <= 5.5) return "Intestino Delgado";
       if (horaFloat > 5.5 && horaFloat <= 7.5) return "Ceco e Apêndice";
-      if (horaFloat > 7.5 && horaFloat <= 10.5) return "Cólon Ascendente e Ângulo Hepático";
+      if (horaFloat > 7.5 && horaFloat <= 10.5) return "Cólon Ascendente";
       return "Cólon Transverso";
     } else {
-      if (horaFloat >= 1 && horaFloat <= 2.5) return "Cólon Transverso e Ângulo Esplênico";
+      if (horaFloat >= 1 && horaFloat <= 2.5) return "Cólon Transverso";
       if (horaFloat > 2.5 && horaFloat <= 5.0) return "Cólon Descendente";
       if (horaFloat > 5.0 && horaFloat <= 7.0) return "Cólon Sigmoide e Reto";
-      return "Intestino Delgado (Jejuno / Íleo)";
+      return "Intestino Delgado";
     }
   }
-  if (zonaIdx === 2) return "Banda do Sistema Nervoso Autônomo (Colarete) / Plexo Solar";
-  if (zonaIdx === 6) return "Pele, Sudorese e Microcirculação Periférica";
+  if (zonaIdx === 2) return "Banda do Sistema Nervoso Autônomo (Colarete)";
+  if (zonaIdx === 6) return "Pele e Microcirculação Periférica";
 
   const h = horaFloat;
   if (olho === "OD") {
-    if (h >= 11.5 || h < 0.5) return "Cérebro Direito / Vitalidade Mental / Hipófise e Pineal";
-    if (h >= 0.5 && h < 1.3) return "Córtex Sensório-Motor / Têmpora e Mastóide";
-    if (h >= 1.3 && h < 2.2) return "Olho Direito, Seios da Face (Sinus) e Fronte";
-    if (h >= 2.2 && h < 3.0) return "Laringe, Faringe, Língua e Mandíbula";
-    if (h >= 3.0 && h < 3.8) return "Tireoide, Paratireoide, Cordas Vocais e Esôfago";
-    if (h >= 3.8 && h < 4.5) return "Coluna (Cervical/Torácica/Lombar) e Costelas";
-    if (h >= 4.5 && h < 5.3) return "Bexiga, Útero / Próstata e Região Pélvica";
-    if (h >= 5.3 && h < 6.0) return "Rim Direito e Glândula Suprarrenal Direita";
-    if (h >= 6.0 && h < 6.6) return "Perna, Joelho, Pé e Virilha Direita";
-    if (h >= 6.6 && h < 7.3) return "Ovário / Testículo Direito e Parede Abdominal";
-    if (h >= 7.3 && h < 8.2) return "Fígado, Vesícula Biliar e Pâncreas (Cabeça)";
-    if (h >= 8.2 && h < 9.0) return "Diafragma, Mama e Pleura Direita";
-    if (h >= 9.0 && h < 10.2) return "Pulmão Direito e Árvore Brônquica";
-    if (h >= 10.2 && h < 11.0) return "Pescoço, Ombro e Ouvido Direito";
-    return "Medula Bulbar, Cerebelo e Equilíbrio";
+    if (h >= 11.5 || h < 0.5) return "Cérebro Direito / Hipófise e Pineal";
+    if (h >= 0.5 && h < 1.3) return "Córtex Sensório-Motor";
+    if (h >= 1.3 && h < 2.2) return "Olho Direito e Seios da Face";
+    if (h >= 2.2 && h < 3.0) return "Laringe, Faringe e Mandíbula";
+    if (h >= 3.0 && h < 3.8) return "Tireoide e Esôfago";
+    if (h >= 3.8 && h < 4.5) return "Coluna Vertebral e Costelas";
+    if (h >= 4.5 && h < 5.3) return "Bexiga e Região Pélvica";
+    if (h >= 5.3 && h < 6.0) return "Rim Direito e Suprarrenal";
+    if (h >= 6.0 && h < 6.6) return "Perna, Joelho e Pé Direito";
+    if (h >= 6.6 && h < 7.3) return "Ovário / Testículo Direito";
+    if (h >= 7.3 && h < 8.2) return "Fígado e Vesícula Biliar";
+    if (h >= 8.2 && h < 9.0) return "Mama e Pleura Direita";
+    if (h >= 9.0 && h < 10.2) return "Pulmão Direito";
+    if (h >= 10.2 && h < 11.0) return "Ouvido e Ombro Direito";
+    return "Cerebelo e Medula";
   } else {
-    if (h >= 11.5 || h < 0.5) return "Cérebro Esquerdo / Centro Emocional / Hipófise";
-    if (h >= 0.5 && h < 1.3) return "Medula, Cerebelo e Equilíbrio Neurovegetativo";
-    if (h >= 1.3 && h < 2.2) return "Pescoço, Ombro e Ouvido Esquerdo";
-    if (h >= 2.2 && h < 3.5) return "Pulmão Esquerdo, Brônquios e Coração (Zona 3h)";
-    if (h >= 3.5 && h < 4.4) return "Mama, Pleura, Costelas e Baço (4h-4h30)";
-    if (h >= 4.4 && h < 5.3) return "Ovário / Testículo Esquerdo, Pâncreas (Cauda) e Pelve";
-    if (h >= 5.3 && h < 6.0) return "Perna, Joelho e Pé Esquerdo";
-    if (h >= 6.0 && h < 6.7) return "Rim Esquerdo e Glândula Suprarrenal Esquerda";
-    if (h >= 6.7 && h < 7.5) return "Bexiga, Útero / Próstata, Reto e Região Lombar";
-    if (h >= 7.5 && h < 8.5) return "Coluna Vertebral (Lombar/Torácica/Cervical)";
-    if (h >= 8.5 && h < 9.4) return "Tireoide, Esôfago, Traqueia e Cordas Vocais";
-    if (h >= 9.4 && h < 10.3) return "Faringe, Amígdalas, Maxilar e Nariz";
-    if (h >= 10.3 && h < 11.5) return "Olho Esquerdo, Seios da Face e Área Temporal";
-    return "Cérebro Esquerdo / Eixo Límbico";
+    if (h >= 11.5 || h < 0.5) return "Cérebro Esquerdo / Centro Emocional";
+    if (h >= 0.5 && h < 1.3) return "Equilíbrio Neurovegetativo";
+    if (h >= 1.3 && h < 2.2) return "Ouvido e Ombro Esquerdo";
+    if (h >= 2.2 && h < 3.5) return "Pulmão Esquerdo e Coração";
+    if (h >= 3.5 && h < 4.4) return "Baço, Mama e Pleura Esquerda";
+    if (h >= 4.4 && h < 5.3) return "Ovário / Testículo Esquerdo";
+    if (h >= 5.3 && h < 6.0) return "Perna e Pé Esquerdo";
+    if (h >= 6.0 && h < 6.7) return "Rim Esquerdo e Suprarrenal";
+    if (h >= 6.7 && h < 7.5) return "Bexiga e Região Lombar";
+    if (h >= 7.5 && h < 8.5) return "Coluna Vertebral (Esquerda)";
+    if (h >= 8.5 && h < 9.4) return "Tireoide e Traqueia";
+    if (h >= 9.4 && h < 10.3) return "Amígdalas e Nariz";
+    if (h >= 10.3 && h < 11.5) return "Olho Esquerdo e Seios da Face";
+    return "Eixo Límbico";
   }
 }
 
@@ -316,7 +330,7 @@ function executarScannerAutomatico() {
     if (raiosEscolhidos.length >= 3) break;
     if (raiosEscolhidos.every(r => Math.min(Math.abs(r.deg - c.deg), 360 - Math.abs(r.deg - c.deg)) > 18)) {
       raiosEscolhidos.push(c);
-      adicionarSinalPolar(olho, c.deg, 2, "Raio Solar (Tensão Neurovegetativa)", "raio");
+      adicionarSinalPolar(olho, c.deg, 2, "Raio Solar (Tensão)", "raio");
     }
   }
 
@@ -351,7 +365,7 @@ function executarScannerAutomatico() {
     if (lacunasEscolhidas.length >= 4) break;
     if (lacunasEscolhidas.every(e => Math.min(Math.abs(e.deg - l.deg), 360 - Math.abs(e.deg - l.deg)) > 20)) {
       lacunasEscolhidas.push(l);
-      let tipo = l.score > 22 ? "Cripta / Mancha Escura (Sobrecarga)" : "Lacuna Aberta (Fragilidade Local)";
+      let tipo = l.score > 22 ? "Cripta / Mancha Escura" : "Lacuna Aberta (Fragilidade)";
       adicionarSinalPolar(olho, l.deg, l.zonaIdx, tipo, "lacuna");
     }
   }
@@ -370,9 +384,7 @@ function executarScannerAutomatico() {
     }
     if (cnt > 40 && (diffLinha / cnt) > 0.32) scoreAnel++;
   }
-  statusAnelTensao = scoreAnel >= 2
-    ? "Presentes nas Zonas 5-6 (Indicativo de Tensão / Rigidez Somática)"
-    : "Discretos ou Ausentes (Sem espasmo circular periférico marcado)";
+  statusAnelTensao = scoreAnel >= 2 ? "Presentes nas Zonas 5-6 (Tensão Somática)" : "Discretos ou Ausentes";
 
   atualizarListaAchados();
   analisar();
@@ -400,7 +412,7 @@ function pos(t) {
   const b = cv.getBoundingClientRect();
   let x = (t.clientX - b.left)*(cv.width/b.width);
   let y = (t.clientY - b.top)*(cv.height/b.height);
-  if (document.getElementById('cZom').checked) {
+  if (document.getElementById('layZoom').checked) {
     x = (x - 250) / 2 + cx;
     y = (y - 250) / 2 + cy;
   }
@@ -422,8 +434,8 @@ function atualizarOrgaoSelecionado() {
 
   if (dist <= rP) {
     document.getElementById('orgCoord').innerText = `⚫ ÁREA PUPILAR (${horaStr})`;
-    document.getElementById('orgNome').innerText = "Pupila — Tônus do Sistema Nervoso Autônomo";
-    document.getElementById('orgZona').innerText = "Borda Pupilar Interna (Eixo Neurogástrico)";
+    document.getElementById('orgNome').innerText = "Pupila — Tônus Autonômico";
+    document.getElementById('orgZona').innerText = "Borda Pupilar Interna";
     ultimoOrgaoInfo = { hora: horaStr, zona: "Borda Pupilar", orgao: "Tônus Pupilar / BPI", x: probeX, y: probeY };
     return;
   }
@@ -433,7 +445,7 @@ function atualizarOrgaoSelecionado() {
   let nomeOrgao = obterOrgaoJensen(olho, horaFloat, zonaIdx);
   let nomeZona = ZONAS_JENSEN[zonaIdx];
 
-  document.getElementById('orgCoord').innerText = `📍 ${olho} • POSIÇÃO ${horaStr} • ANEL ${zonaIdx + 1} DE 7`;
+  document.getElementById('orgCoord').innerText = `📍 ${olho} • ${horaStr} • Anel ${zonaIdx + 1}`;
   document.getElementById('orgNome').innerText = nomeOrgao;
   document.getElementById('orgZona').innerText = nomeZona;
   ultimoOrgaoInfo = { hora: horaStr, zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, x: probeX, y: probeY };
@@ -504,212 +516,15 @@ function render() {
   if (!loaded) return;
   ctx.clearRect(0, 0, 500, 500);
   ctx.save();
-  if (document.getElementById('cZom').checked) {
+  if (document.getElementById('layZoom').checked) {
     ctx.translate(250, 250); ctx.scale(2, 2); ctx.translate(-cx, -cy);
   }
   const sc = Math.max(500 / img.width, 500 / img.height);
   const iw = img.width * sc, ih = img.height * sc;
   ctx.drawImage(img, (500 - iw)/2, (500 - ih)/2, iw, ih);
 
-  if (document.getElementById('cFlsh').checked && cleanPixels) {
+  // CAMADA: Filtro Anti-Flash
+  if (document.getElementById('layFlash').checked && cleanPixels) {
     ctx.fillStyle = 'rgba(0, 220, 255, 0.35)';
     for (let y = Math.max(0, Math.floor(cy - rI)); y < Math.min(500, Math.ceil(cy + rI)); y += 3) {
-      for (let x = Math.max(0, Math.floor(cx - rI)); x < Math.min(500, Math.ceil(cx + rI)); x += 3) {
-        let dist = Math.hypot(x - cx, y - cy);
-        if (dist > rP && dist < rI) {
-          let i = (y * 500 + x) * 4;
-          let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
-          if (lum > 230) ctx.fillRect(x, y, 3, 3);
-        }
-      }
-    }
-  }
-
-  if (document.getElementById('cRel').checked) {
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.lineWidth = 1;
-    for (let h = 1; h <= 12; h++) {
-      let rad = (h * 30 - 90) * Math.PI / 180;
-      ctx.beginPath();
-      ctx.moveTo(cx + rP*Math.cos(rad), cy + rP*Math.sin(rad));
-      ctx.lineTo(cx + rI*Math.cos(rad), cy + rI*Math.sin(rad));
-      ctx.stroke();
-      ctx.fillText(h + 'h', cx + (rI + 12) * Math.cos(rad), cy + (rI + 12) * Math.sin(rad));
-    }
-  }
-
-  if (document.getElementById('cJen').checked) {
-    let st = (rI - rP) / 7;
-    for (let i = 1; i < 7; i++) {
-      ctx.strokeStyle = (i === 3) ? 'rgba(251, 191, 36, 0.85)' : 'rgba(190, 210, 255, 0.6)';
-      ctx.lineWidth = (i === 3) ? 1.6 : 1;
-      ctx.beginPath(); ctx.arc(cx, cy, rP + i*st, 0, 2*Math.PI); ctx.stroke();
-    }
-  }
-
-  ctx.strokeStyle = '#facc15'; ctx.lineWidth = mode==='pup' ? 3.5 : 2;
-  ctx.beginPath(); ctx.arc(cx, cy, rP, 0, 2*Math.PI); ctx.stroke();
-
-  ctx.strokeStyle = '#22c55e'; ctx.lineWidth = mode==='iris' ? 3.5 : 2.5;
-  ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2*Math.PI); ctx.stroke();
-
-  achadosClinicos.forEach(a => {
-    if (a.subtipo === 'raio' && a.rad !== undefined) {
-      ctx.save();
-      ctx.strokeStyle = '#f97316';
-      ctx.lineWidth = 2.2;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
-      ctx.moveTo(cx + rP * Math.cos(a.rad), cy + rP * Math.sin(a.rad));
-      ctx.lineTo(cx + (rI * 0.85) * Math.cos(a.rad), cy + (rI * 0.85) * Math.sin(a.rad));
-      ctx.stroke();
-      ctx.restore();
-    }
-    ctx.fillStyle = a.auto ? '#ea580c' : '#9333ea';
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.8;
-    ctx.beginPath(); ctx.arc(a.x, a.y, 6, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
-  });
-
-  if (probeX !== null && probeY !== null && mode === 'map') {
-    ctx.strokeStyle = '#d946ef';
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(probeX, probeY, 8, 0, 2*Math.PI); ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(probeX - 12, probeY); ctx.lineTo(probeX + 12, probeY);
-    ctx.moveTo(probeX, probeY - 12); ctx.lineTo(probeX, probeY + 12);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-function analisar() {
-  if (!loaded || !cleanPixels) return;
-  const d = cleanPixels;
-  const ignorarFlash = document.getElementById('cFlsh').checked;
-
-  const pw = 360, ph = 65;
-  const pIm = pCtx.createImageData(pw, ph);
-  polarFlashMask.fill(0);
-  let somaMediaEstroma = 0, qtdEstroma = 0;
-
-  for (let y = 0; y < ph; y++) {
-    let r = rP + (y / ph) * (rI - rP);
-    for (let x = 0; x < pw; x++) {
-      let rad = ((x - 90) * 2 * Math.PI) / pw;
-      let sx = Math.min(499, Math.max(0, Math.round(cx + r * Math.cos(rad))));
-      let sy = Math.min(499, Math.max(0, Math.round(cy + r * Math.sin(rad))));
-      let i = (sy * 500 + sx) * 4;
-      let l = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
-      let idx = y * pw + x;
-      if (ignorarFlash && l > 230) { polarFlashMask[idx] = 1; }
-      else { somaMediaEstroma += l; qtdEstroma++; }
-      polarGray[idx] = l;
-    }
-  }
-
-  let mediaEstroma = qtdEstroma > 0 ? (somaMediaEstroma / qtdEstroma) : 128;
-  let flashPct = 0;
-  for (let idx = 0; idx < pw * ph; idx++) {
-    let di = idx * 4;
-    if (polarFlashMask[idx] === 1) {
-      polarGray[idx] = mediaEstroma;
-      pIm.data[di] = 0; pIm.data[di+1] = 190; pIm.data[di+2] = 230; pIm.data[di+3] = 255;
-      flashPct++;
-    } else {
-      let l = polarGray[idx];
-      pIm.data[di] = l; pIm.data[di+1] = l; pIm.data[di+2] = l; pIm.data[di+3] = 255;
-    }
-  }
-  pCtx.putImageData(pIm, 0, 0);
-
-  let s = 0, sq = 0, n = 0;
-  for (let y = 1; y < ph - 1; y++) {
-    for (let x = 1; x < pw - 1; x++) {
-      let k = y*pw + x;
-      if (polarFlashMask[k] || polarFlashMask[k-1] || polarFlashMask[k+1] || polarFlashMask[k-pw] || polarFlashMask[k+pw]) continue;
-      let lp = -4*polarGray[k] + polarGray[k-1] + polarGray[k+1] + polarGray[k-pw] + polarGray[k+pw];
-      s += lp; sq += lp*lp; n++;
-    }
-  }
-  let v = n > 10 ? ((sq / n) - Math.pow(s / n, 2)) : 0;
-  let pr = (rP / rI) * 100;
-  let pctReflexo = ((flashPct / (pw * ph)) * 100).toFixed(1);
-
-  document.getElementById('vProp').innerText = pr.toFixed(1) + '%';
-  document.getElementById('vTex').innerText = v.toFixed(0);
-
-  let dn = v < 110 ? "Grau 1 (Seda - Compacta / Alta Sensibilidade)" : v < 250 ? "Grau 2 (Seda/Linho - Boa Adaptação)" : v < 520 ? "Grau 3 (Linho - Padrão Comum)" : v < 850 ? "Grau 4 (Algodão - Alta Reatividade)" : "Grau 5 (Rede - Alta Vulnerabilidade Tecidual)";
-  let sn = "Equilíbrio Autonômico";
-
-  // Módulo 3: Tipologia Rayid & Psicossomática Integrada
-  let tipologiaRayid = "Padrão Equilibrado / Misto";
-  let psyComportamento = "Boa flexibilidade adaptativa entre pensamento e ação.";
-
-  if (v < 220) {
-    tipologiaRayid = "Arquétipo Flor (Sensibilidade & Empatia)";
-    psyComportamento = "Tendência à alta sensibilidade emocional, criatividade e forte conexão relacional. Processa o estresse através da introversão e necessidade de harmonia ambiental.";
-  } else if (v >= 220 && v < 550) {
-    tipologiaRayid = "Arquétipo Joia (Estratégia & Foco Mental)";
-    psyComportamento = "Tendência analítica, mental e focada em objetivos estratégicos. Tende a intelectualizar as emoções e pode somatizar o estresse na rigidez mental ou muscular.";
-  } else if (v >= 550 && v < 850) {
-    tipologiaRayid = "Arquétipo Corrente (Suporte & Ação Prática)";
-    psyComportamento = "Perfil voltado para a ação comunitária, toque, presença física e suporte direto aos outros. Pode acumular tarefas e sofrer fadiga por excesso de doação.";
-  } else {
-    tipologiaRayid = "Arquétipo Estroma Fibroso (Dinamismo & Independência)";
-    psyComportamento = "Energia vital expansiva, forte independência e necessidade de autonomia. Reage rapidamente aos desafios, exigindo cuidado com a impulsividade.";
-  }
-
-  let psySna = "Sistema Nervoso em homeostase.";
-  if (pr > 33) {
-    sn = "Simpaticotonia (Midríase Relativa)";
-    psySna = "Hipervigilância mental, tendência ao esgotamento por sobrecarga de exigências e ansiedade antecipatória.";
-  } else if (pr < 20) {
-    sn = "Parassimpaticotonia (Miose Relativa)";
-    psySna = "Tendência à lentidão metabólica, fadiga crônica, guardando emoções e baixa reatividade energética.";
-  }
-
-  psicossomaticaResumo = `• Tipologia Rayid: ${tipologiaRayid}\n  ↳ ${psyComportamento}\n• Dinâmica do SNA (${sn}): ${psySna}\n• Padrão Tensional (Anéis): ${statusAnelTensao}`;
-
-  document.getElementById('psyTexto').innerText = psicossomaticaResumo;
-
-  document.getElementById('vDiag').innerHTML = 
-    `<b>Constituição:</b> ${dn}<br><b>SNA:</b> ${sn}<br><b>Tipologia:</b> ${tipologiaRayid}<br><span style="font-size:11px; color:#0369a1;">✨ Flash filtrado: ${pctReflexo}%</span>`;
-
-  const nome = document.getElementById('pacNome').value || "Paciente";
-  const olho = document.getElementById('pacOlho').value || "OE";
-  const queixa = document.getElementById('pacQueixa').value || "-";
-  let listaTxt = achadosClinicos.length > 0
-    ? achadosClinicos.map((a, i) => `  ${i+1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal} (${a.auto ? 'Auto-Scanner' : 'Manual'})`).join('\n')
-    : "  Nenhum sinal focal específico registrado.";
-
-  laudoTxt = `=================================================\n` +
-             `LAUDO IRIDOLÓGICO INTEGRATIVO & COMPORTAMENTAL\n` +
-             `=================================================\n` +
-             `Avaliado(a): ${nome}\n` +
-             `Olho Analisado: ${olho}\n` +
-             `Queixa Principal / Observação: ${queixa}\n\n` +
-             `1. BIOMETRIA E CONSTITUIÇÃO:\n` +
-             `   - Relação Pupila / Limbo: ${pr.toFixed(1)}% (${sn})\n` +
-             `   - Índice de Fibras (Sem Flash): ${v.toFixed(0)} — ${dn}\n` +
-             `   - Anéis de Tensão / Rigidez: ${statusAnelTensao}\n\n` +
-             `2. TIPOLOGIA OCULAR (RAYID) E PSICOSSOMÁTICA:\n` +
-             `${psicossomaticaResumo}\n\n` +
-             `3. SINAIS TOPOGRÁFICOS DETECTADOS (MAPA DE JENSEN):\n` +
-             `${listaTxt}\n`;
-}
-
-function dlLaudo() {
-  const b = new Blob([laudoTxt], {type:'text/plain;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(b);
-  a.download = "Laudo_Integrativo_Completo.txt";
-  a.click();
-}
-</script>
-</body>
-</html>
+      for (let x = Math.
