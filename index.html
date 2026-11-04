@@ -3,41 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Análise Iridológica Touch</title>
+<title>Estação Iridológica Touch - Mapa de Jensen</title>
 <style>
-  body { font-family: system-ui, sans-serif; margin: 0; padding: 12px; background: #f8fafc; color: #0f172a; user-select: none; -webkit-user-select: none; }
-  h2 { margin: 0 0 4px 0; font-size: 20px; color: #0369a1; }
-  .sub { font-size: 12px; color: #64748b; margin-bottom: 12px; }
-  .box { background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 12px; }
-  .row { display: flex; gap: 8px; margin-bottom: 8px; }
-  input[type="text"] { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-  .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
+  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 10px; background: #f8fafc; color: #0f172a; user-select: none; -webkit-user-select: none; }
+  h2 { margin: 0 0 2px 0; font-size: 19px; color: #0369a1; }
+  .sub { font-size: 12px; color: #64748b; margin-bottom: 10px; }
+  .box { background: #fff; padding: 10px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 10px; }
+  .row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  input[type="text"], select { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
+  .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 10px; }
   input[type="file"] { display: none; }
-  .tabs { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
-  .btn { flex: 1; min-width: 80px; padding: 10px 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-weight: 600; font-size: 13px; text-align: center; cursor: pointer; }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+  .btn { padding: 10px 6px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-weight: 600; font-size: 13px; text-align: center; cursor: pointer; }
   .btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
-  .btn-auto { background: #0f766e; color: #fff; border-color: #0f766e; width: 100%; margin-bottom: 8px; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; border: none; cursor: pointer; }
-  .chk-row { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 6px; font-size: 12px; margin-bottom: 8px; font-weight: 500; }
+  .btn.map-active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+  .btn-auto { background: #0f766e; color: #fff; width: 100%; margin-bottom: 8px; padding: 9px; border-radius: 8px; font-weight: bold; font-size: 13px; border: none; cursor: pointer; }
+  .chk-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; font-size: 12px; margin-bottom: 8px; font-weight: 500; }
   .canvas-box { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #000; touch-action: none; }
   canvas { width: 100%; display: block; touch-action: none; }
-  .status-bar { font-size: 12px; color: #0f766e; background: #ccfbf1; padding: 6px 10px; border-radius: 6px; margin-top: 8px; text-align: center; font-weight: 600; }
+  .organ-panel { background: #f3e8ff; border: 2px solid #9333ea; border-radius: 10px; padding: 10px; margin-top: 8px; }
+  .organ-title { font-size: 11px; font-weight: 800; color: #6b21a8; text-transform: uppercase; }
+  .organ-name { font-size: 16px; font-weight: 800; color: #3b0764; margin: 2px 0; }
+  .organ-sub { font-size: 12px; color: #581c87; }
+  .btn-pin { width: 100%; margin-top: 8px; padding: 9px; background: #9333ea; color: #fff; border: none; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; }
+  .pin-list { font-size: 12px; margin-top: 8px; color: #334155; }
+  .pin-item { background: #f1f5f9; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #9333ea; }
   .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
   .m-card { background: #f1f5f9; padding: 10px; border-radius: 8px; border-left: 4px solid #0284c7; }
   .m-lbl { font-size: 11px; color: #64748b; font-weight: bold; }
-  .m-val { font-size: 18px; font-weight: 800; margin-top: 2px; }
+  .m-val { font-size: 17px; font-weight: 800; margin-top: 2px; }
   .diag { grid-column: span 2; background: #e0f2fe; padding: 10px; border-radius: 8px; font-size: 13px; line-height: 1.4; }
   .btn-dl { width: 100%; margin-top: 12px; padding: 12px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
 </style>
 </head>
 <body>
 
-<h2>🔬 Estação Iridológica Touch</h2>
-<div class="sub">Auto-Detecção de Pupila • Filtro Anti-Flash • Calibração por Toque</div>
+<h2>🔬 Estação Iridológica — Mapa de Jensen</h2>
+<div class="sub">Auto-Pupila • Filtro Anti-Flash • Topografia de Órgãos ao Toque</div>
 
 <div class="box">
   <div class="row">
     <input type="text" id="pacNome" placeholder="Nome do Avaliado" value="Lavinia">
-    <input type="text" id="pacOlho" placeholder="Olho (OD / OE)" value="OE" style="max-width:80px;">
+    <select id="pacOlho" style="max-width:135px; font-weight:bold;" onchange="atualizarOrgaoSelecionado(); render(); analisar();">
+      <option value="OE">👁️ Olho Esq. (OE)</option>
+      <option value="OD">👁️ Olho Dir. (OD)</option>
+    </select>
   </div>
   <div class="row" style="margin-bottom:0;">
     <input type="text" id="pacQueixa" placeholder="Queixa Principal / Observações" value="Depressão">
@@ -50,20 +60,19 @@
 </label>
 
 <div id="appArea" style="display:none;">
-  <div id="autoStatus" class="status-bar">🎯 Pupila detectada automaticamente! Ajuste com o dedo se necessário.</div>
-
   <div class="tabs">
-    <div id="bMove" class="btn active" onclick="setM('move')">✥ Mover Tudo</div>
-    <div id="bIris" class="btn" onclick="setM('iris')">🟢 Anel Íris</div>
-    <div id="bPup" class="btn" onclick="setM('pup')">🟡 Anel Pupila</div>
+    <div id="bMove" class="btn active" onclick="setM('move')">✥ Mover Conjunto</div>
+    <div id="bMap" class="btn" onclick="setM('map')">🗺️ Inspecionar Órgão</div>
+    <div id="bIris" class="btn" onclick="setM('iris')">🟢 Ajustar Íris</div>
+    <div id="bPup" class="btn" onclick="setM('pup')">🟡 Ajustar Pupila</div>
   </div>
 
-  <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Recalibrar Pupila Automaticamente</button>
+  <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Auto-Detectar Pupila e Limbo</button>
 
   <div class="chk-row">
     <label><input type="checkbox" id="cJen" checked onchange="render()"> 7 Anéis</label>
-    <label><input type="checkbox" id="cRai" checked onchange="render()"> Raios 30°</label>
-    <label><input type="checkbox" id="cFlsh" checked onchange="render(); analisar();"> ✨ Ignorar Flash</label>
+    <label><input type="checkbox" id="cRel" checked onchange="render()"> Relógio 12h</label>
+    <label><input type="checkbox" id="cFlsh" checked onchange="render(); analisar();"> ✨ Sem Flash</label>
     <label><input type="checkbox" id="cZom" onchange="render()"> 🔍 Lupa 2x</label>
   </div>
 
@@ -71,18 +80,35 @@
     <canvas id="cv" width="500" height="500"></canvas>
   </div>
 
+  <div class="organ-panel">
+    <div class="organ-title" id="orgCoord">🗺️ TOQUE NA ÍRIS (MODO INSPECIONAR ÓRGÃO)</div>
+    <div class="organ-name" id="orgNome">Toque em qualquer ponto da íris para ver o órgão</div>
+    <div class="organ-sub" id="orgZona">As 7 Zonas de Jensen e os setores de 1h a 12h serão calculados no toque.</div>
+    <div class="row" style="margin-top:8px; margin-bottom:0;">
+      <select id="tipoSinal" style="font-size:13px; padding:6px;">
+        <option value="Lacuna / Cripta (Fragilidade)">🔹 Lacuna / Cripta (Fragilidade)</option>
+        <option value="Raio Solar (Esgotamento / Tensão)">⚡ Raio Solar (Tensão Neurovegetativa)</option>
+        <option value="Mancha / Psora (Sobrecarga Toxínica)">🟤 Mancha / Psora (Sobrecarga)</option>
+        <option value="Anel de Tensão (Espasmo / Estresse)">⭕ Anel de Tensão (Estresse)</option>
+        <option value="Fibras Abertas / Hiperatividade">🔸 Fibras Abertas / Irritação</option>
+      </select>
+    </div>
+    <button class="btn-pin" onclick="adicionarAchado()">➕ Anotar este Órgão/Sinal no Laudo</button>
+    <div id="listaAchados" class="pin-list"></div>
+  </div>
+
   <div class="box" style="margin-top:10px; padding:8px;">
-    <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">Projeção Polar de Daugman (0° a 360° • Sem Reflexo)</div>
+    <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">Projeção Polar de Daugman (12h → 3h → 6h → 9h → 12h)</div>
     <canvas id="pCv" width="360" height="65" style="height:65px; border-radius:4px;"></canvas>
   </div>
 
   <div class="metrics">
     <div class="m-card"><div class="m-lbl">PUPILA / ÍRIS</div><div class="m-val" id="vProp">--%</div></div>
     <div class="m-card"><div class="m-lbl">TRAMA (SEM FLASH)</div><div class="m-val" id="vTex">--</div></div>
-    <div class="diag" id="vDiag">Toque e ajuste os anéis sobre a íris.</div>
+    <div class="diag" id="vDiag">Carregue e ajuste os anéis sobre a íris.</div>
   </div>
 
-  <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Relatório Iridológico</button>
+  <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Relatório Completo (.TXT)</button>
 </div>
 
 <script>
@@ -91,12 +117,84 @@ const pCv = document.getElementById('pCv'), pCtx = pCv.getContext('2d');
 let img = new Image(), loaded = false;
 let cx = 250, cy = 250, rP = 55, rI = 170, mode = 'move';
 let drag = false, sx = 0, sy = 0, scx = 0, scy = 0, srP = 0, srI = 0, pinch0 = null;
-let laudoTxt = "";
 let cleanPixels = null;
+let laudoTxt = "";
+
+// Ponto inspecionado na íris
+let probeX = null, probeY = null;
+let ultimoOrgaoInfo = null;
+let achadosClinicos = [];
+
+const ZONAS_JENSEN = [
+  "Zona 1 (Estômago / Digestão Primária)",
+  "Zona 2 (Intestino Delgado e Grosso / Absorção)",
+  "Zona 3 (Colarete / SNA / Eixo Neuroendócrino e Suprarrenais)",
+  "Zona 4 (Ductos, Brônquios e Glândulas Vitais)",
+  "Zona 5 (Parênquima dos Órgãos e Estrutura Muscular/Óssea)",
+  "Zona 6 (Sistema Linfático, Circulatório e Imunitário)",
+  "Zona 7 (Pele, Eliminação Periférica e Barreira Epitelial)"
+];
+
+// Mapa de Bernard Jensen por meia-hora (0.0 a 12.0) para Olho Direito (OD) e Olho Esquerdo (OE)
+function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
+  if (zonaIdx === 0) return "Estômago (Zona Gástrica Central)";
+  if (zonaIdx === 1) {
+    if (olho === "OD") {
+      if (horaFloat >= 1 && horaFloat <= 5.5) return "Intestino Delgado (Duodeno / Jejuno / Íleo)";
+      if (horaFloat > 5.5 && horaFloat <= 7.5) return "Ceco e Apêndice";
+      if (horaFloat > 7.5 && horaFloat <= 10.5) return "Cólon Ascendente e Ângulo Hepático";
+      return "Cólon Transverso";
+    } else {
+      if (horaFloat >= 1 && horaFloat <= 2.5) return "Cólon Transverso e Ângulo Esplênico";
+      if (horaFloat > 2.5 && horaFloat <= 5.0) return "Cólon Descendente";
+      if (horaFloat > 5.0 && horaFloat <= 7.0) return "Cólon Sigmoide e Reto";
+      return "Intestino Delgado (Jejuno / Íleo)";
+    }
+  }
+  if (zonaIdx === 2) return "Banda do Sistema Nervoso Autônomo (Colarete) / Plexo Solar";
+  if (zonaIdx === 6) return "Pele, Sudorese e Microcirculação Periférica";
+
+  // Zonas 4, 5 e 6 (Órgãos Setoriais de Jensen)
+  const h = horaFloat;
+  if (olho === "OD") {
+    if (h >= 11.5 || h < 0.5) return "Cérebro Direito / Vitalidade Mental / Hipófise e Pineal";
+    if (h >= 0.5 && h < 1.3) return "Córtex Sensório-Motor / Têmpora e Mastóide";
+    if (h >= 1.3 && h < 2.2) return "Olho Direito, Seios da Face (Sinus) e Fronte";
+    if (h >= 2.2 && h < 3.0) return "Laringe, Faringe, Língua e Mandíbula";
+    if (h >= 3.0 && h < 3.8) return "Tireoide, Paratireoide, Cordas Vocais e Esôfago";
+    if (h >= 3.8 && h < 4.5) return "Coluna (Cervical/Torácica/Lombar) e Costelas";
+    if (h >= 4.5 && h < 5.3) return "Bexiga, Útero / Próstata e Região Pélvica";
+    if (h >= 5.3 && h < 6.0) return "Rim Direito e Glândula Suprarrenal Direita";
+    if (h >= 6.0 && h < 6.6) return "Perna, Joelho, Pé e Virilha Direita";
+    if (h >= 6.6 && h < 7.3) return "Ovário / Testículo Direito e Parede Abdominal";
+    if (h >= 7.3 && h < 8.2) return "Fígado, Vesícula Biliar e Pâncreas (Cabeça)";
+    if (h >= 8.2 && h < 9.0) return "Diafragma, Mama e Pleura Direita";
+    if (h >= 9.0 && h < 10.2) return "Pulmão Direito e Árvore Brônquica";
+    if (h >= 10.2 && h < 11.0) return "Pescoço, Ombro e Ouvido Direito";
+    return "Medula Bulbar, Cerebelo e Equilíbrio";
+  } else {
+    // Olho Esquerdo (OE)
+    if (h >= 11.5 || h < 0.5) return "Cérebro Esquerdo / Centro Emocional / Hipófise";
+    if (h >= 0.5 && h < 1.3) return "Medula, Cerebelo e Equilíbrio Neurovegetativo";
+    if (h >= 1.3 && h < 2.2) return "Pescoço, Ombro e Ouvido Esquerdo";
+    if (h >= 2.2 && h < 3.5) return "Pulmão Esquerdo, Brônquios e Coração (Zona 3h)";
+    if (h >= 3.5 && h < 4.4) return "Mama, Pleura, Costelas e Baço (4h-4h30)";
+    if (h >= 4.4 && h < 5.3) return "Ovário / Testículo Esquerdo, Pâncreas (Cauda) e Pelve";
+    if (h >= 5.3 && h < 6.0) return "Perna, Joelho e Pé Esquerdo";
+    if (h >= 6.0 && h < 6.7) return "Rim Esquerdo e Glândula Suprarrenal Esquerda";
+    if (h >= 6.7 && h < 7.5) return "Bexiga, Útero / Próstata, Reto e Região Lombar";
+    if (h >= 7.5 && h < 8.5) return "Coluna Vertebral (Lombar/Torácica/Cervical)";
+    if (h >= 8.5 && h < 9.4) return "Tireoide, Esôfago, Traqueia e Cordas Vocais";
+    if (h >= 9.4 && h < 10.3) return "Faringe, Amígdalas, Maxilar e Nariz";
+    if (h >= 10.3 && h < 11.5) return "Olho Esquerdo, Seios da Face e Área Temporal";
+    return "Cérebro Esquerdo / Eixo Límbico";
+  }
+}
 
 function setM(m) {
   mode = m;
   document.getElementById('bMove').className = 'btn' + (m==='move'?' active':'');
+  document.getElementById('bMap').className = 'btn' + (m==='map'?' map-active':'');
   document.getElementById('bIris').className = 'btn' + (m==='iris'?' active':'');
   document.getElementById('bPup').className = 'btn' + (m==='pup'?' active':'');
   render();
@@ -109,6 +207,8 @@ document.getElementById('fIn').onchange = e => {
   r.onload = ev => {
     img.onload = () => {
       loaded = true;
+      achadosClinicos = [];
+      atualizarListaAchados();
       document.getElementById('appArea').style.display = 'block';
       prepararBufferImagem();
       autoDetectarPupila();
@@ -127,11 +227,8 @@ function prepararBufferImagem() {
   cleanPixels = oCtx.getImageData(0, 0, 500, 500).data;
 }
 
-// Algoritmo de Auto-Detecção de Pupila e Limbo
 function autoDetectarPupila() {
   if (!cleanPixels) return;
-
-  // 1. Achar o brilho mínimo na zona central (120 a 380) ignorando reflexos brancos
   let minLum = 255;
   for (let y = 130; y < 370; y += 3) {
     for (let x = 130; x < 370; x += 3) {
@@ -140,92 +237,113 @@ function autoDetectarPupila() {
       if (lum < minLum && lum > 5) minLum = lum;
     }
   }
-
-  // 2. Calcular centro de massa dos pixels escuros da pupila
-  let thresh = minLum + 28;
-  let sumX = 0, sumY = 0, count = 0;
+  let thresh = minLum + 28, sumX = 0, sumY = 0, count = 0;
   for (let y = 120; y < 380; y += 2) {
     for (let x = 120; x < 380; x += 2) {
       let i = (y * 500 + x) * 4;
       let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
-      if (lum <= thresh) {
-        sumX += x; sumY += y; count++;
-      }
+      if (lum <= thresh) { sumX += x; sumY += y; count++; }
     }
   }
+  if (count > 40) { cx = Math.round(sumX / count); cy = Math.round(sumY / count); }
+  else { cx = 250; cy = 250; }
 
-  if (count > 40) {
-    cx = Math.round(sumX / count);
-    cy = Math.round(sumY / count);
-  } else {
-    cx = 250; cy = 250;
-  }
-
-  // 3. Medir o raio da pupila pelo maior salto de gradiente radial (borda pupilar)
   let bestRP = 50, maxGrad = 0;
   for (let r = 20; r < 115; r += 2) {
     let lumIn = 0, lumOut = 0, valid = 0;
     for (let a = 0; a < 360; a += 15) {
       let rad = a * Math.PI / 180;
-      let x1 = Math.round(cx + (r - 3) * Math.cos(rad));
-      let y1 = Math.round(cy + (r - 3) * Math.sin(rad));
-      let x2 = Math.round(cx + (r + 3) * Math.cos(rad));
-      let y2 = Math.round(cy + (r + 3) * Math.sin(rad));
+      let x1 = Math.round(cx + (r - 3) * Math.cos(rad)), y1 = Math.round(cy + (r - 3) * Math.sin(rad));
+      let x2 = Math.round(cx + (r + 3) * Math.cos(rad)), y2 = Math.round(cy + (r + 3) * Math.sin(rad));
       if (x2 >= 0 && x2 < 500 && y2 >= 0 && y2 < 500) {
         let i1 = (y1 * 500 + x1) * 4, i2 = (y2 * 500 + x2) * 4;
         let l1 = 0.299*cleanPixels[i1] + 0.587*cleanPixels[i1+1] + 0.114*cleanPixels[i1+2];
         let l2 = 0.299*cleanPixels[i2] + 0.587*cleanPixels[i2+1] + 0.114*cleanPixels[i2+2];
-        // Ignorar ângulos onde há reflexo de flash estourado (>230)
-        if (l1 < 225 && l2 < 225) {
-          lumIn += l1; lumOut += l2; valid++;
-        }
+        if (l1 < 225 && l2 < 225) { lumIn += l1; lumOut += l2; valid++; }
       }
     }
-    if (valid > 8) {
-      let grad = (lumOut - lumIn) / valid;
-      if (grad > maxGrad) { maxGrad = grad; bestRP = r; }
+    if (valid > 8 && ((lumOut - lumIn) / valid) > maxGrad) {
+      maxGrad = (lumOut - lumIn) / valid; bestRP = r;
     }
   }
   rP = bestRP;
-
-  // 4. Estimar o raio do Limbo (Íris) buscando a transição íris-esclera
-  let bestRI = Math.min(235, Math.round(rP * 3.1));
-  let maxLimboGrad = 0;
-  for (let r = Math.round(rP * 2.2); r < 240; r += 3) {
-    let diffSum = 0, valid = 0;
-    // Analisar apenas setores laterais (evitando pálpebras superior e inferior)
-    const angulosLaterais = [-45, -30, -15, 0, 15, 30, 45, 135, 150, 165, 180, 195, 210, 225];
-    for (let a of angulosLaterais) {
-      let rad = a * Math.PI / 180;
-      let x1 = Math.round(cx + (r - 4) * Math.cos(rad));
-      let y1 = Math.round(cy + (r - 4) * Math.sin(rad));
-      let x2 = Math.round(cx + (r + 4) * Math.cos(rad));
-      let y2 = Math.round(cy + (r + 4) * Math.sin(rad));
-      if (x2 >= 0 && x2 < 500 && y2 >= 0 && y2 < 500) {
-        let i1 = (y1 * 500 + x1) * 4, i2 = (y2 * 500 + x2) * 4;
-        let l1 = 0.299*cleanPixels[i1] + 0.587*cleanPixels[i1+1] + 0.114*cleanPixels[i1+2];
-        let l2 = 0.299*cleanPixels[i2] + 0.587*cleanPixels[i2+1] + 0.114*cleanPixels[i2+2];
-        if (l1 < 220) {
-          diffSum += Math.abs(l2 - l1);
-          valid++;
-        }
-      }
-    }
-    if (valid > 6 && (diffSum / valid) > maxLimboGrad) {
-      maxLimboGrad = diffSum / valid;
-      bestRI = r;
-    }
-  }
-  rI = bestRI;
-
-  document.getElementById('autoStatus').innerText = `🎯 Auto-Calibrado: Centro (${cx},${cy}) • Pupila R=${rP}px • Íris R=${rI}px`;
+  rI = Math.min(235, Math.round(rP * 3.1));
+  probeX = cx; probeY = cy - Math.round((rP + rI) / 2);
+  atualizarOrgaoSelecionado();
   render();
   analisar();
 }
 
 function pos(t) {
   const b = cv.getBoundingClientRect();
-  return { x: (t.clientX - b.left)*(cv.width/b.width), y: (t.clientY - b.top)*(cv.height/b.height) };
+  let x = (t.clientX - b.left)*(cv.width/b.width);
+  let y = (t.clientY - b.top)*(cv.height/b.height);
+  if (document.getElementById('cZom').checked) {
+    x = (x - 250) / 2 + cx;
+    y = (y - 250) / 2 + cy;
+  }
+  return { x, y };
+}
+
+function atualizarOrgaoSelecionado() {
+  if (probeX === null || probeY === null) return;
+  const dx = probeX - cx, dy = probeY - cy;
+  const dist = Math.hypot(dx, dy);
+  const olho = document.getElementById('pacOlho').value;
+
+  // Converter ângulo para Horas do Relógio (12h no topo = -90 graus)
+  let deg = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
+  let horaFloat = deg / 30.0;
+  let hInt = Math.floor(horaFloat);
+  let mInt = Math.round((horaFloat - hInt) * 60);
+  if (hInt === 0) hInt = 12;
+  let horaStr = `${hInt}h${mInt < 10 ? '0'+mInt : mInt}`;
+
+  if (dist <= rP) {
+    document.getElementById('orgCoord').innerText = `⚫ ÁREA PUPILAR (${horaStr})`;
+    document.getElementById('orgNome').innerText = "Pupila — Tônus do Sistema Nervoso Autônomo";
+    document.getElementById('orgZona').innerText = "Borda Pupilar Interna (Eixo Neurogástrico e Vitalidade Central)";
+    ultimoOrgaoInfo = { hora: horaStr, zona: "Borda Pupilar", orgao: "Tônus Pupilar / BPI", x: probeX, y: probeY };
+    return;
+  }
+
+  let ratio = (dist - rP) / (rI - rP);
+  let zonaIdx = Math.min(6, Math.max(0, Math.floor(ratio * 7)));
+  let nomeOrgao = obterOrgaoJensen(olho, horaFloat, zonaIdx);
+  let nomeZona = ZONAS_JENSEN[zonaIdx];
+
+  document.getElementById('orgCoord').innerText = `📍 ${olho} • POSIÇÃO ${horaStr} • ANEL ${zonaIdx + 1} DE 7`;
+  document.getElementById('orgNome').innerText = nomeOrgao;
+  document.getElementById('orgZona').innerText = nomeZona;
+
+  ultimoOrgaoInfo = { hora: horaStr, zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, x: probeX, y: probeY };
+}
+
+function adicionarAchado() {
+  if (!ultimoOrgaoInfo) return;
+  const sinal = document.getElementById('tipoSinal').value;
+  achadosClinicos.push({ ...ultimoOrgaoInfo, sinal });
+  atualizarListaAchados();
+  render();
+  analisar();
+}
+
+function removerAchado(idx) {
+  achadosClinicos.splice(idx, 1);
+  atualizarListaAchados();
+  render();
+  analisar();
+}
+
+function atualizarListaAchados() {
+  const box = document.getElementById('listaAchados');
+  if (achadosClinicos.length === 0) { box.innerHTML = ""; return; }
+  box.innerHTML = achadosClinicos.map((a, i) => `
+    <div class="pin-item">
+      <span><b>${a.hora} (${a.zona}):</b> ${a.orgao} — <i>${a.sinal}</i></span>
+      <button onclick="removerAchado(${i})" style="background:none;border:none;color:#dc2626;font-weight:bold;cursor:pointer;">✕</button>
+    </div>
+  `).join('');
 }
 
 cv.addEventListener('touchstart', e => {
@@ -235,13 +353,18 @@ cv.addEventListener('touchstart', e => {
     srI = rI; srP = rP;
   } else if (e.touches.length === 1) {
     drag = true; const p = pos(e.touches[0]);
-    sx = p.x; sy = p.y; scx = cx; scy = cy; srI = rI; srP = rP;
+    if (mode === 'map') {
+      probeX = p.x; probeY = p.y;
+      atualizarOrgaoSelecionado();
+      render();
+    } else {
+      sx = p.x; sy = p.y; scx = cx; scy = cy; srI = rI; srP = rP;
+    }
   }
 }, {passive:false});
 
 cv.addEventListener('touchmove', e => {
   e.preventDefault();
-  const z = document.getElementById('cZom').checked ? 2 : 1;
   if (e.touches.length === 2 && pinch0) {
     const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
     const k = d / pinch0;
@@ -250,7 +373,13 @@ cv.addEventListener('touchmove', e => {
     render();
   } else if (e.touches.length === 1 && drag) {
     const p = pos(e.touches[0]);
-    const dx = (p.x - sx)/z, dy = (p.y - sy)/z;
+    if (mode === 'map') {
+      probeX = p.x; probeY = p.y;
+      atualizarOrgaoSelecionado();
+      render();
+      return;
+    }
+    const dx = p.x - sx, dy = p.y - sy;
     if (mode === 'move') { cx = Math.max(30, Math.min(470, scx + dx)); cy = Math.max(30, Math.min(470, scy + dy)); }
     else if (mode === 'iris') rI = Math.max(rP + 15, Math.min(245, srI + dx * 0.8));
     else if (mode === 'pup') rP = Math.max(10, Math.min(rI - 10, srP + dx * 0.8));
@@ -271,7 +400,6 @@ function render() {
   const iw = img.width * sc, ih = img.height * sc;
   ctx.drawImage(img, (500 - iw)/2, (500 - ih)/2, iw, ih);
 
-  // Destacar reflexos de flash que estão sendo descontados (em azul ciano)
   if (document.getElementById('cFlsh').checked && cleanPixels) {
     ctx.fillStyle = 'rgba(0, 220, 255, 0.35)';
     for (let y = Math.max(0, Math.floor(cy - rI)); y < Math.min(500, Math.ceil(cy + rI)); y += 3) {
@@ -286,29 +414,61 @@ function render() {
     }
   }
 
-  if (document.getElementById('cRai').checked) {
-    ctx.strokeStyle = 'rgba(255,80,80,0.7)'; ctx.lineWidth = 1;
-    for (let a = 0; a < 360; a += 30) {
-      let r = a * Math.PI / 180;
-      ctx.beginPath(); ctx.moveTo(cx + rP*Math.cos(r), cy + rP*Math.sin(r));
-      ctx.lineTo(cx + rI*Math.cos(r), cy + rI*Math.sin(r)); ctx.stroke();
+  // Raios e Horas do Relógio (1h às 12h)
+  if (document.getElementById('cRel').checked) {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.lineWidth = 1;
+    for (let h = 1; h <= 12; h++) {
+      let rad = (h * 30 - 90) * Math.PI / 180;
+      ctx.beginPath();
+      ctx.moveTo(cx + rP*Math.cos(rad), cy + rP*Math.sin(rad));
+      ctx.lineTo(cx + rI*Math.cos(rad), cy + rI*Math.sin(rad));
+      ctx.stroke();
+      let tx = cx + (rI + 12) * Math.cos(rad);
+      let ty = cy + (rI + 12) * Math.sin(rad);
+      ctx.fillText(h + 'h', tx, ty);
     }
   }
+
   if (document.getElementById('cJen').checked) {
-    ctx.strokeStyle = 'rgba(190,210,255,0.75)'; ctx.lineWidth = 1;
     let st = (rI - rP) / 7;
     for (let i = 1; i < 7; i++) {
+      // Destacar o Anel 3 (Colarete / SNA) em tom dourado/laranja suave
+      ctx.strokeStyle = (i === 3) ? 'rgba(251, 191, 36, 0.85)' : 'rgba(190, 210, 255, 0.65)';
+      ctx.lineWidth = (i === 3) ? 1.6 : 1;
       ctx.beginPath(); ctx.arc(cx, cy, rP + i*st, 0, 2*Math.PI); ctx.stroke();
     }
   }
+
   ctx.strokeStyle = '#facc15'; ctx.lineWidth = mode==='pup' ? 3.5 : 2;
   ctx.beginPath(); ctx.arc(cx, cy, rP, 0, 2*Math.PI); ctx.stroke();
 
   ctx.strokeStyle = '#22c55e'; ctx.lineWidth = mode==='iris' ? 3.5 : 2.5;
   ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2*Math.PI); ctx.stroke();
 
-  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(cx-5, cy); ctx.lineTo(cx+5, cy); ctx.moveTo(cx, cy-5); ctx.lineTo(cx, cy+5); ctx.stroke();
+  // Desenhar pontos já anotados no laudo
+  achadosClinicos.forEach((a, idx) => {
+    ctx.fillStyle = '#a855f7';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(a.x, a.y, 5, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
+  });
+
+  // Desenhar mira roxa do ponto inspecionado atualmente
+  if (probeX !== null && probeY !== null) {
+    ctx.strokeStyle = '#d946ef';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(probeX, probeY, 8, 0, 2*Math.PI); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(probeX - 12, probeY); ctx.lineTo(probeX + 12, probeY);
+    ctx.moveTo(probeX, probeY - 12); ctx.lineTo(probeX, probeY + 12);
+    ctx.stroke();
+  }
+
   ctx.restore();
 }
 
@@ -321,32 +481,25 @@ function analisar() {
   const pIm = pCtx.createImageData(pw, ph);
   const gr = new Float32Array(pw * ph);
   const maskFlash = new Uint8Array(pw * ph);
-
   let somaMediaEstroma = 0, qtdEstroma = 0;
 
   for (let y = 0; y < ph; y++) {
     let r = rP + (y / ph) * (rI - rP);
     for (let x = 0; x < pw; x++) {
-      let rad = (x * 2 * Math.PI) / pw;
+      // Começar em 12h (-90 graus)
+      let rad = ((x - 90) * 2 * Math.PI) / pw;
       let sx = Math.min(499, Math.max(0, Math.round(cx + r * Math.cos(rad))));
       let sy = Math.min(499, Math.max(0, Math.round(cy + r * Math.sin(rad))));
       let i = (sy * 500 + sx) * 4;
       let l = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
       let idx = y * pw + x;
-
-      if (ignorarFlash && l > 230) {
-        maskFlash[idx] = 1;
-      } else {
-        somaMediaEstroma += l;
-        qtdEstroma++;
-      }
+      if (ignorarFlash && l > 230) { maskFlash[idx] = 1; }
+      else { somaMediaEstroma += l; qtdEstroma++; }
       gr[idx] = l;
     }
   }
 
   let mediaEstroma = qtdEstroma > 0 ? (somaMediaEstroma / qtdEstroma) : 128;
-
-  // Inpainting rápido na tira polar (substituir reflexos pelo tom médio das fibras vizinhas)
   let flashPct = 0;
   for (let idx = 0; idx < pw * ph; idx++) {
     let di = idx * 4;
@@ -361,7 +514,6 @@ function analisar() {
   }
   pCtx.putImageData(pIm, 0, 0);
 
-  // Calcular Variância Laplaciana apenas nos pixels reais da íris (ignorando a borda do flash)
   let s = 0, sq = 0, n = 0;
   for (let y = 1; y < ph - 1; y++) {
     for (let x = 1; x < pw - 1; x++) {
@@ -382,19 +534,34 @@ function analisar() {
   let sn = pr > 33 ? "Simpaticotonia (Midríase)" : pr < 20 ? "Parassimpaticotonia (Miose)" : "Equilíbrio Autonômico";
 
   document.getElementById('vDiag').innerHTML = 
-    `<b>Constituição:</b> ${dn}<br><b>SNA:</b> ${sn}<br><span style="font-size:11px; color:#0369a1;">✨ Reflexo de Flash filtrado: ${pctReflexo}% da área</span>`;
+    `<b>Constituição:</b> ${dn}<br><b>SNA:</b> ${sn}<br><span style="font-size:11px; color:#0369a1;">✨ Flash filtrado: ${pctReflexo}% da área</span>`;
 
   const nome = document.getElementById('pacNome').value || "Paciente";
   const olho = document.getElementById('pacOlho').value || "OE";
   const queixa = document.getElementById('pacQueixa').value || "-";
-  laudoTxt = `LAUDO IRIDOLÓGICO - ${nome} (${olho})\nQueixa: ${queixa}\nRelação Pupila/Íris: ${pr.toFixed(1)}% (${sn})\nÍndice de Fibras (Sem Flash): ${v.toFixed(0)} - ${dn}\nReflexo Especular Removido: ${pctReflexo}%\n`;
+  let listaTxt = achadosClinicos.length > 0
+    ? achadosClinicos.map((a, i) => `  ${i+1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal}`).join('\n')
+    : "  Nenhum ponto específico anotado manualmente.";
+
+  laudoTxt = `=================================================\n` +
+             `LAUDO DE ANÁLISE TOPOGRÁFICA IRIDOLÓGICA (JENSEN)\n` +
+             `=================================================\n` +
+             `Avaliado(a): ${nome}\n` +
+             `Olho Analisado: ${olho}\n` +
+             `Queixa Principal: ${queixa}\n\n` +
+             `1. BIOMETRIA E CONSTITUIÇÃO:\n` +
+             `   - Relação Pupila / Limbo: ${pr.toFixed(1)}% (${sn})\n` +
+             `   - Índice de Fibras (Sem Flash): ${v.toFixed(0)} — ${dn}\n` +
+             `   - Área de Reflexo Descontada: ${pctReflexo}%\n\n` +
+             `2. MAPEAMENTO TOPOGRÁFICO DE SINAIS (JENSEN):\n` +
+             `${listaTxt}\n`;
 }
 
 function dlLaudo() {
   const b = new Blob([laudoTxt], {type:'text/plain;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(b);
-  a.download = "Laudo_Iridologico.txt";
+  a.download = "Laudo_Iridologico_Jensen.txt";
   a.click();
 }
 </script>
