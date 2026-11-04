@@ -13,24 +13,26 @@
   input[type="text"] { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
   .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
   input[type="file"] { display: none; }
-  .tabs { display: flex; gap: 6px; margin: 10px 0; }
-  .btn { flex: 1; padding: 10px 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-weight: 600; font-size: 13px; text-align: center; cursor: pointer; }
+  .tabs { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+  .btn { flex: 1; min-width: 80px; padding: 10px 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-weight: 600; font-size: 13px; text-align: center; cursor: pointer; }
   .btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
-  .chk-row { display: flex; justify-content: space-around; font-size: 13px; margin-bottom: 8px; font-weight: 500; }
+  .btn-auto { background: #0f766e; color: #fff; border-color: #0f766e; width: 100%; margin-bottom: 8px; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; border: none; cursor: pointer; }
+  .chk-row { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 6px; font-size: 12px; margin-bottom: 8px; font-weight: 500; }
   .canvas-box { position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #000; touch-action: none; }
   canvas { width: 100%; display: block; touch-action: none; }
+  .status-bar { font-size: 12px; color: #0f766e; background: #ccfbf1; padding: 6px 10px; border-radius: 6px; margin-top: 8px; text-align: center; font-weight: 600; }
   .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
   .m-card { background: #f1f5f9; padding: 10px; border-radius: 8px; border-left: 4px solid #0284c7; }
   .m-lbl { font-size: 11px; color: #64748b; font-weight: bold; }
   .m-val { font-size: 18px; font-weight: 800; margin-top: 2px; }
   .diag { grid-column: span 2; background: #e0f2fe; padding: 10px; border-radius: 8px; font-size: 13px; line-height: 1.4; }
-  .btn-dl { width: 100%; margin-top: 12px; padding: 12px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; }
+  .btn-dl { width: 100%; margin-top: 12px; padding: 12px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <h2>🔬 Estação Iridológica Touch</h2>
-<div class="sub">Instantâneo • Use 1 dedo para arrastar e 2 dedos (pinça) para ajustar os anéis</div>
+<div class="sub">Auto-Detecção de Pupila • Filtro Anti-Flash • Calibração por Toque</div>
 
 <div class="box">
   <div class="row">
@@ -48,15 +50,20 @@
 </label>
 
 <div id="appArea" style="display:none;">
+  <div id="autoStatus" class="status-bar">🎯 Pupila detectada automaticamente! Ajuste com o dedo se necessário.</div>
+
   <div class="tabs">
     <div id="bMove" class="btn active" onclick="setM('move')">✥ Mover Tudo</div>
     <div id="bIris" class="btn" onclick="setM('iris')">🟢 Anel Íris</div>
     <div id="bPup" class="btn" onclick="setM('pup')">🟡 Anel Pupila</div>
   </div>
 
+  <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Recalibrar Pupila Automaticamente</button>
+
   <div class="chk-row">
-    <label><input type="checkbox" id="cJen" checked onchange="render()"> 7 Anéis Jensen</label>
+    <label><input type="checkbox" id="cJen" checked onchange="render()"> 7 Anéis</label>
     <label><input type="checkbox" id="cRai" checked onchange="render()"> Raios 30°</label>
+    <label><input type="checkbox" id="cFlsh" checked onchange="render(); analisar();"> ✨ Ignorar Flash</label>
     <label><input type="checkbox" id="cZom" onchange="render()"> 🔍 Lupa 2x</label>
   </div>
 
@@ -65,13 +72,13 @@
   </div>
 
   <div class="box" style="margin-top:10px; padding:8px;">
-    <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">Projeção Polar de Daugman (0° a 360°)</div>
+    <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">Projeção Polar de Daugman (0° a 360° • Sem Reflexo)</div>
     <canvas id="pCv" width="360" height="65" style="height:65px; border-radius:4px;"></canvas>
   </div>
 
   <div class="metrics">
     <div class="m-card"><div class="m-lbl">PUPILA / ÍRIS</div><div class="m-val" id="vProp">--%</div></div>
-    <div class="m-card"><div class="m-lbl">TRAMA (FIBRAS)</div><div class="m-val" id="vTex">--</div></div>
+    <div class="m-card"><div class="m-lbl">TRAMA (SEM FLASH)</div><div class="m-val" id="vTex">--</div></div>
     <div class="diag" id="vDiag">Toque e ajuste os anéis sobre a íris.</div>
   </div>
 
@@ -85,6 +92,7 @@ let img = new Image(), loaded = false;
 let cx = 250, cy = 250, rP = 55, rI = 170, mode = 'move';
 let drag = false, sx = 0, sy = 0, scx = 0, scy = 0, srP = 0, srI = 0, pinch0 = null;
 let laudoTxt = "";
+let cleanPixels = null;
 
 function setM(m) {
   mode = m;
@@ -100,14 +108,120 @@ document.getElementById('fIn').onchange = e => {
   const r = new FileReader();
   r.onload = ev => {
     img.onload = () => {
-      cx = 250; cy = 250; rP = 55; rI = 170; loaded = true;
+      loaded = true;
       document.getElementById('appArea').style.display = 'block';
-      render(); analisar();
+      prepararBufferImagem();
+      autoDetectarPupila();
     };
     img.src = ev.target.result;
   };
   r.readAsDataURL(f);
 };
+
+function prepararBufferImagem() {
+  const off = document.createElement('canvas');
+  off.width = 500; off.height = 500;
+  const oCtx = off.getContext('2d');
+  const sc = Math.max(500 / img.width, 500 / img.height);
+  oCtx.drawImage(img, (500 - img.width*sc)/2, (500 - img.height*sc)/2, img.width*sc, img.height*sc);
+  cleanPixels = oCtx.getImageData(0, 0, 500, 500).data;
+}
+
+// Algoritmo de Auto-Detecção de Pupila e Limbo
+function autoDetectarPupila() {
+  if (!cleanPixels) return;
+
+  // 1. Achar o brilho mínimo na zona central (120 a 380) ignorando reflexos brancos
+  let minLum = 255;
+  for (let y = 130; y < 370; y += 3) {
+    for (let x = 130; x < 370; x += 3) {
+      let i = (y * 500 + x) * 4;
+      let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
+      if (lum < minLum && lum > 5) minLum = lum;
+    }
+  }
+
+  // 2. Calcular centro de massa dos pixels escuros da pupila
+  let thresh = minLum + 28;
+  let sumX = 0, sumY = 0, count = 0;
+  for (let y = 120; y < 380; y += 2) {
+    for (let x = 120; x < 380; x += 2) {
+      let i = (y * 500 + x) * 4;
+      let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
+      if (lum <= thresh) {
+        sumX += x; sumY += y; count++;
+      }
+    }
+  }
+
+  if (count > 40) {
+    cx = Math.round(sumX / count);
+    cy = Math.round(sumY / count);
+  } else {
+    cx = 250; cy = 250;
+  }
+
+  // 3. Medir o raio da pupila pelo maior salto de gradiente radial (borda pupilar)
+  let bestRP = 50, maxGrad = 0;
+  for (let r = 20; r < 115; r += 2) {
+    let lumIn = 0, lumOut = 0, valid = 0;
+    for (let a = 0; a < 360; a += 15) {
+      let rad = a * Math.PI / 180;
+      let x1 = Math.round(cx + (r - 3) * Math.cos(rad));
+      let y1 = Math.round(cy + (r - 3) * Math.sin(rad));
+      let x2 = Math.round(cx + (r + 3) * Math.cos(rad));
+      let y2 = Math.round(cy + (r + 3) * Math.sin(rad));
+      if (x2 >= 0 && x2 < 500 && y2 >= 0 && y2 < 500) {
+        let i1 = (y1 * 500 + x1) * 4, i2 = (y2 * 500 + x2) * 4;
+        let l1 = 0.299*cleanPixels[i1] + 0.587*cleanPixels[i1+1] + 0.114*cleanPixels[i1+2];
+        let l2 = 0.299*cleanPixels[i2] + 0.587*cleanPixels[i2+1] + 0.114*cleanPixels[i2+2];
+        // Ignorar ângulos onde há reflexo de flash estourado (>230)
+        if (l1 < 225 && l2 < 225) {
+          lumIn += l1; lumOut += l2; valid++;
+        }
+      }
+    }
+    if (valid > 8) {
+      let grad = (lumOut - lumIn) / valid;
+      if (grad > maxGrad) { maxGrad = grad; bestRP = r; }
+    }
+  }
+  rP = bestRP;
+
+  // 4. Estimar o raio do Limbo (Íris) buscando a transição íris-esclera
+  let bestRI = Math.min(235, Math.round(rP * 3.1));
+  let maxLimboGrad = 0;
+  for (let r = Math.round(rP * 2.2); r < 240; r += 3) {
+    let diffSum = 0, valid = 0;
+    // Analisar apenas setores laterais (evitando pálpebras superior e inferior)
+    const angulosLaterais = [-45, -30, -15, 0, 15, 30, 45, 135, 150, 165, 180, 195, 210, 225];
+    for (let a of angulosLaterais) {
+      let rad = a * Math.PI / 180;
+      let x1 = Math.round(cx + (r - 4) * Math.cos(rad));
+      let y1 = Math.round(cy + (r - 4) * Math.sin(rad));
+      let x2 = Math.round(cx + (r + 4) * Math.cos(rad));
+      let y2 = Math.round(cy + (r + 4) * Math.sin(rad));
+      if (x2 >= 0 && x2 < 500 && y2 >= 0 && y2 < 500) {
+        let i1 = (y1 * 500 + x1) * 4, i2 = (y2 * 500 + x2) * 4;
+        let l1 = 0.299*cleanPixels[i1] + 0.587*cleanPixels[i1+1] + 0.114*cleanPixels[i1+2];
+        let l2 = 0.299*cleanPixels[i2] + 0.587*cleanPixels[i2+1] + 0.114*cleanPixels[i2+2];
+        if (l1 < 220) {
+          diffSum += Math.abs(l2 - l1);
+          valid++;
+        }
+      }
+    }
+    if (valid > 6 && (diffSum / valid) > maxLimboGrad) {
+      maxLimboGrad = diffSum / valid;
+      bestRI = r;
+    }
+  }
+  rI = bestRI;
+
+  document.getElementById('autoStatus').innerText = `🎯 Auto-Calibrado: Centro (${cx},${cy}) • Pupila R=${rP}px • Íris R=${rI}px`;
+  render();
+  analisar();
+}
 
 function pos(t) {
   const b = cv.getBoundingClientRect();
@@ -157,6 +271,21 @@ function render() {
   const iw = img.width * sc, ih = img.height * sc;
   ctx.drawImage(img, (500 - iw)/2, (500 - ih)/2, iw, ih);
 
+  // Destacar reflexos de flash que estão sendo descontados (em azul ciano)
+  if (document.getElementById('cFlsh').checked && cleanPixels) {
+    ctx.fillStyle = 'rgba(0, 220, 255, 0.35)';
+    for (let y = Math.max(0, Math.floor(cy - rI)); y < Math.min(500, Math.ceil(cy + rI)); y += 3) {
+      for (let x = Math.max(0, Math.floor(cx - rI)); x < Math.min(500, Math.ceil(cx + rI)); x += 3) {
+        let dist = Math.hypot(x - cx, y - cy);
+        if (dist > rP && dist < rI) {
+          let i = (y * 500 + x) * 4;
+          let lum = 0.299*cleanPixels[i] + 0.587*cleanPixels[i+1] + 0.114*cleanPixels[i+2];
+          if (lum > 230) ctx.fillRect(x, y, 3, 3);
+        }
+      }
+    }
+  }
+
   if (document.getElementById('cRai').checked) {
     ctx.strokeStyle = 'rgba(255,80,80,0.7)'; ctx.lineWidth = 1;
     for (let a = 0; a < 360; a += 30) {
@@ -184,16 +313,16 @@ function render() {
 }
 
 function analisar() {
-  if (!loaded) return;
-  const off = document.createElement('canvas'); off.width = 500; off.height = 500;
-  const oCtx = off.getContext('2d');
-  const sc = Math.max(500 / img.width, 500 / img.height);
-  oCtx.drawImage(img, (500 - img.width*sc)/2, (500 - img.height*sc)/2, img.width*sc, img.height*sc);
-  const d = oCtx.getImageData(0, 0, 500, 500).data;
+  if (!loaded || !cleanPixels) return;
+  const d = cleanPixels;
+  const ignorarFlash = document.getElementById('cFlsh').checked;
 
   const pw = 360, ph = 65;
   const pIm = pCtx.createImageData(pw, ph);
   const gr = new Float32Array(pw * ph);
+  const maskFlash = new Uint8Array(pw * ph);
+
+  let somaMediaEstroma = 0, qtdEstroma = 0;
 
   for (let y = 0; y < ph; y++) {
     let r = rP + (y / ph) * (rI - rP);
@@ -203,36 +332,62 @@ function analisar() {
       let sy = Math.min(499, Math.max(0, Math.round(cy + r * Math.sin(rad))));
       let i = (sy * 500 + sx) * 4;
       let l = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
-      gr[y*pw + x] = l;
-      let di = (y*pw + x)*4;
+      let idx = y * pw + x;
+
+      if (ignorarFlash && l > 230) {
+        maskFlash[idx] = 1;
+      } else {
+        somaMediaEstroma += l;
+        qtdEstroma++;
+      }
+      gr[idx] = l;
+    }
+  }
+
+  let mediaEstroma = qtdEstroma > 0 ? (somaMediaEstroma / qtdEstroma) : 128;
+
+  // Inpainting rápido na tira polar (substituir reflexos pelo tom médio das fibras vizinhas)
+  let flashPct = 0;
+  for (let idx = 0; idx < pw * ph; idx++) {
+    let di = idx * 4;
+    if (maskFlash[idx] === 1) {
+      gr[idx] = mediaEstroma;
+      pIm.data[di] = 0; pIm.data[di+1] = 190; pIm.data[di+2] = 230; pIm.data[di+3] = 255;
+      flashPct++;
+    } else {
+      let l = gr[idx];
       pIm.data[di] = l; pIm.data[di+1] = l; pIm.data[di+2] = l; pIm.data[di+3] = 255;
     }
   }
   pCtx.putImageData(pIm, 0, 0);
 
+  // Calcular Variância Laplaciana apenas nos pixels reais da íris (ignorando a borda do flash)
   let s = 0, sq = 0, n = 0;
   for (let y = 1; y < ph - 1; y++) {
     for (let x = 1; x < pw - 1; x++) {
       let k = y*pw + x;
+      if (maskFlash[k] || maskFlash[k-1] || maskFlash[k+1] || maskFlash[k-pw] || maskFlash[k+pw]) continue;
       let lp = -4*gr[k] + gr[k-1] + gr[k+1] + gr[k-pw] + gr[k+pw];
       s += lp; sq += lp*lp; n++;
     }
   }
-  let v = (sq / n) - Math.pow(s / n, 2);
+  let v = n > 10 ? ((sq / n) - Math.pow(s / n, 2)) : 0;
   let pr = (rP / rI) * 100;
+  let pctReflexo = ((flashPct / (pw * ph)) * 100).toFixed(1);
 
   document.getElementById('vProp').innerText = pr.toFixed(1) + '%';
   document.getElementById('vTex').innerText = v.toFixed(0);
 
-  let dn = v < 120 ? "Grau 1 (Seda)" : v < 280 ? "Grau 2 (Seda/Linho)" : v < 600 ? "Grau 3 (Linho)" : v < 1000 ? "Grau 4 (Algodão)" : "Grau 5 (Rede - Fragilidade)";
+  let dn = v < 110 ? "Grau 1 (Seda - Compacta)" : v < 250 ? "Grau 2 (Seda/Linho - Boa)" : v < 520 ? "Grau 3 (Linho - Comum)" : v < 850 ? "Grau 4 (Algodão - Aberta)" : "Grau 5 (Rede - Fragilidade)";
   let sn = pr > 33 ? "Simpaticotonia (Midríase)" : pr < 20 ? "Parassimpaticotonia (Miose)" : "Equilíbrio Autonômico";
 
-  document.getElementById('vDiag').innerHTML = "<b>Constituição:</b> " + dn + "<br><b>SNA:</b> " + sn;
+  document.getElementById('vDiag').innerHTML = 
+    `<b>Constituição:</b> ${dn}<br><b>SNA:</b> ${sn}<br><span style="font-size:11px; color:#0369a1;">✨ Reflexo de Flash filtrado: ${pctReflexo}% da área</span>`;
 
   const nome = document.getElementById('pacNome').value || "Paciente";
   const olho = document.getElementById('pacOlho').value || "OE";
   const queixa = document.getElementById('pacQueixa').value || "-";
-  laudoTxt = `LAUDO IRIDOLÓGICO - ${nome} (${olho})\nQueixa: ${queixa}\nRelação Pupila/Íris: ${pr.toFixed(1)}% (${sn})\nÍndice de Fibras: ${v.toFixed(0)} - ${dn}\n`;
+  laudoTxt = `LAUDO IRIDOLÓGICO - ${nome} (${olho})\nQueixa: ${queixa}\nRelação Pupila/Íris: ${pr.toFixed(1)}% (${sn})\nÍndice de Fibras (Sem Flash): ${v.toFixed(0)} - ${dn}\nReflexo Especular Removido: ${pctReflexo}%\n`;
 }
 
 function dlLaudo() {
