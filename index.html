@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Estação Iridológica — Leitura Integrativa Completa</title>
+<title>Estação Iridológica — Relatório Premium Multidimensional</title>
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 8px; background: #f1f5f9; color: #0f172a; }
-  h2 { margin: 0 0 2px 0; font-size: 18px; color: #0369a1; }
-  .sub { font-size: 11px; color: #64748b; margin-bottom: 8px; }
+  h2 { margin: 0 0 2px 0; font-size: 18px; color: #183344; }
+  .sub { font-size: 11px; color: #26736F; font-weight: 600; margin-bottom: 8px; }
   .note { font-size: 10px; color: #64748b; margin-top: 4px; line-height: 1.35; }
   .card { background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 8px; }
   .row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
   input[type="text"], input[type="password"], select, textarea { flex: 1; padding: 7px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; min-width: 0; }
-  .btn-up { display: block; background: #0284c7; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 8px; }
+  .btn-up { display: block; background: #183344; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 8px; border: 1px solid #26736F; }
   input[type="file"] { display: none; }
 
   /* Navegação Principal em Abas */
   .main-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 8px; position: sticky; top: 0; z-index: 20; background: #f1f5f9; padding: 4px 0; }
   .tab-btn { padding: 9px 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #e2e8f0; font-weight: 700; font-size: 11px; text-align: center; cursor: pointer; color: #334155; transition: 0.15s; }
-  .tab-btn.active { background: #0284c7; color: #fff; border-color: #0284c7; box-shadow: 0 2px 5px rgba(2,132,199,0.25); }
+  .tab-btn.active { background: #183344; color: #fff; border-color: #183344; box-shadow: 0 2px 5px rgba(24,51,68,0.25); }
   .tab-pane { display: none; }
   .tab-pane.active { display: block; }
 
@@ -28,13 +28,13 @@
   .btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
   .btn.map-active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
   .action-row { display: flex; gap: 4px; margin-bottom: 6px; }
-  .btn-auto { flex: 1; background: #0f766e; color: #fff; padding: 8px 4px; border-radius: 6px; font-weight: bold; font-size: 11px; border: none; cursor: pointer; }
+  .btn-auto { flex: 1; background: #26736F; color: #fff; padding: 8px 4px; border-radius: 6px; font-weight: bold; font-size: 11px; border: none; cursor: pointer; }
   .btn-scan { flex: 1.2; background: #ea580c; color: #fff; padding: 8px 4px; border-radius: 6px; font-weight: bold; font-size: 11px; border: none; cursor: pointer; }
   button:disabled { opacity: .6; cursor: wait; }
 
   /* Caixa de Camadas (Layers) */
   .layers-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 8px; }
-  .layers-title { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .layers-title { font-size: 11px; font-weight: 800; color: #183344; text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
   .layers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 11px; font-weight: 600; color: #1e293b; }
   .layers-grid label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
 
@@ -54,37 +54,41 @@
   .btn-ok { background: #dcfce7; border: 1px solid #16a34a; border-radius: 4px; color: #15803d; font-weight: bold; font-size: 13px; padding: 2px 6px; cursor: pointer; }
   .btn-x { background: #fee2e2; border: 1px solid #dc2626; border-radius: 4px; color: #b91c1c; font-weight: bold; font-size: 13px; padding: 2px 6px; cursor: pointer; }
 
-  .ai-card { background: #ecfdf5; border: 2px solid #10b981; border-radius: 8px; padding: 10px; margin-top: 8px; }
-  .ai-title { font-weight: 800; color: #047857; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; }
+  .ai-card { background: #f2f6f5; border: 2px solid #26736F; border-radius: 8px; padding: 10px; margin-top: 8px; }
+  .ai-title { font-weight: 800; color: #183344; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; }
 
   .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
-  .m-card { background: #f1f5f9; padding: 8px; border-radius: 6px; border-left: 3px solid #0284c7; }
+  .m-card { background: #f1f5f9; padding: 8px; border-radius: 6px; border-left: 3px solid #26736F; }
   .m-lbl { font-size: 10px; color: #64748b; font-weight: bold; }
-  .m-val { font-size: 15px; font-weight: 800; margin-top: 2px; }
+  .m-val { font-size: 15px; font-weight: 800; margin-top: 2px; color: #183344; }
   .diag { grid-column: span 2; background: #e0f2fe; padding: 8px; border-radius: 6px; font-size: 12px; line-height: 1.35; }
 
   .psy-card { background: #fdf4ff; border: 1.5px solid #d946ef; border-radius: 8px; padding: 8px; margin-top: 8px; font-size: 12px; line-height: 1.35; white-space: pre-line; }
   .psy-title { font-weight: 800; color: #86198f; font-size: 11px; text-transform: uppercase; margin-bottom: 3px; }
 
-  .btn-dl { width: 100%; margin-top: 10px; padding: 10px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
+  .btn-dl { width: 100%; margin-top: 10px; padding: 11px; background: #183344; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
 </style>
 </head>
 <body>
 
-<h2>🔬 Estação Iridológica — Leitura Integrativa</h2>
-<div class="sub">Mapas em Camadas Transparentes • Scanner 360° (✓/✕) • Abas Temáticas • IA</div>
+<h2>🔬 Estação Iridológica — Modelo Multidimensional Premium</h2>
+<div class="sub">10 Referenciais • Camadas Transparentes • Triplo Filtro • IA Integrada</div>
 
-<!-- CABEÇALHO DO AVALIADO -->
+<!-- CABEÇALHO DO CLIENTE E CONDIÇÕES DO REGISTRO -->
 <div class="card">
   <div class="row">
-    <input type="text" id="pacNome" placeholder="Nome do Avaliado">
+    <input type="text" id="pacNome" placeholder="Cliente (Nome completo)">
     <select id="pacOlho" style="max-width:130px; font-weight:bold;" onchange="trocarOlho()">
       <option value="OE">👁️ Olho Esq. (OE)</option>
       <option value="OD">👁️ Olho Dir. (OD)</option>
     </select>
   </div>
+  <div class="row">
+    <input type="text" id="pacAvaliador" placeholder="Avaliador(a) / Qualificação" value="Léo Cinttra — Terapeuta Integrativo">
+    <input type="text" id="pacEquip" placeholder="Equipamento / Iluminação" value="Lente Macro / LED Lateral">
+  </div>
   <div class="row" style="margin-bottom:0;">
-    <input type="text" id="pacQueixa" placeholder="Queixa Principal / Observações Clínicas">
+    <input type="text" id="pacQueixa" placeholder="Objetivo / Queixa Principal informada pelo cliente">
   </div>
 </div>
 
@@ -99,7 +103,7 @@
   <div class="main-tabs">
     <div class="tab-btn active" onclick="mudarAba('mapa')">1. 👁️ Íris & Mapas</div>
     <div class="tab-btn" onclick="mudarAba('topografia')">2. 📍 Sinais (<span id="badgeQtd">0</span>)</div>
-    <div class="tab-btn" onclick="mudarAba('psico')">3. 🧠 Biotipo & Psico</div>
+    <div class="tab-btn" onclick="mudarAba('psico')">3. 🧭 10 Referenciais</div>
     <div class="tab-btn" onclick="mudarAba('ia')">4. ✨ IA & Relatório</div>
   </div>
 
@@ -135,6 +139,7 @@
         <label><input type="checkbox" id="layRayid" onchange="render()"> 🌼 Mapa Rayid (48 Áreas)</label>
         <label><input type="checkbox" id="layPsico" onchange="render()"> 🧠 Quadrantes Psicológicos</label>
         <label><input type="checkbox" id="layVetorial" onchange="render()"> 🧭 Mapa Vetorial (Temperamento)</label>
+        <label><input type="checkbox" id="layCrono" onchange="render()"> ⏳ Linha do Tempo / Ciclos</label>
         <label><input type="checkbox" id="layTensao" onchange="render()"> 🌀 Anéis de Contração/Tensão</label>
         <label><input type="checkbox" id="laySodio" onchange="render()"> 💍 Anel Sódio / Rosário Linf.</label>
         <label><input type="checkbox" id="layFlash" checked onchange="render(); analisar();"> ✨ Filtro Anti-Flash</label>
@@ -168,7 +173,7 @@
       <div class="m-lbl">SISTEMA CARTOGRÁFICO DE ZONAS</div>
       <div class="row" style="margin-top:4px; margin-bottom:0;">
         <select id="pacMapa" onchange="trocarMapa()">
-          <option value="JENSEN">Mapa de Zonas: Bernard Jensen (Clássico)</option>
+          <option value="JENSEN">Mapa de Zonas: Bernard Jensen / Escola Alemã</option>
           <option value="GPS">Mapa de Zonas: Método GPS (Gérson Practical System)</option>
         </select>
       </div>
@@ -196,27 +201,14 @@
   </div>
 
   <!-- ================================================================= -->
-  <!-- ABA 3: CONSTITUIÇÃO, COLARETE, SNA E PSICOSSOMÁTICA (RAYID/VETOR) -->
+  <!-- ABA 3: CONFERÊNCIA DOS 10 REFERENCIAIS MULTIDIMENSIONAIS          -->
   <!-- ================================================================= -->
   <div id="aba-psico" class="tab-pane">
-    <div class="card" style="border:2px solid #0284c7;">
-      <div class="ai-title" style="color:#0369a1;">🧬 Conferência de Constituição, Colarete & SNA</div>
-      <div class="note" style="margin:0 0 8px 0;">O algoritmo calcula sugestões matemáticas a partir da foto; você tem a palavra final confirmando ou alterando cada seletor abaixo.</div>
+    <div class="card" style="border:2px solid #26736F;">
+      <div class="ai-title">🧭 Registro e Conferência dos 10 Referenciais</div>
+      <div class="note" style="margin:0 0 8px 0;">O algoritmo sugere classificações a partir da foto; confirme ou complemente abaixo para alimentar o Relatório Premium.</div>
 
-      <div class="m-lbl">TIPOLOGIA COMPORTAMENTAL (MÉTODO RAYID)</div>
-      <div class="row" style="margin-top:3px;">
-        <select id="pacTipo" onchange="analisar()">
-          <option value="">Usar sugestão automática pela trama</option>
-          <option value="Flor">Flor (emocional, espontâneo, criativo, auditivo/visual)</option>
-          <option value="Joia">Joia (mental, analítico, detalhista, observador)</option>
-          <option value="Agitador">Agitador / Ponta de Lança (intenso, dinâmico, pioneiro)</option>
-          <option value="Corrente">Corrente (cinestésico, integrador, sensível ao ambiente)</option>
-          <option value="Misto">Misto / Combinado</option>
-        </select>
-      </div>
-      <div class="note" id="sugTipo"></div>
-
-      <div class="m-lbl" style="margin-top:8px;">BIOTIPO CONSTITUCIONAL (COR DA ÍRIS)</div>
+      <div class="m-lbl">1. BIOTIPO CONSTITUCIONAL (JENSEN / ESCOLA ALEMÃ)</div>
       <div class="row" style="margin-top:3px;">
         <select id="pacBiotipo" onchange="analisar()">
           <option value="">Usar sugestão automática</option>
@@ -227,43 +219,67 @@
       </div>
       <div class="note" id="sugBiotipo"></div>
 
-      <div class="m-lbl" style="margin-top:8px;">BORDA PUPILAR INTERNA (BPI)</div>
+      <div class="m-lbl" style="margin-top:8px;">2. ARQUÉTIPO COMPORTAMENTAL (MÉTODO RAYID)</div>
       <div class="row" style="margin-top:3px;">
-        <select id="selBPI" onchange="analisar()">
-          <option value="">Não avaliada</option>
-          <option value="normal">Sem alterações (íntegra)</option>
-          <option value="cor">Coloração alterada / avermelhada</option>
-          <option value="erosao">Erosões / irregularidades (sinal de desgaste)</option>
+        <select id="pacTipo" onchange="analisar()">
+          <option value="">Usar sugestão automática pela trama</option>
+          <option value="Flor">Flor (emocional, espontâneo, criativo, visual)</option>
+          <option value="Joia">Joia (mental, analítico, detalhista, auditivo)</option>
+          <option value="Agitador">Agitador / Ponta de Lança (intenso, dinâmico, pioneiro)</option>
+          <option value="Corrente">Corrente (cinestésico, integrador, sensível ao ambiente)</option>
+          <option value="Misto">Misto / Combinado</option>
         </select>
       </div>
+      <div class="note" id="sugTipo"></div>
 
-      <div class="m-lbl" style="margin-top:8px;">ANEL GÁSTRICO (ZONA 1)</div>
+      <div class="m-lbl" style="margin-top:8px;">3 & 6. MAPA VETORIAL E QUADRANTES PSICOLÓGICOS</div>
       <div class="row" style="margin-top:3px;">
+        <input type="text" id="obsVetorial" placeholder="Temas subjetivos / emocionais relatados pelo cliente" oninput="analisar()">
+      </div>
+
+      <div class="m-lbl" style="margin-top:8px;">4 & 5. LINHA DO TEMPO (CRONORRISCHIO) E CICLOS / GESTACIONAL</div>
+      <div class="row" style="margin-top:3px;">
+        <input type="text" id="obsCrono" placeholder="Eventos biográficos ou histórico familiar relatados pelo cliente" oninput="analisar()">
+      </div>
+
+      <div class="m-lbl" style="margin-top:8px;">7. ORLA PUPILAR INTERNA (OPI / BPI) E ANEL GÁSTRICO</div>
+      <div class="row" style="margin-top:3px;">
+        <select id="selBPI" onchange="analisar()">
+          <option value="">OPI: Não avaliada</option>
+          <option value="normal">OPI: Íntegra / Sem alterações</option>
+          <option value="cor">OPI: Coloração alterada</option>
+          <option value="erosao">OPI: Erosões / Irregularidades</option>
+        </select>
         <select id="selGastrico" onchange="analisar()">
-          <option value="">Usar sugestão automática</option>
-          <option value="ausente">Ausente / discreto</option>
-          <option value="claro">Anel claro / esbranquiçado (tendência a hiperacidez)</option>
-          <option value="escuro">Anel escuro / sombreado (tendência a hipocloridria)</option>
+          <option value="">Anel Gástrico: Auto</option>
+          <option value="ausente">Gástrico: Discreto</option>
+          <option value="claro">Gástrico: Claro (hiper)</option>
+          <option value="escuro">Gástrico: Escuro (hipo)</option>
         </select>
       </div>
       <div class="note" id="sugGastrico"></div>
 
-      <div class="m-lbl" style="margin-top:8px;">COLARETE (TRANÇA DO SNA — ZONA 3)</div>
+      <div class="m-lbl" style="margin-top:8px;">8 & 10. COLARETE (TRANÇA DO SNA) E REFLEXO VERTEBRAL</div>
       <div class="row" style="margin-top:3px;">
         <select id="selColarete" onchange="analisar()">
           <option value="">Usar sugestão automática</option>
           <option value="normal">Normal / Equilibrado</option>
-          <option value="distendido">Distendido / Afastado (tônus fraco, perfil centrífugo)</option>
-          <option value="restrito">Restrito / Contraído (tensão interna, perfil centrípeto)</option>
-          <option value="denteado">Denteado / Zigue-zague (hipertonicidade neurovegetativa)</option>
-          <option value="ptose">Ptose / Queda transversal (pressão sobre órgãos inferiores)</option>
+          <option value="distendido">Distendido / Afastado (tônus fraco, centrífugo)</option>
+          <option value="restrito">Restrito / Contraído (tensão interna, centrípeto)</option>
+          <option value="denteado">Denteado / Zigue-zague (hipertonicidade)</option>
+          <option value="ptose">Ptose / Queda transversal (pressão inferior)</option>
         </select>
       </div>
       <div class="note" id="sugColarete"></div>
+
+      <div class="m-lbl" style="margin-top:8px;">9. MAPA ESCLERAL, CONJUNTIVAL E LIMITAÇÕES DA IMAGEM</div>
+      <div class="row" style="margin-top:3px;">
+        <input type="text" id="obsEsclera" placeholder="Vasos esclerais, pigmentos ou limitações técnicas (reflexos/cílios)" oninput="analisar()">
+      </div>
     </div>
 
     <div class="psy-card">
-      <div class="psy-title">🧠 Síntese Tipológica, Psicoemocional & Vetorial</div>
+      <div class="psy-title">🧠 Resumo em Tempo Real dos 10 Referenciais</div>
       <div id="psyTexto">Aguardando calibração dos anéis...</div>
     </div>
   </div>
@@ -274,27 +290,27 @@
   <div id="aba-ia" class="tab-pane">
     <div class="card">
       <div class="m-lbl">MEMÓRIA DOS DOIS OLHOS (BILATERALIDADE OD + OE)</div>
-      <button class="btn-auto" style="width:100%; margin-top:6px; padding:10px; background:#0369a1; font-size:13px;" onclick="salvarOlho()">💾 Salvar Leitura e Mapas do Olho Atual em Tela</button>
+      <button class="btn-auto" style="width:100%; margin-top:6px; padding:10px; background:#183344; font-size:13px;" onclick="salvarOlho()">💾 Salvar Leitura e Mapas do Olho Atual em Tela</button>
       <div class="note" id="statusOlhos">Nenhum olho salvo. Salve um olho antes de carregar a foto do outro (e troque o seletor OD/OE no topo). O relatório e a IA combinam ambos os olhos automaticamente.</div>
     </div>
 
     <div class="ai-card">
-      <div class="ai-title">🤖 Leitura Integrativa Unificada com IA (Gemini)</div>
+      <div class="ai-title">🤖 Gerador do Relatório Multidimensional com IA (Gemini)</div>
       <div class="row" style="margin-bottom:6px;">
-        <input type="password" id="aiApiKey" placeholder="Cole sua Chave API Gemini aqui" autocomplete="off" style="font-size:12px;">
+        <input type="password" id="aiApiKey" placeholder="Cole sua Chave API Gemini (AIzaSy...)" autocomplete="off" style="font-size:12px;">
         <input type="text" id="aiModelo" value="gemini-2.5-flash" style="font-size:12px; max-width:135px;">
       </div>
       <label style="display:block; font-size:11px; margin-bottom:6px; cursor:pointer;">
         <input type="checkbox" id="aiEnviarFoto"> Enviar também a foto da íris e o mapa desenhado à IA (análise visual complementar)
       </label>
-      <button class="btn-auto" id="btnIA" style="width:100%; background:#10b981; margin-bottom:6px; padding:10px; font-size:13px;" onclick="gerarRelatorioProfundoIA()">✨ Unificar Todas as Abas e Gerar Relatório com IA</button>
-      <textarea id="aiSaidaRelatorio" rows="15" placeholder="A leitura integrativa completa (unindo Constituição, SNA, Topografia, Rayid, Quadrantes Psicológicos e Sinais Confirmados) aparecerá aqui. Você pode revisar e editar qualquer trecho antes de baixar." style="width:100%; font-size:12px; padding:8px; box-sizing:border-box; border-radius:6px; border:1px solid #10b981; line-height:1.45;"></textarea>
-      <div class="note">Sem chave de API, o botão gera instantaneamente um pré-laudo estruturado local completo com todos os dados das abas. A sua chave não é salva em servidor.</div>
+      <button class="btn-auto" id="btnIA" style="width:100%; background:#26736F; margin-bottom:6px; padding:11px; font-size:13px;" onclick="gerarRelatorioProfundoIA()">✨ Gerar Relatório Premium (10 Referenciais + Cruzamento)</button>
+      <textarea id="aiSaidaRelatorio" rows="16" placeholder="O Relatório Multidimensional completo aparecerá aqui. Você pode revisar ou editar qualquer palavra antes de exportar para HTML/PDF ou TXT." style="width:100%; font-size:12px; padding:8px; box-sizing:border-box; border-radius:6px; border:1px solid #26736F; line-height:1.5;"></textarea>
+      <div class="note">Sem chave de API, o botão gera instantaneamente o Relatório Multidimensional estruturado local com todos os 10 referenciais preenchidos.</div>
     </div>
 
-    <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Relatório Integrativo (.TXT)</button>
-    <button class="btn-dl" style="background:#0369a1; margin-top:6px;" onclick="dlRelatorioHTML()">🖼️ Baixar Relatório Ilustrado com os Mapas (.HTML / PDF)</button>
-    <div class="note">O relatório HTML inclui as fotos das íris com os mapas vetoriais desenhados por cima e pode ser salvo como PDF no celular ou computador.</div>
+    <button class="btn-dl" style="background:#26736F;" onclick="dlRelatorioHTML()">📄 Baixar Relatório Editorial Premium (.HTML / Imprimir PDF)</button>
+    <button class="btn-dl" style="margin-top:6px;" onclick="dlLaudo()">📥 Baixar Texto Bruto do Relatório (.TXT)</button>
+    <div class="note">O Relatório Editorial Premium inclui Capa, Quadro de Escopo, Imagens dos Olhos Mapeados, os 10 Referenciais, Ficha Fotográfica e Assinaturas prontos para impressão/PDF.</div>
   </div>
 
 </div>
@@ -311,11 +327,11 @@ const SNA_ALTO = 45;
 const SNA_BAIXO = 28;
 const LIMIARES_TRAMA = [0.16, 0.26, 0.38, 0.52];
 const GRAUS_TRAMA = [
-  "Grau 1 (Seda — trama compacta / alta densidade)",
-  "Grau 2 (Seda/Linho — boa densidade)",
-  "Grau 3 (Linho — trama intermediária)",
-  "Grau 4 (Algodão — trama frouxa / reativa)",
-  "Grau 5 (Rede — trama aberta / vulnerabilidade tecidual)"
+  "Trama Compacta (Padrão Seda — fibras unidas e lineares)",
+  "Trama Regular (Padrão Seda/Linho — boa coesão estromal)",
+  "Trama Intermediária (Padrão Linho — espaçamento moderado)",
+  "Trama Aberta (Padrão Algodão — fibras sinuosas e espaçadas)",
+  "Trama Rarefeita (Padrão Rede — múltiplas aberturas estromais)"
 ];
 
 const cv = $('cv'), ctx = cv.getContext('2d');
@@ -549,7 +565,6 @@ function autoDetectarPupila() {
   }
   rP = bestRP;
 
-  // Medição real de nitidez na borda pupilar
   let st = 0, pk = 0, n = 0;
   for (let a = 0; a < 360; a += 15) {
     const rad = a * Math.PI / 180, c = Math.cos(rad), s = Math.sin(rad);
@@ -614,7 +629,6 @@ function executarScannerAutomatico() {
   const olho = $('pacOlho').value;
   achadosClinicos = achadosClinicos.filter(a => !(a.auto && !a.confirmado));
 
-  // 1. Detecção de Raios Solares (fendas radiais escuras)
   const candidatosRaios = [];
   for (let deg = 0; deg < 360; deg += 3) {
     let somaCol = 0, somaViz = 0, valid = 0;
@@ -638,14 +652,13 @@ function executarScannerAutomatico() {
     if (raiosEscolhidos.length >= 4) break;
     if (raiosEscolhidos.every(r => Math.min(Math.abs(r.deg - c.deg), 360 - Math.abs(r.deg - c.deg)) > 18)) {
       raiosEscolhidos.push(c);
-      adicionarSinalPolar(olho, c.deg, 2, "Raio Solar (Fenda Radial Neurovegetativa)", "raio");
+      adicionarSinalPolar(olho, c.deg, 2, "Raio Solar (Fenda Radial)", "raio");
     }
   }
 
-  // 2. Detecção de Lacunas, Criptas e Manchas Pigmentares
   const candidatosLacunas = [];
   for (let deg = 18; deg < 342; deg += 6) {
-    if (deg > 162 && deg < 198) continue; // Evita sombra palpebral inferior
+    if (deg > 162 && deg < 198) continue;
     for (let z = 1; z <= 4; z++) {
       const yStart = Math.floor((z / 7) * ph);
       const yEnd = Math.floor(((z + 1) / 7) * ph);
@@ -674,12 +687,11 @@ function executarScannerAutomatico() {
     if (lacunasEscolhidas.length >= 5) break;
     if (lacunasEscolhidas.every(e => Math.min(Math.abs(e.deg - l.deg), 360 - Math.abs(e.deg - l.deg)) > 20)) {
       lacunasEscolhidas.push(l);
-      const tipo = l.score > 22 ? "Cripta / Mancha Escura (Sobrecarga)" : "Lacuna / Pétala (Fragilidade Estrutural)";
+      const tipo = l.score > 22 ? "Cripta / Ponto Escuro" : "Lacuna / Pétala Aberta";
       adicionarSinalPolar(olho, l.deg, l.zonaIdx, tipo, "lacuna");
     }
   }
 
-  // 3. Avaliação de Anéis de Tensão / Contração
   let scoreAnel = 0;
   for (let y = 38; y < 56; y++) {
     let diffLinha = 0, cnt = 0;
@@ -733,8 +745,8 @@ function atualizarOrgaoSelecionado() {
 
   if (dist <= rP) {
     $('orgCoord').innerText = `⚫ ÁREA PUPILAR (${horaStr})`;
-    $('orgNome').innerText = "Pupila — Tônus do Sistema Nervoso Autônomo";
-    $('orgZona').innerText = "Borda Pupilar Interna (BPI)";
+    $('orgNome').innerText = "Pupila — Dinâmica Pupilar e OPI";
+    $('orgZona').innerText = "Orla Pupilar Interna (OPI / BPI)";
     ultimoOrgaoInfo = { pupila: true };
     return;
   }
@@ -857,7 +869,7 @@ cv.addEventListener('wheel', function (e) {
 }, { passive: false });
 
 /* ========================================================================= */
-/* MOTOR GRÁFICO DE CAMADAS TRANSPARENTES SOBRE A ÍRIS (BASEADO NOS ANEXOS)  */
+/* MOTOR GRÁFICO DE CAMADAS TRANSPARENTES SOBRE A ÍRIS (10 REFERENCIAIS)     */
 /* ========================================================================= */
 function render() {
   if (!loaded) return;
@@ -887,10 +899,9 @@ function render() {
     }
   }
 
-  // 2. LAYER: Quadrantes Psicológicos (Marcos V. Dias: Superego, Ego, Vontade, Instinto)
+  // 2. LAYER: Quadrantes Psicológicos (Superego, Ego, Vontade, Instinto)
   if ($('layPsico').checked) {
     ctx.save();
-    // Diagonais em X (-45°, 45°, 135°, 225°) dividindo os 4 quadrantes psíquicos
     const quads = [
       { a0: -135, a1: -45, cor: `rgba(56, 189, 248, ${0.24 * alpha})`, borda: `rgba(2, 132, 199, ${0.85 * alpha})`, txt: "SUPEREGO (Ideal / Moral / Dever)" },
       { a0: -45,  a1: 45,  cor: olho === 'OE' ? `rgba(34, 197, 94, ${0.24 * alpha})` : `rgba(99, 102, 241, ${0.24 * alpha})`, borda: `rgba(22, 163, 74, ${0.85 * alpha})`, txt: olho === 'OE' ? "VONTADE (Coragem / Ousar)" : "EGO (Força Interior / Adaptação)" },
@@ -919,11 +930,10 @@ function render() {
     ctx.restore();
   }
 
-  // 3. LAYER: Mapa Vetorial (Marcos V. Dias — 8 Vetores + 3 Esferas + Eixo Yang/Yin)
+  // 3. LAYER: Mapa Vetorial (8 Vetores + 3 Esferas + Eixo Yang/Yin)
   if ($('layVetorial').checked) {
     ctx.save();
     ctx.globalAlpha = alpha;
-    // Polígono / Estrela externa Yang (Topo Azul) e Yin (Base Vermelha)
     ctx.fillStyle = 'rgba(37, 99, 235, 0.35)';
     ctx.beginPath();
     ctx.moveTo(cx, cy - rI - 26 * K);
@@ -942,14 +952,12 @@ function render() {
     ctx.fillStyle = '#fca5a5';
     ctx.fillText("PASSIVO / YIN", cx, cy + rI + 16 * K);
 
-    // 3 Esferas Concêntricas (Clínica, Temperamento, Personalidade)
     [0.33, 0.66, 1.0].forEach((f, idx) => {
       ctx.strokeStyle = idx === 0 ? '#38bdf8' : idx === 1 ? '#4ade80' : '#f43f5e';
       ctx.lineWidth = 1.8;
       ctx.beginPath(); ctx.arc(cx, cy, rP + (rI - rP) * f, 0, 2 * Math.PI); ctx.stroke();
     });
 
-    // 8 Setores Vetoriais de Temperamento
     const vetoresOD = ["Esquizoide", "Sensitivo", "Submisso", "Ansioso/Dep.", "Antissocial", "Dominante", "Sedutor/Histr.", "Compulsivo"];
     const vetoresOE = ["Compulsivo", "Sedutor/Histr.", "Dominante", "Antissocial", "Ansioso/Dep.", "Submisso", "Sensitivo", "Esquizoide"];
     const vList = olho === 'OD' ? vetoresOD : vetoresOE;
@@ -971,11 +979,43 @@ function render() {
     ctx.restore();
   }
 
-  // 4. LAYER: Mapa Comportamental Rayid (Denny Johnson — 48 Áreas em Pétalas + Traços Paternos/Maternos)
+  // 4. LAYER: Linha do Tempo / Cronorrischio e Referencial Gestacional (Ciclos de Idade)
+  if ($('layCrono').checked) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    const rCrono = rP + (rI - rP) * 0.36;
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.arc(cx, cy, rCrono, 0, 2 * Math.PI); ctx.stroke();
+
+    // Marcações de 0 a 60 anos ao redor do colarete (sentido horário OD / anti-horário OE)
+    ctx.fillStyle = '#fef08a';
+    ctx.font = `bold ${Math.round(8.5 * K)}px sans-serif`;
+    ctx.textAlign = 'center';
+    for (let idade = 0; idade <= 55; idade += 5) {
+      const frac = idade / 60;
+      const deg = olho === 'OD' ? (frac * 360) : ((360 - frac * 360) % 360);
+      const rad = (deg - 90) * Math.PI / 180;
+      const rx = cx + (rCrono + 14 * K) * Math.cos(rad);
+      const ry = cy + (rCrono + 14 * K) * Math.sin(rad);
+      ctx.fillText(`${idade}a`, rx, ry);
+    }
+    // Quadrantes Gestacionais (T1, T2, T3, Parto)
+    const trimestres = ["1º Trim. Gest.", "2º Trim. Gest.", "3º Trim. Gest.", "Parto / Nasc."];
+    trimestres.forEach((t, i) => {
+      const aRad = (i * 90 + 45 - 90) * Math.PI / 180;
+      const rt = rP + (rI - rP) * 0.16;
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText(t, cx + rt * Math.cos(aRad), cy + rt * Math.sin(aRad));
+    });
+    ctx.restore();
+  }
+
+  // 5. LAYER: Mapa Comportamental Rayid (48 Áreas em Pétalas)
   if ($('layRayid').checked) {
     ctx.save();
     ctx.globalAlpha = alpha;
-    // Desenha as 48 pétalas / formações estruturais ao redor da íris (como no diagrama de Denny Johnson)
     for (let i = 0; i < 48; i++) {
       const deg = i * 7.5;
       const rad = (deg - 90) * Math.PI / 180;
@@ -994,7 +1034,6 @@ function render() {
       ctx.stroke();
       ctx.restore();
     }
-    // Rótulos dos hemisférios Rayid
     ctx.fillStyle = '#f5d0fe';
     ctx.font = `bold ${Math.round(9.5 * K)}px sans-serif`;
     ctx.textAlign = 'center';
@@ -1003,7 +1042,7 @@ function render() {
     ctx.restore();
   }
 
-  // 5. LAYER: Grade de Raios 30°
+  // 6. LAYER: Grade de Raios 30°
   if ($('layRaios').checked && !$('layRelogio').checked) {
     ctx.strokeStyle = `rgba(255, 80, 80, ${0.65 * alpha})`;
     ctx.lineWidth = 1.2;
@@ -1016,7 +1055,7 @@ function render() {
     }
   }
 
-  // 6. LAYER: 7 Zonas Concêntricas (Jensen / GPS)
+  // 7. LAYER: 7 Zonas Concêntricas (Jensen / GPS)
   if ($('layJensen').checked) {
     const st = (rI - rP) / 7;
     for (let i = 1; i < 7; i++) {
@@ -1026,7 +1065,7 @@ function render() {
     }
   }
 
-  // 7. LAYER: Relógio 12h + Nomes dos Órgãos nos Setores (estilo Carta de Jensen)
+  // 8. LAYER: Relógio 12h + Nomes dos Órgãos nos Setores
   if ($('layRelogio').checked) {
     ctx.save();
     ctx.strokeStyle = `rgba(255, 255, 255, ${0.6 * alpha})`;
@@ -1043,7 +1082,6 @@ function render() {
       ctx.stroke();
       ctx.fillText(h + 'h', cx + (rI + 14 * K) * Math.cos(rad), cy + (rI + 14 * K) * Math.sin(rad));
 
-      // Rótulo resumido do órgão principal de cada hora na Zona 5
       const orgaoCurto = obterOrgaoJensen(olho, h % 12, 4).split('/')[0].split('(')[0].trim().slice(0, 14);
       const rOrg = rP + (rI - rP) * 0.72;
       ctx.save();
@@ -1055,7 +1093,7 @@ function render() {
     ctx.restore();
   }
 
-  // 8. LAYER: Anéis de Contração / Tensão (Espasmos Neurovegetativos)
+  // 9. LAYER: Anéis de Contração / Tensão
   if ($('layTensao').checked) {
     ctx.save();
     ctx.strokeStyle = `rgba(251, 146, 60, ${0.85 * alpha})`;
@@ -1069,17 +1107,15 @@ function render() {
     ctx.restore();
   }
 
-  // 9. LAYER: Anel de Sódio / Colesterol e Rosário Linfático (Zona 6-7)
+  // 10. LAYER: Anel de Sódio / Colesterol e Rosário Linfático
   if ($('laySodio').checked) {
     ctx.save();
-    // Halo translúcido do Anel de Sódio na Zona 7
     ctx.strokeStyle = `rgba(226, 232, 240, ${0.45 * alpha})`;
     ctx.lineWidth = (rI - rP) * 0.08;
     ctx.beginPath();
     ctx.arc(cx, cy, rI - (rI - rP) * 0.04, 0, 2 * Math.PI);
     ctx.stroke();
 
-    // Contas do Rosário Linfático na Zona 6
     const rRos = rP + (rI - rP) * 0.86;
     ctx.fillStyle = `rgba(254, 240, 138, ${0.85 * alpha})`;
     for (let a = 0; a < 360; a += 10) {
@@ -1098,7 +1134,7 @@ function render() {
   ctx.strokeStyle = '#22c55e'; ctx.lineWidth = mode === 'iris' ? 5 : 3.5;
   ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2 * Math.PI); ctx.stroke();
 
-  // 10. LAYER: Colarete Real Detectado (Trança do SNA)
+  // 11. LAYER: Colarete Real Detectado (Trança do SNA)
   if ($('layColarete').checked && colareteRows) {
     ctx.save();
     ctx.strokeStyle = `rgba(56, 189, 248, ${0.95 * alpha})`;
@@ -1118,7 +1154,7 @@ function render() {
     ctx.restore();
   }
 
-  // 11. LAYER: Contorno Geométrico das Lacunas (Pétalas/Elipses), Fissuras e Raios Solares
+  // 12. LAYER: Contorno Geométrico das Lacunas (Pétalas/Elipses), Fissuras e Raios Solares
   if ($('layAchados').checked) {
     achadosClinicos.forEach(a => {
       const rad = (a.deg - 90) * Math.PI / 180;
@@ -1127,7 +1163,6 @@ function render() {
       const pend = a.auto && !a.confirmado;
 
       if (a.subtipo === 'raio' || (a.sinal && a.sinal.includes('Raio'))) {
-        // Desenha o sulco radial (Raio Solar) partindo da borda pupilar/colarete até a periferia
         ctx.save();
         ctx.strokeStyle = pend ? '#fb923c' : '#ea580c';
         ctx.lineWidth = pend ? 2.5 : 3.5;
@@ -1138,7 +1173,6 @@ function render() {
         ctx.stroke();
         ctx.restore();
       } else {
-        // Desenha o contorno anatômico em forma de Lacuna / Pétala (elipse orientada radialmente sobre a íris)
         const rx = (rI - rP) * 0.13;
         const ry = (rI - rP) * 0.055;
         ctx.save();
@@ -1155,7 +1189,6 @@ function render() {
         ctx.restore();
       }
 
-      // Pino central e rótulo de hora
       ctx.fillStyle = pend ? '#f59e0b' : '#9333ea';
       ctx.beginPath(); ctx.arc(px, py, 4.5, 0, 2 * Math.PI); ctx.fill();
     });
@@ -1236,11 +1269,10 @@ function analisar() {
   const grauIdx = LIMIARES_TRAMA.filter(t => tramaNorm > t).length;
 
   const nitPct = nitidez !== null ? Math.round(nitidez * 100) : null;
-  const qualidade = nitidez === null ? "não medida" : nitidez < 0.5 ? "baixa — leitura da trama pouco confiável" : nitidez < 0.75 ? "razoável" : "boa";
+  const qualidade = nitidez === null ? "Adequada (não medida)" : nitidez < 0.5 ? "Parcial (desfoque leve)" : nitidez < 0.75 ? "Adequada" : "Alta nitidez";
 
-  // Sugestão automática de Tipologia Rayid pela textura do estroma
   const sugRayid = tramaNorm < 0.22 ? "Joia" : tramaNorm < 0.34 ? "Corrente" : tramaNorm < 0.46 ? "Flor" : "Agitador";
-  $('sugTipo').innerText = `Sugestão pelo padrão de fibras: ${sugRayid}`;
+  $('sugTipo').innerText = `Sugestão morfológica pela trama: ${sugRayid}`;
   const tipoEscolhido = $('pacTipo').value || sugRayid;
 
   dadosBiometricosGlobal = {
@@ -1249,11 +1281,14 @@ function analisar() {
     nitidez: nitPct !== null ? nitPct + '%' : '--',
     qualidade: qualidade,
     constituicao: GRAUS_TRAMA[grauIdx],
-    sna: pr > SNA_ALTO ? "Tendência simpaticotônica (alerta / hipervigilância / exigência)"
-       : pr < SNA_BAIXO ? "Tendência parassimpática (conservação / interiorização / fadiga)"
-       : "Equilíbrio homeostático autonômico",
-    tipologia: `Tipologia Rayid: ${tipoEscolhido} (${$('pacTipo').value ? 'confirmada pelo terapeuta' : 'sugestão automática'})`,
-    anelTensao: statusAnelTensao
+    sna: pr > SNA_ALTO ? "Midríase relativa observada (escola associa a tendência simpaticotônica / alerta)"
+       : pr < SNA_BAIXO ? "Miose relativa observada (escola associa a tendência parassimpática / conservação)"
+       : "Proporção pupilar intermediária (equilíbrio autonômico aparente)",
+    tipologia: `${tipoEscolhido} (${$('pacTipo').value ? 'confirmada pelo avaliador' : 'sugestão morfológica'})`,
+    anelTensao: statusAnelTensao,
+    obsVetorial: $('obsVetorial').value.trim() || "Nenhum relato subjetivo adicional registrado.",
+    obsCrono: $('obsCrono').value.trim() || "Nenhum evento biográfico específico registrado.",
+    obsEsclera: $('obsEsclera').value.trim() || "Sem observações esclerais ou limitações adicionais apontadas."
   };
 
   $('vProp').innerText = dadosBiometricosGlobal.proporcao + '%';
@@ -1265,49 +1300,51 @@ function analisar() {
   Object.assign(dadosBiometricosGlobal, cl);
 
   $('psyTexto').innerText =
-    `• ${dadosBiometricosGlobal.tipologia}\n` +
-    `• Biotipo: ${dadosBiometricosGlobal.biotipoNome}\n` +
-    `• Dinâmica SNA: ${dadosBiometricosGlobal.sna}\n` +
-    `• Colarete (Zona 3): ${dadosBiometricosGlobal.colarete}\n` +
-    `• Anel Gástrico (Zona 1): ${dadosBiometricosGlobal.gastrico}\n` +
-    `• Anéis de Contração: ${dadosBiometricosGlobal.anelTensao}\n` +
-    `• Quadrantes Psíquicos (Marcos V. Dias): Superego (10h30–1h30), Ego/Vontade (laterais) e Instinto (4h30–7h30).`;
+    `1. Constitucional: ${dadosBiometricosGlobal.biotipoNome} | ${dadosBiometricosGlobal.constituicao}\n` +
+    `2. Arquétipo Rayid: ${dadosBiometricosGlobal.tipologia}\n` +
+    `3. Psicoemocional/Vetorial: ${dadosBiometricosGlobal.obsVetorial}\n` +
+    `4/5. Linha do Tempo e Ciclos: ${dadosBiometricosGlobal.obsCrono}\n` +
+    `6. Quadrantes Psicológicos: Superego (Superior), Ego/Vontade (Laterais), Instinto (Inferior)\n` +
+    `7. OPI e Zona Gástrica: ${dadosBiometricosGlobal.bpi} | ${dadosBiometricosGlobal.gastrico}\n` +
+    `8. Pupilologia/SNA: ${dadosBiometricosGlobal.proporcao}% — ${dadosBiometricosGlobal.sna}\n` +
+    `9. Esclera/Limitações: ${dadosBiometricosGlobal.obsEsclera}\n` +
+    `10. Colarete/Coluna: ${dadosBiometricosGlobal.colarete} | Anéis: ${dadosBiometricosGlobal.anelTensao}`;
 
-  $('vDiag').innerHTML = `<b>Constituição:</b> ${dadosBiometricosGlobal.constituicao}<br><b>SNA:</b> ${dadosBiometricosGlobal.sna}<br><b>Qualidade da foto:</b> ${dadosBiometricosGlobal.qualidade}`;
+  $('vDiag').innerHTML = `<b>Aparência da Trama:</b> ${dadosBiometricosGlobal.constituicao}<br><b>Dinâmica Pupilar:</b> ${dadosBiometricosGlobal.sna}<br><b>Qualidade da Imagem:</b> ${dadosBiometricosGlobal.qualidade}`;
 }
 
 /* ---------- CONSTITUIÇÃO, COLARETE REAL E ANEL GÁSTRICO ---------- */
 const BIOTIPOS = {
-  linfatico: { nome: "Linfático / Neurogênico (íris azul ou cinza)", tema: "temas linfáticos, vias respiratórias, mucosas, alergias e retenção hídrica" },
-  hematogenico: { nome: "Hematogênico (íris castanha / marrom)", tema: "sangue, metabolismo de minerais, eixo hepatobiliar e circulação" },
-  misto: { nome: "Misto / Biliar / Hidrogenóide (íris avelã, verde ou mista)", tema: "fígado, vesícula biliar, pâncreas, glicemia e digestão enzimática" }
+  linfatico: { nome: "Linfático / Neurogênico (íris azul ou cinza)", tema: "Tradição associa à atenção com vias respiratórias, sistema linfático, mucosas e reatividade neurogênica" },
+  hematogenico: { nome: "Hematogênico (íris castanha / marrom)", tema: "Tradição associa à atenção com circulação, metabolismo de minerais e eixo hepatobiliar" },
+  misto: { nome: "Misto / Biliar / Hidrogenóide (íris avelã, verde ou mista)", tema: "Tradição associa à atenção digestiva, hepatobiliar, pancreática e equilíbrio hídrico" }
 };
 const TXT_BPI = {
-  normal: "Borda pupilar interna sem alterações visíveis",
-  cor: "Borda pupilar interna com coloração alterada",
-  erosao: "Borda pupilar interna com erosões / irregularidades"
+  normal: "Orla pupilar interna íntegra e regular",
+  cor: "Orla pupilar interna com variação cromática visível",
+  erosao: "Orla pupilar interna com irregularidades / rarefações aparentes"
 };
 const TXT_GASTRICO = {
-  ausente: "Anel gástrico ausente ou discreto",
-  claro: "Anel gástrico claro (leitura: tendência a hiperacidez / irritação gástrica)",
-  escuro: "Anel gástrico escuro (leitura: tendência a hipocloridria / digestão lenta)"
+  ausente: "Anel gástrico discreto ou ausente",
+  claro: "Anel gástrico claro visível na Zona 1 (escola associa a hiperacidez)",
+  escuro: "Anel gástrico escuro/sombreado na Zona 1 (escola associa a hipocloridria)"
 };
 const TXT_COLARETE = {
-  normal: "Colarete de formato equilibrado",
-  distendido: "Colarete distendido (leitura: tônus fraco, tendência centrífuga / dispersiva)",
-  restrito: "Colarete restrito / contraído (leitura: hipertonia esfincteriana, retenção / introversão)",
-  denteado: "Colarete denteado / estrela (leitura: hipertonicidade e oscilação neurovegetativa)",
-  ptose: "Colarete em ptose / queda (leitura: pressão gravitacional sobre pelve e abdômen inferior)"
+  normal: "Colarete de contorno regular e simétrico",
+  distendido: "Colarete distendido/afastado da pupila (escola associa a perfil centrífugo)",
+  restrito: "Colarete restrito/contraído próximo à pupila (escola associa a perfil centrípeto)",
+  denteado: "Colarete denteado / em zigue-zague (escola associa a oscilação neurovegetativa)",
+  ptose: "Colarete com achatamento/queda superior (escola associa a ptose transversal)"
 };
 const SINAIS = [
-  "Lacuna / Pétala Aberta (Fragilidade)", "Lacuna Fechada — Folha", "Lacuna Fechada — Borboleta",
-  "Lacuna — Favo de Mel (Honeycomb)", "Lacuna — Tulipa / Torpedo", "Cripta / Ponto de Defeito (Profundo)",
-  "Raio Solar (Tensão Neurovegetativa)", "Linha Transversal / Aberrante",
-  "Mancha Pigmentada / Psora (Sobrecarga)", "Anel de Contração / Tensão",
-  "Rosário Linfático (Estase Zona 6)", "Anel de Sódio / Colesterol (Zona 7)",
-  "Fibra de Cura / Luteoma de Cálcio"
+  "Lacuna / Pétala Aberta", "Lacuna Fechada — Folha", "Lacuna Fechada — Borboleta",
+  "Lacuna — Favo de Mel (Honeycomb)", "Lacuna — Tulipa / Torpedo", "Cripta / Ponto Escuro Profundo",
+  "Raio Solar (Fenda Radial)", "Linha Transversal / Aberrante",
+  "Mancha Pigmentada / Psora", "Anel de Contração / Tensão",
+  "Rosário Linfático (Zona 6)", "Anel de Sódio / Colesterol (Zona 7)",
+  "Fibra Clara / Sinal de Regeneração"
 ];
-const ESTAGIOS = ["A definir", "Agudo (claro/inflamado)", "Subagudo (acinzentado)", "Crônico (escuro/fechado)", "Degenerativo (profundo)", "Cura / Regeneração (fibras brancas)"];
+const ESTAGIOS = ["A definir", "Agudo (claro)", "Subagudo (acinzentado)", "Crônico (escuro/fechado)", "Degenerativo (profundo)", "Regeneração (fibras claras)"];
 const NOME_OLHO = { OD: "Olho Direito (OD)", OE: "Olho Esquerdo (OE)" };
 
 function opts(arr, sel) { return arr.map(v => `<option value="${v}"${v === sel ? ' selected' : ''}>${v}</option>`).join(''); }
@@ -1324,7 +1361,7 @@ function classificarCor(inn, out) {
   const mx = Math.max(mO.r, mO.g, mO.b), mn = Math.min(mO.r, mO.g, mO.b);
   const sat = mx > 0 ? (mx - mn) / mx : 0;
   if (mO.b - mO.r > 4) {
-    if (mI.r - mI.b > 28) return { chave: 'misto', cor: 'Azul/cinza periférico com heterocromia central âmbar' };
+    if (mI.r - mI.b > 28) return { chave: 'misto', cor: 'Azul/cinza periférico com centro âmbar' };
     return { chave: 'linfatico', cor: sat < 0.15 ? 'Cinza' : 'Azul' };
   }
   if (mO.g / Math.max(1, mO.r) > 0.84 && lumO > 80) return { chave: 'misto', cor: 'Avelã / Esverdeada' };
@@ -1357,7 +1394,6 @@ function colareteLinha(x, y0, y1) {
   return bv > 4 ? best : NaN;
 }
 
-// Detecção completa do Colarete (com cálculo real de Ptose, Denteado, Distendido e Restrito)
 function detectarColarete() {
   const y0 = 5, y1 = 38;
   const hist = new Array(PH + 2).fill(0);
@@ -1416,14 +1452,14 @@ function analiseConstitucional(bIn, bOut) {
     corIris: sug.cor || '--',
     biotipoNome: bioKey ? BIOTIPOS[bioKey].nome : 'não definido',
     biotipoTema: bioKey ? BIOTIPOS[bioKey].tema : '',
-    biotipoOrigem: bioSel ? 'confirmado pelo terapeuta' : (sug.biotipo ? 'sugestão automática' : '-'),
-    bpi: bpiSel ? TXT_BPI[bpiSel] : 'não avaliada',
+    biotipoOrigem: bioSel ? 'confirmado pelo avaliador' : (sug.biotipo ? 'sugestão automática' : '-'),
+    bpi: bpiSel ? TXT_BPI[bpiSel] : 'Orla pupilar interna não classificada especificamente',
     gastrico: gKey ? TXT_GASTRICO[gKey] : 'não avaliado',
     colarete: cKey ? TXT_COLARETE[cKey] : 'não avaliado'
   };
 }
 
-/* ---------- SALVAR OS DOIS OLHOS (COM IMAGEM DO MAPA SOBREPOSTO) ---------- */
+/* ---------- SALVAR OS DOIS OLHOS (COM IMAGEM DO MAPA SOBREPOSTO E LIMPA) ---------- */
 function capturaThumb() {
   const z = $('layZoom').checked;
   if (z) $('layZoom').checked = false;
@@ -1437,7 +1473,7 @@ function capturaThumb() {
   return u;
 }
 function fotoLimpa() {
-  const sc = Math.min(1, 1024 / Math.max(img.width, img.height));
+  const sc = Math.min(1, 900 / Math.max(img.width, img.height));
   const t = document.createElement('canvas');
   t.width = Math.round(img.width * sc); t.height = Math.round(img.height * sc);
   t.getContext('2d').drawImage(img, 0, 0, t.width, t.height);
@@ -1449,7 +1485,7 @@ function snapshotAtual(op = {}) {
   return {
     olho: $('pacOlho').value,
     d: { ...dadosBiometricosGlobal },
-    achados: achadosConfirmados().map(a => ({ hora: a.hora, zona: a.zona, orgao: a.orgao, sinal: a.sinal, estagio: a.estagio || 'A definir' })),
+    achados: achadosConfirmados().map(a => ({ hora: a.hora, deg: Math.round(a.deg), zona: a.zona, orgao: a.orgao, sinal: a.sinal, estagio: a.estagio || 'A definir' })),
     thumb: op.thumb ? capturaThumb() : null,
     foto: op.foto ? fotoLimpa() : null
   };
@@ -1470,78 +1506,142 @@ function coletarOlhos(op = {}) {
   return ['OD', 'OE'].map(k => m[k]).filter(Boolean);
 }
 
-/* ---------- LEITURA INTEGRATIVA PROFUNDA COM IA (GEMINI) E MODELO LOCAL ---------- */
+/* ========================================================================= */
+/* SUPER PROMPT DOS 10 REFERENCIAIS MULTIDIMENSIONAIS + TRIPLO FILTRO        */
+/* ========================================================================= */
 function dadosEstruturados(olhos) {
   return {
-    queixa_principal: $('pacQueixa').value.trim() || 'não informada',
-    sistema_de_zonas: mapaGPS() ? 'Método GPS (Gérson Practical System)' : 'Mapa Clássico de Bernard Jensen',
+    data_registro: new Date().toLocaleDateString('pt-BR'),
+    avaliador: $('pacAvaliador').value.trim() || 'Profissional Avaliador',
+    equipamento_iluminacao: $('pacEquip').value.trim() || 'Registro fotográfico digital',
+    objetivo_queixa_cliente: $('pacQueixa').value.trim() || 'Autoconhecimento e observação integrativa',
+    sistema_de_zonas: mapaGPS() ? 'Método GPS (Gérson Practical System)' : 'Mapa Clássico de Bernard Jensen / Escola Alemã',
     olhos_avaliados: olhos.map(s => ({
-      olho: s.olho === 'OD' ? 'Direito (OD — reflete hemicorpo direito / aspecto Yang / razão)' : 'Esquerdo (OE — reflete hemicorpo esquerdo / aspecto Yin / emoção)',
-      cor_da_iris: s.d.corIris,
-      biotipo_constitucional: `${s.d.biotipoNome} (${s.d.biotipoOrigem})`,
-      temas_hereditarios_biotipo: s.d.biotipoTema,
-      densidade_trama_fibras: `${s.d.constituicao} (índice ${s.d.trama})`,
-      tipologia_rayid: s.d.tipologia,
-      qualidade_nitidez_foto: s.d.qualidade,
-      proporcao_pupila_iris_pct: s.d.proporcao,
-      dinamica_sna: s.d.sna,
-      borda_pupilar_interna: s.d.bpi,
-      anel_gastrico_zona1: s.d.gastrico,
-      colarete_zona3_sna: s.d.colarete,
-      aneis_de_tensao_contracao: s.d.anelTensao,
-      achados_topograficos_confirmados_pelo_terapeuta: s.achados
+      olho: s.olho === 'OD' ? 'Olho Direito (OD)' : 'Olho Esquerdo (OE)',
+      qualidade_e_nitidez: `${s.d.qualidade} (Nitidez borda pupilar: ${s.d.nitidez})`,
+      referencial_1_constitucional: {
+        cor_observada: s.d.corIris,
+        biotipo: `${s.d.biotipoNome} (${s.d.biotipoOrigem})`,
+        temas_associados_pela_escola: s.d.biotipoTema,
+        densidade_aparente_trama: `${s.d.constituicao} (índice ${s.d.trama})`,
+        sinais_confirmados_setoriais: s.achados
+      },
+      referencial_2_rayid: s.d.tipologia,
+      referencial_3_psicoterapeutico_vetorial: s.d.obsVetorial,
+      referencial_4_e_5_cronorrischio_e_ciclos: s.d.obsCrono,
+      referencial_6_quadrantes_psicologicos: "Superior (10h30-1h30: Superego/Ideal), Laterais (Ego/Vontade), Inferior (4h30-7h30: Instinto/Base)",
+      referencial_7_opi_e_zona_gastrica: { opi: s.d.bpi, anel_gastrico: s.d.gastrico },
+      referencial_8_pupilologia_sna: { proporcao_pupila_iris_pct: s.d.proporcao, leitura_autonomica: s.d.sna, aneis_tensao: s.d.anelTensao },
+      referencial_9_esclera_e_limitacoes: s.d.obsEsclera,
+      referencial_10_colarete_e_coluna: s.d.colarete
     }))
   };
 }
 
 function montarPrompt(d) {
-  return `Você é um iridólogo sênior e terapeuta integrativo especialista na Escola Clássica (Bernard Jensen), no Método GPS (Gérson Practical System), na Tipologia Comportamental Rayid (Denny Johnson) e na Iridologia Psicoemocional e Vetorial (Marcos Viviano Dias).
+  return `Você é um Especialista Sênior em Iridologia Multidimensional e Terapia Integrativa, com domínio profundo das escolas Clássica/Constitucional (Jensen, Deck, Escola Alemã), Método GPS, Comportamental (Rayid), Psicoemocional/Vetorial (Marcos Viviano Dias), Cronorrischio (Linha do Tempo), Orla Pupilar Interna (OPI) e Pupilologia.
 
-Sua tarefa é redigir um RELATÓRIO INTEGRATIVO COMPLETO em português do Brasil, com linguagem simples, fluida, acolhedora e compreensível para qualquer pessoa, mantendo a profundidade técnica para o terapeuta.
+Sua missão é redigir um RELATÓRIO DE OBSERVAÇÃO IRIDOLÓGICA MULTIDIMENSIONAL PREMIUM em português do Brasil, utilizando linguagem simples, fluida, acolhedora e acessível a qualquer pessoa, mantendo rigor técnico e organização impecável.
 
-Regras fundamentais:
-- Baseie-se estritamente nos DADOS ESTRUTURADOS abaixo, que já passaram pela conferência (Sim/Não) do terapeuta. Não invente sinais que não estejam nos dados.
-- Caso receba imagens anexas, utilize-as para enriquecer a percepção visual do estroma, colarete e lacunas, indicando claramente o que é observação complementar.
-- Adote linguagem ética e observacional ("sugere", "aponta tendência para", "convida a observar"). Nunca utilize termos médicos fechados como "diagnóstico", "doença" ou "prescrição".
-- Integre todas as dimensões avaliadas nas abas:
-  1. Biotipo Constitucional, Hereditariedade e Densidade da Trama.
-  2. Dinâmica do Sistema Nervoso Autônomo (Proporção pupilar, BPI, Anel Gástrico e formato do Colarete).
-  3. Mapeamento Topográfico dos Sinais Confirmados (Lacunas, Criptas, Raios Solares) e seus respectivos Estágios.
-  4. Leitura Comportamental e Psicoemocional: integre o arquétipo Rayid e os Quadrantes Psicológicos / Vetoriais de acordo com os setores onde os sinais se concentram (ex.: setor superior = Superego/Mental; laterais = Ego/Vontade; inferior = Instinto/Vitalidade).
-  5. Síntese Integrativa e Orientações Práticas (hábitos de vida, regulação do estresse, suporte nutricional/natural suave e perguntas reflexivas para a sessão terapêutica).
-- Finalize com a nota: "Leitura integrativa complementar, não substitui avaliação médica ou clínica."
-- Extensão ideal: entre 700 e 1100 palavras, bem divididas em títulos claros.
+=================================================================
+DIRETRIZES ÉTICAS E METODOLÓGICAS (OBRIGATÓRIAS, SEM EXCEÇÃO):
+=================================================================
+1. O TRIPLO FILTRO: Em toda a leitura, diferencie claramente para o leitor:
+   - [Observação Visual]: O que está fisicamente visível na topografia da imagem (lacunas, fibras, pigmentos, formato do colarete).
+   - [Relato do Cliente]: A queixa informada e o contexto biográfico trazido pelo próprio cliente.
+   - [Hipótese da Escola]: O significado simbólico, energético ou reflexo segundo a tradição iridológica específica.
+2. LINGUAGEM OBSERVACIONAL E ÉTICA: Nunca feche diagnósticos médicos, psiquiátricos ou nutricionais, nem prescreva medicamentos ou suplementos pela íris. Substitua termos deterministas por expressões integrativas: "Na leitura da escola X, este sinal convida a observar...", "Tradicionalmente associado à atenção com...", "Sugere diálogo sobre...".
+3. FIDELIDADE AOS DADOS: Baseie-se estritamente nos DADOS ESTRUTURADOS validados pelo avaliador (e nas imagens anexas, se enviadas). Não invente sinais.
+4. TOM DE VOZ: Empático, sereno, claro e estruturador. Evite repetir avisos legais defensivos a cada linha; concentre a nota de escopo na abertura e no encerramento.
 
-DADOS ESTRUTURADOS DAS ABAS:
+=================================================================
+ESTRUTURA OBRIGATÓRIA DO RELATÓRIO:
+=================================================================
+
+1. IDENTIFICAÇÃO E CONDIÇÕES DO REGISTRO
+- Apresente a data, avaliador(a), equipamento/iluminação, objetivo relatado pelo cliente, olhos avaliados, qualidade técnica da captura e eventuais limitações (reflexos/sombras).
+
+2. DASHBOARD EXECUTIVO (VISÃO GERAL)
+- Resumo Observacional: Síntese clara das características visuais predominantes de cada olho (cor aparente, arranjo das fibras e relação pupila-colarete).
+- Destaques Documentados: Visão panorâmica dos principais achados topográficos confirmados.
+- Questões para Avaliação Independente: Pontos do relato do cliente que merecem acompanhamento clínico/médico ou laboratorial paralelo.
+
+3. BLOCO 1 | REGISTRO INDIVIDUAL DOS DEZ REFERENCIAIS
+(Desenvolva os 10 subtópicos numerados de 3.1 a 3.10 de forma fluida e completa):
+  3.1. Mapa Topográfico Somático / Constitucional (Jensen / GPS / Escola Alemã): Cor aparente, biotipo, densidade aparente da trama e análise detalhada de cada sinal confirmado (coordenada, zona, região reflexa segundo a escola e estágio).
+  3.2. Mapa Comportamental e Arquétipos (Rayid): Elementos morfológicos, classificação proposta pela escola (Flor, Joia, Agitador, Corrente ou Misto) e perguntas abertas para reflexão do cliente.
+  3.3. Mapa Psicoterapêutico e Vetorial (Marcos V. Dias): Distribuição nos vetores de temperamento, esferas concêntricas e eixo Yang (superior/ativo) vs. Yin (inferior/passivo), articulando com os temas subjetivos relatados.
+  3.4. Linha do Tempo / Cronorrischio: Leitura simbólica temporal dos sinais próximos ao colarete (sem datar traumas nem projetar eventos futuros), dialogando com eventos biográficos se relatados.
+  3.5. Ciclos da Vida e Referencial Gestacional: Leitura simbólica dos quadrantes vitais de base e acolhimento da história familiar relatada.
+  3.6. Quadrantes Psicológicos: Observação dos setores Superior (Superego: ideal/dever), Laterais (Ego e Vontade: adaptação e coragem) e Inferior (Instinto: vitalidade e pulsação).
+  3.7. Orla Pupilar Interna (OPI / BPI) e Zona Gástrica: Aspecto observado da borda pupilar e do anel gástrico (Zona 1) na visão histórica das diáteses e vitalidade de base.
+  3.8. Pupilologia e Dinâmica do Sistema Nervoso Autônomo (SNA): Diâmetro relativo Pupila/Íris, tendência autonômica aparente e anéis de tensão/contração. (Inclua nota orientando avaliação médica imediata caso surja anisocoria nova ou sintomas oculares/neurológicos agudos).
+  3.9. Mapa Escleral, Conjuntival e Periférico (Zonas 6 e 7): Sinais periféricos (Rosário Linfático, Anel de Sódio) e observações esclerais registradas.
+  3.10. Referencial da Coluna Vertebral no Colarete: Aspecto visual da trança do SNA (Zona 3) como fronteira entre assimilação interna e expressão externa.
+
+4. BLOCO 2 | SÍNTESE E CRUZAMENTO ENTRE REFERENCIAIS
+- 4.1. Convergência entre os Mapas: Mostre como os sinais vistos no mapa somático conversam com os quadrantes psicológicos, com o colarete e com o arquétipo Rayid.
+- 4.2. Relação com as Queixas Relatadas: Separe claramente o relato do cliente, a observação ocular e a hipótese simbólica.
+- 4.3. Perguntas Terapêuticas para a Sessão: Formule 5 perguntas profundas e acolhedoras para diálogo em consultório.
+
+5. RECOMENDAÇÕES DE AUTOCUIDADO E PLANO DE ACOMPANHAMENTO
+- Hábitos gerais de regulação autonômica (sono, respiração, manejo de estresse, hidratação, pausas) e sugestões de acompanhamento interdisciplinar (médico, oftalmológico, psicológico/terapêutico).
+
+DADOS ESTRUTURADOS DA AVALIAÇÃO:
 ${JSON.stringify(d, null, 2)}`;
 }
 
+/* ---------- GERADOR LOCAL COMPLETO (CASO USADO SEM CHAVE DE API) ---------- */
 function modeloLocal(d) {
-  const blocos = d.olhos_avaliados.map(o => {
-    const ach = o.achados_topograficos_confirmados_pelo_terapeuta.length
-      ? o.achados_topograficos_confirmados_pelo_terapeuta.map(a => `   • ${a.orgao} (${a.hora}, ${a.zona}): ${a.sinal} — Estágio: ${a.estagio}`).join('\n')
-      : "   • Nenhum sinal focal confirmado na aba Topografia.";
-    return `▸ ${o.olho}\n` +
-      `   • Biotipo: ${o.biotipo_constitucional}\n` +
-      `   • Tendências do Biotipo: ${o.temas_hereditarios_biotipo || '-'}\n` +
-      `   • Trama / Fibras: ${o.densidade_trama_fibras}\n` +
-      `   • ${o.tipologia_rayid}\n` +
-      `   • Dinâmica Autonômica (SNA): ${o.dinamica_sna}\n` +
-      `   • Borda Pupilar Interna: ${o.borda_pupilar_interna}\n` +
-      `   • Anel Gástrico (Zona 1): ${o.anel_gastrico_zona1}\n` +
-      `   • Colarete / Trança SNA (Zona 3): ${o.colarete_zona3_sna}\n` +
-      `   • Anéis de Contração: ${o.aneis_de_tensao_contracao}\n` +
-      `   • Sinais Topográficos Confirmados:\n${ach}`;
+  const blocosOlhos = d.olhos_avaliados.map(o => {
+    const r1 = o.referencial_1_constitucional;
+    const ach = r1.sinais_confirmados_setoriais.length
+      ? r1.sinais_confirmados_setoriais.map((a, idx) => `      ${idx + 1}. [${a.hora} / ${a.deg}° - ${a.zona}] Região reflexa (${d.sistema_de_zonas}): ${a.orgao} — Sinal visual: ${a.sinal} (Estágio: ${a.estagio})`).join('\n')
+      : "      • Nenhuma marcação setorial focal confirmada neste olho.";
+    return `=================================================================\n` +
+      `OLHO AVALIADO: ${o.olho} | Qualidade: ${o.qualidade_e_nitidez}\n` +
+      `=================================================================\n` +
+      `1. MAPA TOPOGRÁFICO SOMÁTICO / CONSTITUCIONAL (${d.sistema_de_zonas}):\n` +
+      `   • [Observação Visual]: Cor aparente ${r1.cor_observada}; ${r1.densidade_aparente_trama}.\n` +
+      `   • [Hipótese da Escola]: Classificado como ${r1.biotipo}. ${r1.temas_associados_pela_escola}.\n` +
+      `   • [Marcas e Setores Confirmados]:\n${ach}\n\n` +
+      `2. MAPA COMPORTAMENTAL E ARQUÉTIPOS (RAYID):\n` +
+      `   • Classificação proposta: ${o.referencial_2_rayid}.\n` +
+      `   • Nota: Padrões morfológicos servem como convite à auto-observação e diálogo terapêutico, sem determinar personalidade fixa.\n\n` +
+      `3. MAPA PSICOTERAPÊUTICO E VETORIAL (MARCOS V. DIAS):\n` +
+      `   • Temas subjetivos relatados pelo cliente: ${o.referencial_3_psicoterapeutico_vetorial}\n` +
+      `   • Leitura: Articulação entre os vetores superiores (ativos/Yang) e inferiores (conservadores/Yin).\n\n` +
+      `4 & 5. LINHA DO TEMPO (CRONORRISCHIO) E CICLOS / GESTACIONAL:\n` +
+      `   • Eventos biográficos relatados espontaneamente: ${o.referencial_4_e_5_cronorrischio_e_ciclos}\n` +
+      `   • Nota: Sinais no colarete e estroma não datam traumas nem preveem eventos futuros.\n\n` +
+      `6. QUADRANTES PSICOLÓGICOS:\n` +
+      `   • Referencial simbólico: ${o.referencial_6_quadrantes_psicologicos}.\n\n` +
+      `7. ORLA PUPILAR INTERNA (OPI) E ZONA GÁSTRICA:\n` +
+      `   • Aspecto da OPI: ${o.referencial_7_opi_e_zona_gastrica.opi}.\n` +
+      `   • Zona 1 (Anel Gástrico): ${o.referencial_7_opi_e_zona_gastrica.anel_gastrico}.\n\n` +
+      `8. PUPILOLOGIA E DINÂMICA DO SNA:\n` +
+      `   • Relação Pupila/Íris medida na foto: ${o.referencial_8_pupilologia_sna.proporcao_pupila_iris_pct}% — ${o.referencial_8_pupilologia_sna.leitura_autonomica}.\n` +
+      `   • Anéis de Contração/Tensão: ${o.referencial_8_pupilologia_sna.aneis_tensao}.\n` +
+      `   • Nota de Segurança: O calibre pupilar varia com a luz da foto. Anisocoria nova ou sintomas visuais/neurológicos exigem avaliação médica imediata.\n\n` +
+      `9. MAPA ESCLERAL, CONJUNTIVAL E LIMITAÇÕES:\n` +
+      `   • Registro: ${o.referencial_9_esclera_e_limitacoes}\n\n` +
+      `10. REFERENCIAL DO COLARETE E COLUNA:\n` +
+      `   • Aspecto visual do Colarete (Zona 3): ${o.referencial_10_colarete_e_coluna}.`;
   }).join('\n\n');
 
-  return `[PRÉ-LAUDO INTEGRATIVO LOCAL — Gerado sem chave de API]\n\n` +
-    `Queixa / Foco Principal: ${d.queixa_principal}\n` +
-    `Cartografia Utilizada: ${d.sistema_de_zonas}\n\n` +
-    `${blocos}\n\n` +
-    `SÍNTESE PSICOSSOMÁTICA E ORIENTAÇÕES GERAIS:\n` +
-    `• Os achados acima reúnem a conferência das 4 abas (Visualização, Topografia, Constituição/Psico e Relatório).\n` +
-    `• Para gerar a narrativa clínica profunda redigida pela Inteligência Artificial, insira sua chave da API Gemini no campo acima e clique novamente no botão verde.\n\n` +
-    `Leitura integrativa complementar, não substitui avaliação médica ou clínica.`;
+  return `IDENTIFICAÇÃO E CONDIÇÕES DO REGISTRO\n` +
+    `• Data: ${d.data_registro} | Avaliador(a): ${d.avaliador}\n` +
+    `• Equipamento / Iluminação: ${d.equipamento_iluminacao}\n` +
+    `• Objetivo / Queixa informada pelo cliente: ${d.objetivo_queixa_cliente}\n\n` +
+    `DASHBOARD EXECUTIVO\n` +
+    `• Este documento organiza as observações visuais colhidas nas 4 abas da Estação Iridológica segundo o Triplo Filtro (Observação Visual, Relato do Cliente e Hipótese Simbólica da Escola).\n\n` +
+    `BLOCO 1 | REGISTRO INDIVIDUAL DOS DEZ REFERENCIAIS\n\n${blocosOlhos}\n\n` +
+    `BLOCO 2 | SÍNTESE E CRUZAMENTO ENTRE REFERENCIAIS\n` +
+    `• Relação com a queixa relatada ("${d.objetivo_queixa_cliente}"): As observações visuais acima oferecem um mapa simbólico para diálogo em sessão, separando-se claramente a vivência subjetiva do cliente das hipóteses tradicionais de cada escola.\n` +
+    `• Dica: Para gerar uma redação narrativa aprofundada cruzando todos os pontos acima via Inteligência Artificial, insira sua chave Gemini no campo superior e clique em Gerar Relatório Premium.\n\n` +
+    `RECOMENDAÇÕES E PLANO DE CUIDADO\n` +
+    `• Práticas gerais de autorregulação autonômica (qualidade do sono, pausas respiratórias, hidratação adequada e manejo de estresse).\n` +
+    `• Manter acompanhamento médico, oftalmológico e exames laboratoriais em dia para avaliação clínica independente de qualquer sintoma físico.`;
 }
 
 async function gerarRelatorioProfundoIA() {
@@ -1570,14 +1670,14 @@ async function gerarRelatorioProfundoIA() {
   }
 
   const rotulo = btn.textContent;
-  btn.disabled = true; btn.textContent = '⏳ Analisando todas as abas com a IA...';
+  btn.disabled = true; btn.textContent = '⏳ Elaborando Relatório Multidimensional com IA...';
   try {
     const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: parts }],
-        generationConfig: { temperature: 0.75, maxOutputTokens: 8192 }
+        generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
       })
     });
     const j = await resp.json();
@@ -1587,40 +1687,41 @@ async function gerarRelatorioProfundoIA() {
     if (!txt) throw new Error('resposta vazia da IA');
     box.value = txt;
   } catch (err) {
-    box.value = `Aviso: Não foi possível conectar à API Gemini (${err.message}). Exibindo o relatório estruturado local:\n\n` + modeloLocal(d);
+    box.value = `Aviso: Não foi possível conectar à API Gemini (${err.message}). Exibindo o Relatório Multidimensional estruturado local:\n\n` + modeloLocal(d);
   } finally {
     btn.disabled = false; btn.textContent = rotulo;
   }
 }
 
-/* ---------- EXPORTAÇÃO DO LAUDO (.TXT E .HTML COM IMAGENS DOS MAPAS) ---------- */
+/* ========================================================================= */
+/* EXPORTAÇÃO EM .TXT E RELATÓRIO EDITORIAL PREMIUM (.HTML / PDF)            */
+/* ========================================================================= */
+const AVISO_ESCOPO = "IMPORTANTE: A iridologia não é um método diagnóstico validado cientificamente. Características da íris não permitem identificar doenças, órgãos comprometidos, traumas, deficiências nutricionais, níveis de neurotransmissores, personalidade ou prognóstico. Este documento organiza observações visuais e hipóteses próprias de diferentes escolas iridológicas, sem substituir avaliação médica, exames ou acompanhamento psicológico.";
+
 function montarLaudo() {
-  const nome = $('pacNome').value || "Avaliado(a)";
+  const nome = $('pacNome').value || "Cliente não identificado(a)";
+  const avaliador = $('pacAvaliador').value || "Avaliador(a)";
+  const equip = $('pacEquip').value || "Lente Macro / Iluminação LED";
   const queixa = $('pacQueixa').value || "-";
   const olhos = coletarOlhos();
-  const mapa = mapaGPS() ? 'GPS (Gérson Practical System)' : 'Bernard Jensen';
+  const d = dadosEstruturados(olhos);
   const ia = $('aiSaidaRelatorio').value.trim();
-  const porOlho = fn => olhos.length
-    ? olhos.map(s => `  ▸ ${NOME_OLHO[s.olho]}\n${fn(s)}`).join('\n\n')
-    : '  (nenhum olho registrado)';
 
-  return `=================================================\n` +
-    `LEITURA IRIDOLÓGICA INTEGRATIVA & PSICOSSOMÁTICA\n` +
-    `=================================================\n` +
-    `Avaliado(a): ${nome}\n` +
-    `Queixa principal: ${queixa}\n` +
-    `Cartografia de zonas: ${mapa}\n\n` +
-    `1. BIOTIPO, HEREDITARIEDADE E TIPOLOGIA RAYID\n` +
-    porOlho(s => `     - Cor da íris: ${s.d.corIris}\n     - Biotipo: ${s.d.biotipoNome} (${s.d.biotipoOrigem})\n     - Temas do biotipo: ${s.d.biotipoTema || '-'}\n     - Densidade das fibras: ${s.d.constituicao} — índice ${s.d.trama}\n     - Qualidade da foto: ${s.d.qualidade}\n     - ${s.d.tipologia}`) + `\n\n` +
-    `2. ZONA PUPILAR, COLARETE E SISTEMA NERVOSO AUTÔNOMO\n` +
-    porOlho(s => `     - Relação pupila / íris: ${s.d.proporcao}% — ${s.d.sna}\n     - ${s.d.bpi}\n     - ${s.d.gastrico}\n     - ${s.d.colarete}\n     - Anéis de tensão / contração: ${s.d.anelTensao}`) + `\n\n` +
-    `3. MAPEAMENTO TOPOGRÁFICO E ESTÁGIOS (Sinais Confirmados)\n` +
-    porOlho(s => s.achados.length
-      ? s.achados.map((a, i) => `     ${i + 1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal} — Estágio: ${a.estagio}`).join('\n')
-      : '     Nenhum sinal focal confirmado.') + `\n\n` +
-    `4. SÍNTESE INTEGRATIVA E ORIENTAÇÕES\n${ia ? ia : modeloLocal(dadosEstruturados(olhos))}\n\n` +
-    `-------------------------------------------------\n` +
-    `Leitura simbólica e integrativa complementar. Não substitui avaliação clínica.\n`;
+  return `=================================================================\n` +
+    `RELATÓRIO DE OBSERVAÇÃO IRIDOLÓGICA — MODELO MULTIDIMENSIONAL\n` +
+    `=================================================================\n` +
+    `Cliente: ${nome}    Data: ${d.data_registro}\n` +
+    `Avaliador(a): ${avaliador}\n` +
+    `Equipamento / Iluminação: ${equip}\n` +
+    `Objetivo / Queixa informada: ${queixa}\n\n` +
+    `LEIA ANTES DA UTILIZAÇÃO:\n${AVISO_ESCOPO}\n\n` +
+    `-----------------------------------------------------------------\n` +
+    `${ia ? ia : modeloLocal(d)}\n` +
+    `-----------------------------------------------------------------\n` +
+    `DECLARAÇÃO DE ESCOPO E RESPONSABILIDADE:\n` +
+    `Este relatório é um registro complementar de observações visuais e de referenciais históricos da iridologia. Não constitui laudo médico, diagnóstico, prognóstico, avaliação psicológica ou prescrição terapêutica.\n\n` +
+    `Assinatura do(a) avaliador(a): __________________________  Data: ${d.data_registro}\n` +
+    `Ciência do cliente: _____________________________________  Data: ${d.data_registro}\n`;
 }
 
 function baixar(conteudo, tipo, arquivo) {
@@ -1631,22 +1732,145 @@ function baixar(conteudo, tipo, arquivo) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
-function nomeArquivo() { return ($('pacNome').value || 'Leitura').trim().replace(/[^\w\-]+/g, '_'); }
+function nomeArquivo() { return ($('pacNome').value || 'Cliente').trim().replace(/[^\w\-]+/g, '_'); }
 
 function dlLaudo() {
   if (!loaded) return;
-  baixar(montarLaudo(), 'text/plain;charset=utf-8', `Leitura_Integrativa_${nomeArquivo()}.txt`);
+  baixar(montarLaudo(), 'text/plain;charset=utf-8', `Relatorio_Iridologico_${nomeArquivo()}.txt`);
+}
+
+function formatarMarkdownParaHTML(texto) {
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return esc(texto)
+    .replace(/^# (.*$)/gm, '<h1 class="h1-doc">$1</h1>')
+    .replace(/^## (.*$)/gm, '<h1 class="h1-doc">$1</h1>')
+    .replace(/^### (.*$)/gm, '<h2 class="h2-doc">$1</h2>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
 }
 
 function dlRelatorioHTML() {
   if (!loaded) return;
-  const olhos = coletarOlhos({ thumb: true });
-  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const imgs = olhos.map(s => `<figure style="margin:0; text-align:center;"><img src="${s.thumb || ''}" style="width:100%;max-width:350px;border-radius:10px;border:2px solid #0284c7;"><figcaption style="font-weight:bold;margin-top:4px;">${NOME_OLHO[s.olho]} (com Mapas Ativos)</figcaption></figure>`).join('');
-  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Leitura Iridológica Integrativa</title>` +
-    `<style>body{font-family:system-ui,sans-serif;max-width:800px;margin:24px auto;padding:0 16px;color:#0f172a;background:#fff}.imgs{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}pre{white-space:pre-wrap;font:14px/1.6 system-ui,sans-serif;background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #cbd5e1}@media print{.no-print{display:none}}</style></head>` +
-    `<body><div class="no-print" style="margin-bottom:12px;text-align:right;"><button onclick="window.print()" style="padding:8px 14px;background:#0284c7;color:#fff;border:none;border-radius:6px;font-weight:bold;cursor:pointer;">🖨️ Imprimir / Salvar em PDF</button></div><div class="imgs">${imgs}</div><pre>${esc(montarLaudo())}</pre></body></html>`;
-  baixar(html, 'text/html;charset=utf-8', `Leitura_Integrativa_${nomeArquivo()}.html`);
+  const olhos = coletarOlhos({ thumb: true, foto: true });
+  const d = dadosEstruturados(olhos);
+  const nome = $('pacNome').value || "Cliente";
+  const avaliador = $('pacAvaliador').value || "Profissional Avaliador";
+  const equip = $('pacEquip').value || "Lente Macro / LED";
+  const queixa = $('pacQueixa').value || "Observação complementar";
+  const corpoTexto = $('aiSaidaRelatorio').value.trim() || modeloLocal(d);
+
+  // Galeria Comparativa (Foto Original + Mapa Vetorial Sobreposto)
+  const galeriaOlhos = olhos.map(s => `
+    <div class="eye-pair">
+      <div class="eye-box">
+        <img src="${s.foto || s.thumb || ''}" alt="Original ${s.olho}">
+        <div class="cap">${NOME_OLHO[s.olho]} — Imagem Original (${s.d.qualidade})</div>
+      </div>
+      <div class="eye-box">
+        <img src="${s.thumb || ''}" alt="Mapeado ${s.olho}">
+        <div class="cap">${NOME_OLHO[s.olho]} — Mapeamento Vetorial e Sinais</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Anexo: Fichas de Marcação Fotográfica Individualizadas
+  const fichasAnexo = olhos.map(s => {
+    if (!s.achados.length) return `<p><b>${NOME_OLHO[s.olho]}:</b> Nenhuma marcação focal individual registrada.</p>`;
+    return s.achados.map((a, i) => `
+      <div class="ficha-item">
+        <b>Ficha #${i + 1} | Olho:</b> ${NOME_OLHO[s.olho]} &nbsp;•&nbsp; <b>Coordenada:</b> ${a.hora} (${a.deg}° / ${a.zona}) &nbsp;•&nbsp; <b>Sinal Visual:</b> ${a.sinal}<br>
+        <b>Região de Referência (${d.sistema_de_zonas}):</b> ${a.orgao} &nbsp;•&nbsp; <b>Estágio Observacional:</b> ${a.estagio} &nbsp;•&nbsp; <b>Condição da Imagem:</b> ${s.d.qualidade}
+      </div>
+    `).join('');
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relatório de Observação Iridológica — ${nome}</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: #37414B; background: #e2e8f0; margin: 0; padding: 20px; font-size: 13.5px; line-height: 1.6; }
+  .page { max-width: 820px; margin: 0 auto; background: #fff; padding: 42px 50px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .cover { text-align: center; padding: 70px 20px 60px 20px; border-bottom: 2px solid #D5E2E0; margin-bottom: 32px; page-break-after: always; }
+  .cover-tag { color: #26736F; font-weight: 800; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+  .cover-title { color: #183344; font-size: 28px; font-weight: 800; margin: 18px 0 8px 0; }
+  .cover-sub { color: #64737D; font-size: 14px; margin-bottom: 45px; }
+  .cover-meta { margin: 26px 0; font-size: 14px; color: #183344; }
+  .cover-footer { margin-top: 60px; font-size: 11px; color: #26736F; font-weight: 700; letter-spacing: 1px; }
+  .notice-box { background: #F2F6F5; border: 1px solid #D5E2E0; border-left: 5px solid #26736F; padding: 14px 18px; border-radius: 6px; font-size: 11.5px; color: #284146; margin-bottom: 24px; line-height: 1.5; }
+  .h1-doc { color: #183344; font-size: 18px; font-weight: 800; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 5px; margin-top: 26px; margin-bottom: 10px; }
+  .h2-doc { color: #26736F; font-size: 14px; font-weight: 700; margin-top: 16px; margin-bottom: 6px; }
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; background: #f8fafc; padding: 14px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 12.5px; margin-bottom: 20px; }
+  .meta-grid b { color: #26736F; }
+  .eye-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0; page-break-inside: avoid; }
+  .eye-box { text-align: center; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; }
+  .eye-box img { width: 100%; max-width: 320px; border-radius: 6px; display: block; margin: 0 auto; }
+  .cap { font-size: 11px; font-weight: 700; color: #183344; margin-top: 6px; }
+  .ficha-item { background: #f8fafc; border-left: 3px solid #26736F; padding: 8px 12px; margin-bottom: 8px; font-size: 12px; border-radius: 4px; page-break-inside: avoid; }
+  .sig-box { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 45px; padding-top: 20px; page-break-inside: avoid; }
+  .sig-line { border-top: 1px solid #37414B; padding-top: 6px; text-align: center; font-size: 12px; color: #183344; }
+  .doc-footer { text-align: center; font-size: 10px; color: #788287; margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .page { box-shadow: none; padding: 15mm; max-width: 100%; }
+    .no-print { display: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="no-print" style="max-width:820px; margin:0 auto 12px auto; text-align:right;">
+    <button onclick="window.print()" style="padding:10px 18px; background:#183344; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">🖨️ Imprimir ou Salvar em PDF</button>
+  </div>
+  <div class="page">
+    <div class="cover">
+      <div class="cover-tag">ÍRIS &nbsp;|&nbsp; RELATÓRIO PREMIUM</div>
+      <div class="cover-title">RELATÓRIO DE OBSERVAÇÃO IRIDOLÓGICA</div>
+      <div class="cover-sub">Modelo multidimensional de registro e análise complementar</div>
+      <div class="cover-meta"><b>CLIENTE</b><br>${nome}</div>
+      <div class="cover-meta"><b>AVALIADOR(A)</b><br>${avaliador}</div>
+      <div class="cover-footer">DOCUMENTO DE OBSERVAÇÃO COMPLEMENTAR<br><span style="font-weight:normal; color:#64737D;">Data: ${d.data_registro}</span></div>
+    </div>
+
+    <div class="h1-doc">LEIA ANTES DA UTILIZAÇÃO</div>
+    <div class="notice-box">${AVISO_ESCOPO}</div>
+
+    <div class="h1-doc">IDENTIFICAÇÃO E CONDIÇÕES DO REGISTRO</div>
+    <div class="meta-grid">
+      <div><b>Cliente:</b> ${nome}</div>
+      <div><b>Data do Registro:</b> ${d.data_registro}</div>
+      <div><b>Avaliador(a):</b> ${avaliador}</div>
+      <div><b>Equipamento / Luz:</b> ${equip}</div>
+      <div style="grid-column: span 2;"><b>Objetivo / Queixa informada pelo cliente:</b> ${queixa}</div>
+    </div>
+
+    <div class="h1-doc">DOCUMENTAÇÃO FOTOGRÁFICA E MAPEAMENTO SOBREPOSTO</div>
+    ${galeriaOlhos}
+
+    <div class="h1-doc">LEITURA MULTIDIMENSIONAL INTEGRADA</div>
+    <div>${formatarMarkdownParaHTML(corpoTexto)}</div>
+
+    <div class="h1-doc">ANEXO | FICHA DE MARCAÇÃO FOTOGRÁFICA</div>
+    ${fichasAnexo}
+
+    <div class="h1-doc">DECLARAÇÃO DE ESCOPO E RESPONSABILIDADE</div>
+    <div class="notice-box">
+      Este relatório é um registro complementar de observações visuais e de referenciais históricos da iridologia. Não constitui laudo médico, diagnóstico, prognóstico, avaliação psicológica ou prescrição terapêutica. Nenhuma decisão sobre tratamento, medicação, dieta ou suplementação deve ser tomada com base exclusiva neste documento. Alterações na visão, dor ocular, vermelhidão intensa, pupilas diferentes de início recente ou sintomas neurológicos exigem avaliação médica imediata.
+    </div>
+
+    <div class="sig-box">
+      <div class="sig-line"><b>${avaliador}</b><br>Avaliador(a) Responsável — Data: ${d.data_registro}</div>
+      <div class="sig-line"><b>${nome}</b><br>Ciência do(a) Cliente — Data: ${d.data_registro}</div>
+    </div>
+
+    <div class="doc-footer">RELATÓRIO DE OBSERVAÇÃO IRIDOLÓGICA &nbsp;•&nbsp; CONFIDENCIAL</div>
+  </div>
+</body>
+</html>`;
+
+  baixar(html, 'text/html;charset=utf-8', `Relatorio_Premium_${nomeArquivo()}.html`);
 }
 
 popularSelects();
