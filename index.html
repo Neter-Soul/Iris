@@ -73,7 +73,7 @@
   <div class="row">
     <input type="text" id="pacQueixa" placeholder="Queixa Principal / Observações">
   </div>
-  <div class="row" style="margin-bottom:0;">
+  <div class="row">
     <select id="pacTipo" onchange="analisar()">
       <option value="">Tipologia (definir pelo terapeuta)</option>
       <option value="Flor">Flor</option>
@@ -81,6 +81,12 @@
       <option value="Agitador">Agitador</option>
       <option value="Corrente">Corrente</option>
       <option value="Misto">Misto</option>
+    </select>
+  </div>
+  <div class="row" style="margin-bottom:0;">
+    <select id="pacMapa" onchange="trocarMapa()">
+      <option value="JENSEN">Mapa de zonas: Jensen (padrão)</option>
+      <option value="GPS">Mapa de zonas: GPS</option>
     </select>
   </div>
 </div>
@@ -112,6 +118,7 @@
       <label><input type="checkbox" id="layRaios" checked onchange="render()"> Grade de Raios 30°</label>
       <label><input type="checkbox" id="layAchados" checked onchange="render()"> Sinais e Marcadores</label>
       <label><input type="checkbox" id="layFlash" checked onchange="render(); analisar();"> ✨ Filtro Anti-Flash</label>
+      <label><input type="checkbox" id="layColarete" checked onchange="render()"> 〰️ Colarete detectado</label>
       <label><input type="checkbox" id="layZoom" onchange="render()"> 🔍 Lupa 2x</label>
     </div>
     <div class="note">Mouse: arraste para mover; roda do mouse ajusta o anel ativo. Toque: arraste e pinça.</div>
@@ -126,12 +133,8 @@
     <div class="organ-name" id="orgNome">Use "Inspecionar" e toque na íris</div>
     <div class="organ-sub" id="orgZona">As camadas ativas aparecem sobre a imagem.</div>
     <div class="row" style="margin-top:6px; margin-bottom:0;">
-      <select id="tipoSinal" style="font-size:12px; padding:5px;">
-        <option value="Lacuna / Cripta (Fragilidade)">🔹 Lacuna / Cripta (Fragilidade)</option>
-        <option value="Raio Solar (Tensão)">⚡ Raio Solar (Tensão)</option>
-        <option value="Mancha / Psora (Sobrecarga)">🟤 Mancha / Psora (Sobrecarga)</option>
-        <option value="Anel de Tensão">⭕ Anel de Tensão</option>
-      </select>
+      <select id="tipoSinal" style="font-size:12px; padding:5px;"></select>
+      <select id="estagioSinal" style="font-size:12px; padding:5px; max-width:150px;"></select>
     </div>
     <button class="btn-pin" onclick="adicionarAchadoManual()">➕ Registar na Leitura</button>
     <div id="listaAchados" class="pin-list"></div>
@@ -143,14 +146,64 @@
     <div id="psyTexto">Aguardando calibração dos anéis...</div>
   </div>
 
+  <div class="card" style="margin-top:8px; border:2px solid #0284c7;">
+    <div class="ai-title" style="color:#0369a1;">🧬 Constituição, Colarete & SNA</div>
+    <div class="note" style="margin:0 0 6px 0;">O app sugere a partir da foto; você confirma ou corrige escolhendo uma opção. A cor depende da luz e do balanço de branco da foto.</div>
+
+    <div class="m-lbl">BIOTIPO (COR DA ÍRIS)</div>
+    <div class="row" style="margin-top:3px;">
+      <select id="pacBiotipo" onchange="analisar()">
+        <option value="">Usar sugestão automática</option>
+        <option value="linfatico">Linfático / Neurogênico (azul ou cinza)</option>
+        <option value="hematogenico">Hematogênico (castanho / marrom)</option>
+        <option value="misto">Misto / Biliar / Hidrogenóide (avelã, verde)</option>
+      </select>
+    </div>
+    <div class="note" id="sugBiotipo"></div>
+
+    <div class="m-lbl" style="margin-top:8px;">BORDA PUPILAR INTERNA (BPI)</div>
+    <div class="row" style="margin-top:3px;">
+      <select id="selBPI" onchange="analisar()">
+        <option value="">Não avaliada</option>
+        <option value="normal">Sem alterações</option>
+        <option value="cor">Coloração alterada</option>
+        <option value="erosao">Erosões / irregularidades</option>
+      </select>
+    </div>
+
+    <div class="m-lbl" style="margin-top:8px;">ANEL GÁSTRICO</div>
+    <div class="row" style="margin-top:3px;">
+      <select id="selGastrico" onchange="analisar()">
+        <option value="">Usar sugestão automática</option>
+        <option value="ausente">Ausente / discreto</option>
+        <option value="claro">Anel claro (hiperacidez)</option>
+        <option value="escuro">Anel escuro (hipocloridria)</option>
+      </select>
+    </div>
+    <div class="note" id="sugGastrico"></div>
+
+    <div class="m-lbl" style="margin-top:8px;">COLARETE (TRANÇA DO SNA)</div>
+    <div class="row" style="margin-top:3px;">
+      <select id="selColarete" onchange="analisar()">
+        <option value="">Usar sugestão automática</option>
+        <option value="normal">Normal</option>
+        <option value="distendido">Distendido (tônus fraco)</option>
+        <option value="denteado">Denteado / zigue-zague (hipertonicidade)</option>
+        <option value="ptose">Ptose / queda</option>
+      </select>
+    </div>
+    <div class="note" id="sugColarete"></div>
+  </div>
+
   <div class="ai-card">
     <div class="ai-title">🤖 Leitura Integrativa com IA (Gemini)</div>
     <div class="row" style="margin-bottom:6px;">
       <input type="password" id="aiApiKey" placeholder="Chave API Gemini" autocomplete="off" style="font-size:11px;">
       <input type="text" id="aiModelo" value="gemini-2.5-flash" style="font-size:11px; max-width:130px;">
     </div>
+    <label style="display:block; font-size:11px; margin-bottom:6px;"><input type="checkbox" id="aiEnviarFoto"> Enviar também a foto da íris à IA (análise visual; é dado biométrico sensível e a IA pode descrever sinais que não existem)</label>
     <button class="btn-auto" id="btnIA" style="width:100%; background:#10b981; margin-bottom:6px; padding:9px;" onclick="gerarRelatorioProfundoIA()">✨ Gerar Leitura Integrativa</button>
-    <textarea id="aiSaidaRelatorio" rows="9" placeholder="A leitura aparecerá aqui. Você pode editar o texto antes de baixar." style="width:100%; font-size:11px; padding:6px; box-sizing:border-box; border-radius:6px; border:1px solid #10b981;"></textarea>
+    <textarea id="aiSaidaRelatorio" rows="14" placeholder="A leitura aparecerá aqui. Você pode editar o texto antes de baixar." style="width:100%; font-size:11px; padding:6px; box-sizing:border-box; border-radius:6px; border:1px solid #10b981;"></textarea>
     <div class="note">Sem chave, é gerado um texto-modelo local. A chave fica só nesta página (não é salva). O nome da pessoa não é enviado à IA.</div>
   </div>
 
@@ -167,7 +220,14 @@
     <div class="diag" id="vDiag">Ajuste os anéis sobre a íris.</div>
   </div>
 
+  <div class="card" style="margin-top:8px;">
+    <div class="m-lbl">LEITURA DOS DOIS OLHOS</div>
+    <button class="btn-auto" style="width:100%; margin-top:6px; padding:9px; background:#0369a1;" onclick="salvarOlho()">💾 Salvar leitura do olho em tela</button>
+    <div class="note" id="statusOlhos">Nenhum olho salvo. Salve um olho antes de carregar a foto do outro (e troque o seletor OD/OE no topo). O relatório e a IA combinam os dois.</div>
+  </div>
   <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Leitura Integrativa (.TXT)</button>
+  <button class="btn-dl" style="background:#0369a1; margin-top:6px;" onclick="dlRelatorioHTML()">🖼️ Baixar Relatório com Imagens (.HTML)</button>
+  <div class="note">O relatório HTML pode ser impresso ou salvo em PDF pelo navegador.</div>
 </div>
 
 <script>
@@ -205,6 +265,8 @@ let ultimoOrgaoInfo = null;
 let achadosClinicos = [];
 let statusAnelTensao = "Não avaliado";
 let dadosBiometricosGlobal = {};
+let colareteRows = null;
+let olhosSalvos = { OD: null, OE: null };
 
 const ZONAS_JENSEN = [
   "Zona 1 (Estômago / Digestão Primária)",
@@ -215,6 +277,17 @@ const ZONAS_JENSEN = [
   "Zona 6 (Sistema Linfático e Circulação)",
   "Zona 7 (Pele e Eliminação Periférica)"
 ];
+const ZONAS_GPS = [
+  "Zona 1 (Estômago)",
+  "Zona 2 (Intestinos: grosso e delgado)",
+  "Zona 3 (Coração, Tireoide e Glândulas)",
+  "Zona 4 (Pulmões, Brônquios, Traqueia, Fígado, Baço e Rins)",
+  "Zona 5 (Cérebro e Órgãos Sexuais)",
+  "Zona 6 (Sistema Circulatório e Linfático)",
+  "Zona 7 (Pele, Membros, Músculos e Nervos Motores)"
+];
+function mapaGPS() { return $('pacMapa') && $('pacMapa').value === 'GPS'; }
+function zonasAtivas() { return mapaGPS() ? ZONAS_GPS : ZONAS_JENSEN; }
 
 function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
   if (zonaIdx === 0) return "Estômago (Zona Gástrica Central)";
@@ -231,7 +304,7 @@ function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
       return "Intestino Delgado";
     }
   }
-  if (zonaIdx === 2) return "Banda do Sistema Nervoso Autônomo (Colarete)";
+  if (zonaIdx === 2) return mapaGPS() ? "Coração, Tireoide e Glândulas (Zona 3)" : "Banda do Sistema Nervoso Autônomo (Colarete)";
   if (zonaIdx === 6) return "Pele e Microcirculação Periférica";
 
   const h = horaFloat;
@@ -300,8 +373,22 @@ function setM(m) {
   render();
 }
 
+function recalcularOrgaos() {
+  const olho = $('pacOlho').value;
+  achadosClinicos.forEach(a => {
+    const z = Math.min(6, Math.max(0, Math.floor(a.fr * 7)));
+    a.orgao = obterOrgaoJensen(olho, a.deg / 30.0, z);
+  });
+}
+function trocarMapa() {
+  recalcularOrgaos();
+  atualizarListaAchados();
+  atualizarOrgaoSelecionado();
+  analisar();
+}
 function trocarOlho() {
   achadosClinicos = achadosClinicos.filter(a => !(a.auto && !a.confirmado));
+  recalcularOrgaos();
   atualizarListaAchados();
   atualizarOrgaoSelecionado();
   analisar();
@@ -318,6 +405,7 @@ $('fIn').onchange = function (e) {
     loaded = true;
     achadosClinicos = [];
     statusAnelTensao = "Não avaliado";
+    ['pacBiotipo', 'selBPI', 'selGastrico', 'selColarete'].forEach(id => $(id).value = '');
     $('appArea').style.display = 'block';
     prepararBufferImagem();
     autoDetectarPupila();
@@ -534,7 +622,7 @@ function adicionarSinalPolar(olho, deg, zonaIdx, descricaoSinal, subtipo) {
   const nomeOrgao = obterOrgaoJensen(olho, deg / 30.0, zonaIdx);
   achadosClinicos.push({
     hora: fmtHora(deg), zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, sinal: descricaoSinal,
-    deg: deg, fr: (zonaIdx + 0.5) / 7.0, auto: true, confirmado: false, subtipo: subtipo
+    deg: deg, fr: (zonaIdx + 0.5) / 7.0, auto: true, confirmado: false, subtipo: subtipo, estagio: 'A definir'
   });
 }
 
@@ -573,13 +661,13 @@ function atualizarOrgaoSelecionado() {
 
   $('orgCoord').innerText = `📍 ${olho} • ${horaStr} • Anel ${zonaIdx + 1}`;
   $('orgNome').innerText = nomeOrgao;
-  $('orgZona').innerText = ZONAS_JENSEN[zonaIdx];
+  $('orgZona').innerText = zonasAtivas()[zonaIdx];
   ultimoOrgaoInfo = { hora: horaStr, zona: `Anel ${zonaIdx + 1}`, orgao: nomeOrgao, deg: deg, fr: ratio };
 }
 
 function adicionarAchadoManual() {
   if (!ultimoOrgaoInfo || ultimoOrgaoInfo.pupila) return;
-  achadosClinicos.push({ ...ultimoOrgaoInfo, sinal: $('tipoSinal').value, auto: false, confirmado: true });
+  achadosClinicos.push({ ...ultimoOrgaoInfo, sinal: $('tipoSinal').value, estagio: $('estagioSinal').value, auto: false, confirmado: true });
   atualizarListaAchados(); analisar(); render();
 }
 function confirmarAchado(i) {
@@ -591,6 +679,8 @@ function removerAchado(i) {
   atualizarListaAchados(); analisar(); render();
 }
 
+function mudarEstagio(i, v) { if (achadosClinicos[i]) achadosClinicos[i].estagio = v; }
+
 function atualizarListaAchados() {
   const box = $('listaAchados');
   if (achadosClinicos.length === 0) { box.innerHTML = ""; return; }
@@ -600,7 +690,10 @@ function atualizarListaAchados() {
     const ico = a.auto ? (a.confirmado ? '🔍' : '❓') : '📌';
     return `<div class="pin-item ${cls}">
       <span>${ico} <b>${a.hora} (${a.zona}):</b> ${a.orgao} — <i>${a.sinal}</i>${pend ? ' <b>(sugestão)</b>' : ''}</span>
-      <span>${pend ? `<button class="btn-ok" onclick="confirmarAchado(${i})">✓</button>` : ''}<button class="btn-x" onclick="removerAchado(${i})">✕</button></span>
+      <span style="display:flex; align-items:center; gap:2px;">
+        <select onchange="mudarEstagio(${i}, this.value)" style="font-size:10px; padding:2px; flex:none; max-width:105px;">${opts(ESTAGIOS, a.estagio || 'A definir')}</select>
+        ${pend ? `<button class="btn-ok" onclick="confirmarAchado(${i})">✓</button>` : ''}<button class="btn-x" onclick="removerAchado(${i})">✕</button>
+      </span>
     </div>`;
   }).join('');
 }
@@ -741,6 +834,23 @@ function render() {
   ctx.strokeStyle = '#22c55e'; ctx.lineWidth = mode === 'iris' ? 5 : 3.5;
   ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2 * Math.PI); ctx.stroke();
 
+  if ($('layColarete').checked && colareteRows) {
+    ctx.save();
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.setLineDash([8, 5]);
+    ctx.beginPath();
+    let pen = false;
+    for (let x = 0; x < PW; x++) {
+      const yy = colareteRows[x];
+      if (isNaN(yy)) { pen = false; continue; }
+      const rr = rP + (yy / PH) * (rI - rP);
+      const rd = ((x - 90) * 2 * Math.PI) / PW;
+      const qx = cx + rr * Math.cos(rd), qy = cy + rr * Math.sin(rd);
+      if (!pen) { ctx.moveTo(qx, qy); pen = true; } else ctx.lineTo(qx, qy);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
   if ($('layAchados').checked) {
     achadosClinicos.forEach(a => {
       const rad = (a.deg - 90) * Math.PI / 180;
@@ -790,6 +900,7 @@ function analisar() {
   const pIm = pCtx.createImageData(PW, PH);
   polarFlashMask.fill(0);
   let somaMedia = 0, qtd = 0;
+  const bIn = { r: 0, g: 0, b: 0, n: 0 }, bOut = { r: 0, g: 0, b: 0, n: 0 };
 
   for (let y = 0; y < PH; y++) {
     const r = rP + (y / PH) * (rI - rP);
@@ -803,6 +914,10 @@ function analisar() {
       if (ignorarFlash && l > FLASH) polarFlashMask[idx] = 1;
       else { somaMedia += l; qtd++; }
       polarGray[idx] = l;
+      if (l > 20 && l <= FLASH) {
+        const bb = (y >= 3 && y < 18) ? bIn : (y >= 30 && y < 58) ? bOut : null;
+        if (bb) { bb.r += cleanPixels[i]; bb.g += cleanPixels[i + 1]; bb.b += cleanPixels[i + 2]; bb.n++; }
+      }
     }
   }
 
@@ -864,67 +979,281 @@ function analisar() {
 
   $('psyTexto').innerText = `• ${dadosBiometricosGlobal.tipologia}\n• Dinâmica SNA: ${dadosBiometricosGlobal.sna}\n• Anéis de tensão: ${dadosBiometricosGlobal.anelTensao}`;
   $('vDiag').innerHTML = `<b>Constituição:</b> ${dadosBiometricosGlobal.constituicao}<br><b>SNA:</b> ${dadosBiometricosGlobal.sna}<br><b>Qualidade da foto:</b> ${dadosBiometricosGlobal.qualidade}<br><span style="color:#64748b">O tamanho da pupila varia com a luz da foto; leia a proporção com cautela.</span>`;
+
+  const cl = analiseConstitucional(bIn, bOut);
+  Object.assign(dadosBiometricosGlobal, cl);
+}
+
+/* ---------- constituição, colarete e anel gástrico ---------- */
+const BIOTIPOS = {
+  linfatico: { nome: "Linfático / Neurogênico (íris azul ou cinza)", tema: "temas linfáticos, respiratórios, catarrais, reumáticos, alérgicos e de retenção de líquidos" },
+  hematogenico: { nome: "Hematogênico (íris castanha / marrom)", tema: "sangue, metabolismo de minerais, sistema hepatobiliar e circulação" },
+  misto: { nome: "Misto / Biliar / Hidrogenóide (íris avelã, verde ou mista)", tema: "fígado, vesícula, pâncreas, glicemia e articulações" }
+};
+const TXT_BPI = {
+  normal: "Borda pupilar interna sem alterações",
+  cor: "Borda pupilar interna com coloração alterada",
+  erosao: "Borda pupilar interna com erosões / irregularidades"
+};
+const TXT_GASTRICO = {
+  ausente: "Anel gástrico ausente ou discreto",
+  claro: "Anel gástrico claro (leitura: tendência a hiperacidez)",
+  escuro: "Anel gástrico escuro (leitura: tendência a hipocloridria / sensibilidade gástrica)"
+};
+const TXT_COLARETE = {
+  normal: "Colarete de formato normal",
+  distendido: "Colarete distendido (leitura: tônus fraco, perfil centrífugo)",
+  denteado: "Colarete denteado / zigue-zague (leitura: hipertonicidade, perfil centrópeto)",
+  ptose: "Colarete em ptose / queda (leitura: pressão sobre órgãos inferiores)"
+};
+const SINAIS = [
+  "Lacuna / Cripta (Fragilidade)", "Lacuna fechada — folha", "Lacuna fechada — borboleta", "Lacuna fechada — favo de mel",
+  "Lacuna fechada — escada", "Lacuna fechada — torpedo", "Raio Solar (Tensão)", "Linha transversal / aberrante",
+  "Mancha pigmentada / Psora (Sobrecarga)", "Anel de Tensão", "Fibra de cura (luteoma de cálcio)"
+];
+const ESTAGIOS = ["A definir", "Agudo", "Subagudo", "Crônico (lacuna fechada)", "Degenerativo", "Cura / regeneração"];
+const NOME_OLHO = { OD: "Olho Direito (OD)", OE: "Olho Esquerdo (OE)" };
+
+function opts(arr, sel) { return arr.map(v => `<option value="${v}"${v === sel ? ' selected' : ''}>${v}</option>`).join(''); }
+function popularSelects() {
+  $('tipoSinal').innerHTML = opts(SINAIS);
+  $('estagioSinal').innerHTML = opts(ESTAGIOS);
+}
+
+function classificarCor(inn, out) {
+  if (!out || out.n < 200) return null;
+  const mO = { r: out.r / out.n, g: out.g / out.n, b: out.b / out.n };
+  const mI = inn && inn.n > 100 ? { r: inn.r / inn.n, g: inn.g / inn.n, b: inn.b / inn.n } : mO;
+  const lumO = 0.299 * mO.r + 0.587 * mO.g + 0.114 * mO.b;
+  const mx = Math.max(mO.r, mO.g, mO.b), mn = Math.min(mO.r, mO.g, mO.b);
+  const sat = mx > 0 ? (mx - mn) / mx : 0;
+  if (mO.b - mO.r > 4) {
+    if (mI.r - mI.b > 28) return { chave: 'misto', cor: 'Azul/cinza periférico com centro âmbar' };
+    return { chave: 'linfatico', cor: sat < 0.15 ? 'Cinza' : 'Azul' };
+  }
+  if (mO.g / Math.max(1, mO.r) > 0.84 && lumO > 80) return { chave: 'misto', cor: 'Avelã / verde' };
+  return { chave: 'hematogenico', cor: lumO < 90 ? 'Castanho escuro' : 'Castanho' };
+}
+
+function medianaCirc(arr, jan) {
+  const n = arr.length, out = new Float32Array(n).fill(NaN), h = jan >> 1;
+  for (let i = 0; i < n; i++) {
+    const v = [];
+    for (let k = -h; k <= h; k++) { const x = arr[(i + k + n) % n]; if (!isNaN(x)) v.push(x); }
+    if (v.length >= h + 1) { v.sort((a, b) => a - b); out[i] = v[v.length >> 1]; }
+  }
+  return out;
+}
+
+function colareteLinha(x, y0, y1) {
+  let best = -1, bv = 0;
+  for (let y = y0; y <= y1; y++) {
+    let a = 0, b = 0, ok = true;
+    for (let k = 1; k <= 3; k++) {
+      const iA = (y - k) * PW + x, iB = (y + k) * PW + x;
+      if (polarFlashMask[iA] || polarFlashMask[iB]) { ok = false; break; }
+      a += polarGray[iA]; b += polarGray[iB];
+    }
+    if (!ok) continue;
+    const v = Math.abs(b - a) / 3;
+    if (v > bv) { bv = v; best = y; }
+  }
+  return bv > 4 ? best : NaN;
+}
+
+// Colarete = estrutura de borda mais consistente entre as zonas 1 e 4; o formato é só uma sugestão
+function detectarColarete() {
+  const y0 = 5, y1 = 38;
+  const hist = new Array(PH + 2).fill(0);
+  for (let x = 0; x < PW; x++) { const y = colareteLinha(x, y0, y1); if (!isNaN(y)) hist[y]++; }
+  let m = -1, mv = 0;
+  for (let y = y0; y <= y1; y++) { const sc = (hist[y - 1] || 0) + hist[y] + (hist[y + 1] || 0); if (sc > mv) { mv = sc; m = y; } }
+  if (m < 0 || mv < PW * 0.25) return null;
+  const lo = Math.max(y0, m - 8), hi = Math.min(y1, m + 8);
+  const raw = new Float32Array(PW);
+  let validos = 0;
+  for (let x = 0; x < PW; x++) { raw[x] = colareteLinha(x, lo, hi); if (!isNaN(raw[x])) validos++; }
+  if (validos < PW * 0.5) return null;
+  const sm = medianaCirc(raw, 9);
+  let dev = 0, nd = 0, mu = 0, nm = 0, oy = 0;
+  for (let x = 0; x < PW; x++) {
+    if (!isNaN(raw[x]) && !isNaN(sm[x])) { dev += Math.abs(raw[x] - sm[x]); nd++; }
+    if (!isNaN(sm[x])) {
+      const r = rP + (sm[x] / PH) * (rI - rP);
+      const rad = ((x - 90) * 2 * Math.PI) / PW;
+      mu += sm[x]; nm++; oy += r * Math.sin(rad);
+    }
+  }
+  if (!nd || !nm) return null;
+  dev /= nd; mu /= nm; oy /= nm;
+  let chave = 'normal';
+  if (oy / rI > 0.05) chave = 'ptose';
+  else if (dev > 2.0) chave = 'denteado';
+  else if (mu / PH > 0.42) chave = 'distendido';
+  return { chave, sm };
+}
+
+function analiseConstitucional(bIn, bOut) {
+  const cor = classificarCor(bIn, bOut);
+  const col = detectarColarete();
+  colareteRows = col ? col.sm : null;
+
+  const banda = (y0, y1) => {
+    let sm = 0, n = 0;
+    for (let y = y0; y < y1; y++) for (let x = 0; x < PW; x++) { const k = y * PW + x; if (polarFlashMask[k]) continue; sm += polarGray[k]; n++; }
+    return n ? sm / n : null;
+  };
+  const b0 = banda(0, 8), b1 = banda(10, 20);
+  let gastr = '';
+  if (b0 !== null && b1 !== null) { const df = b0 - b1; gastr = df > 14 ? 'claro' : df < -14 ? 'escuro' : 'ausente'; }
+
+  const sug = { biotipo: cor ? cor.chave : '', cor: cor ? cor.cor : '', gastrico: gastr, colarete: col ? col.chave : '' };
+  const bioSel = $('pacBiotipo').value, gSel = $('selGastrico').value, cSel = $('selColarete').value, bpiSel = $('selBPI').value;
+  const bioKey = bioSel || sug.biotipo, gKey = gSel || sug.gastrico, cKey = cSel || sug.colarete;
+
+  $('sugBiotipo').innerText = sug.biotipo ? `Sugestão: ${sug.cor} → ${BIOTIPOS[sug.biotipo].nome}` : 'Sem sugestão (cor não medida).';
+  $('sugGastrico').innerText = sug.gastrico ? `Sugestão: ${TXT_GASTRICO[sug.gastrico]}` : 'Sem sugestão.';
+  $('sugColarete').innerText = sug.colarete ? `Sugestão: ${TXT_COLARETE[sug.colarete]}` : 'Colarete não identificado com segurança: defina manualmente.';
+
+  return {
+    corIris: sug.cor || '--',
+    biotipoNome: bioKey ? BIOTIPOS[bioKey].nome : 'não definido',
+    biotipoTema: bioKey ? BIOTIPOS[bioKey].tema : '',
+    biotipoOrigem: bioSel ? 'definido pelo terapeuta' : (sug.biotipo ? 'sugestão automática' : '-'),
+    bpi: bpiSel ? TXT_BPI[bpiSel] : 'não avaliada',
+    gastrico: gKey ? TXT_GASTRICO[gKey] : 'não avaliado',
+    colarete: cKey ? TXT_COLARETE[cKey] : 'não avaliado'
+  };
+}
+
+/* ---------- salvar os dois olhos ---------- */
+function capturaThumb() {
+  const z = $('layZoom').checked;
+  if (z) { $('layZoom').checked = false; render(); }
+  const sw = Math.min(S, Math.round(rI * 2.5));
+  const sx0 = clamp(Math.round(cx - sw / 2), 0, S - sw), sy0 = clamp(Math.round(cy - sw / 2), 0, S - sw);
+  const t = document.createElement('canvas'); t.width = 480; t.height = 480;
+  t.getContext('2d').drawImage(cv, sx0, sy0, sw, sw, 0, 0, 480, 480);
+  const u = t.toDataURL('image/jpeg', 0.82);
+  if (z) { $('layZoom').checked = true; render(); }
+  return u;
+}
+function fotoLimpa() {
+  const sc = Math.min(1, 1024 / Math.max(img.width, img.height));
+  const t = document.createElement('canvas');
+  t.width = Math.round(img.width * sc); t.height = Math.round(img.height * sc);
+  t.getContext('2d').drawImage(img, 0, 0, t.width, t.height);
+  return t.toDataURL('image/jpeg', 0.85);
+}
+function snapshotAtual(op = {}) {
+  if (!loaded) return null;
+  analisar();
+  return {
+    olho: $('pacOlho').value,
+    d: { ...dadosBiometricosGlobal },
+    achados: achadosConfirmados().map(a => ({ hora: a.hora, zona: a.zona, orgao: a.orgao, sinal: a.sinal, estagio: a.estagio || 'A definir' })),
+    thumb: op.thumb ? capturaThumb() : null,
+    foto: op.foto ? fotoLimpa() : null
+  };
+}
+function atualizarStatusOlhos() {
+  $('statusOlhos').textContent = `Salvos: OD ${olhosSalvos.OD ? '✓' : '—'} · OE ${olhosSalvos.OE ? '✓' : '—'}. O olho em tela também entra no relatório. Para o outro olho, carregue a foto e troque o seletor OD/OE no topo.`;
+}
+function salvarOlho() {
+  if (!loaded) { $('statusOlhos').textContent = 'Carregue a foto do olho antes de salvar.'; return; }
+  const s = snapshotAtual({ thumb: true, foto: true });
+  olhosSalvos[s.olho] = s;
+  atualizarStatusOlhos();
+}
+function coletarOlhos(op = {}) {
+  const m = { ...olhosSalvos };
+  const atual = snapshotAtual(op);
+  if (atual) m[atual.olho] = atual;
+  return ['OD', 'OE'].map(k => m[k]).filter(Boolean);
 }
 
 /* ---------- leitura com IA ---------- */
-function dadosEstruturados() {
+function dadosEstruturados(olhos) {
+  const tipologia = olhos.length ? olhos[0].d.tipologia : 'não definida';
   return {
-    olho: $('pacOlho').value === 'OD' ? 'direito' : 'esquerdo',
     queixa: $('pacQueixa').value.trim() || 'não informada',
-    proporcao_pupila_iris_pct: dadosBiometricosGlobal.proporcao,
-    tendencia_sna: dadosBiometricosGlobal.sna,
-    constituicao_trama: dadosBiometricosGlobal.constituicao,
-    qualidade_da_foto: dadosBiometricosGlobal.qualidade,
-    tipologia: dadosBiometricosGlobal.tipologia,
-    aneis_de_tensao: dadosBiometricosGlobal.anelTensao,
-    achados_confirmados: achadosConfirmados().map(a => ({ horario: a.hora, anel: a.zona, regiao_simbolica: a.orgao, sinal: a.sinal }))
+    tipologia: tipologia,
+    mapa_de_zonas: mapaGPS() ? 'GPS' : 'Jensen',
+    olhos: olhos.map(s => ({
+      olho: s.olho === 'OD' ? 'direito' : 'esquerdo',
+      cor_da_iris: s.d.corIris,
+      biotipo: `${s.d.biotipoNome} (${s.d.biotipoOrigem})`,
+      tendencias_a_observar: s.d.biotipoTema,
+      trama_fibras: `${s.d.constituicao} (índice ${s.d.trama})`,
+      qualidade_da_foto: s.d.qualidade,
+      proporcao_pupila_iris_pct: s.d.proporcao,
+      tendencia_sna: s.d.sna,
+      borda_pupilar_interna: s.d.bpi,
+      anel_gastrico: s.d.gastrico,
+      colarete: s.d.colarete,
+      aneis_de_tensao: s.d.anelTensao,
+      achados_confirmados: s.achados
+    }))
   };
 }
 
 function montarPrompt(d) {
-  return `Você é assistente de redação de um terapeuta integrativo experiente (hipnose ericksoniana, constelação sistêmica, abordagem junguiana e somática).
-Escreva uma LEITURA INTEGRATIVA da íris, em português do Brasil, como mapa simbólico e observacional, a partir dos dados abaixo.
+  return `Você é um iridólogo especialista no Método GPS (Gérson Practical System) e na Escola Clássica/Moderna de Iridologia, apoiando um terapeuta integrativo. Escreva a LEITURA INTEGRATIVA abaixo em português do Brasil, com linguagem simples, fluida e acessível, de forma ética, humanizada e profissional.
 
 Regras:
-- Linguagem de leitura simbólica: use "sugere", "pode apontar", "convida a observar", "tema a explorar". Não use "diagnóstico", "doença", "tratamento" nem "conduta".
-- Não prometa cura nem substitua avaliação clínica. Termine com uma linha discreta: "Leitura complementar, não substitui avaliação clínica."
-- Use apenas os dados fornecidos; não invente achados. Se a qualidade da foto for baixa, mencione com delicadeza que a leitura da trama é menos confiável.
-- Relacione os achados à queixa de modo acolhedor e coerente, sem alarmismo.
-- Texto único para esta pessoa, caloroso e profissional, até ~450 palavras, sem markdown pesado.
+- A base são os DADOS ESTRUTURADOS, já revisados pelo terapeuta. Não invente sinais. Se houver imagem anexa, use-a apenas para complementar e deixe claro o que for incerto.
+- Escreva como leitura simbólica e observacional: use "sugere", "pode indicar", "tendência a observar". Evite "diagnóstico", "doença", "tratamento" e "paciente".
+- Os estágios dos sinais (agudo, subagudo, crônico/lacunas fechadas, degenerativo, cura/regeneração) descrevem o estágio do sinal na leitura. "A definir" significa que o terapeuta ainda não classificou: não classifique por conta própria.
+- Quando houver os dois olhos, compare-os (olho direito reflete o lado direito do corpo; o esquerdo, o lado esquerdo).
+- Relacione os achados à queixa de forma acolhedora e sem alarmismo.
+- Se algum dado não foi avaliado, diga isso em vez de supor.
+- Termine com a linha: "Leitura complementar, não substitui avaliação clínica."
+- Entre 600 e 900 palavras.
 
 Estrutura:
-1. Visão geral da leitura
-2. Constituição e tônus (trama, tendência do sistema nervoso autônomo)
-3. Eixos de atenção (a partir dos achados confirmados)
-4. Dimensão emocional e psicossomática ligada à queixa
-5. Sugestões de cuidado integrativo (práticas, hábitos, recursos terapêuticos)
+1. Biotipo e hereditariedade (constituição e densidade das fibras)
+2. Zona pupilar e colarete (sistema nervoso autônomo, borda pupilar interna, anel gástrico)
+3. Mapeamento topográfico (zonas e relógio)
+4. Sinais e seus estágios
+5. Síntese integrativa e orientações gerais (reeducação alimentar, limpeza orgânica, suporte aos órgãos de choque identificados, práticas de regulação)
 6. Perguntas para aprofundar na sessão
 
-DADOS:
+DADOS ESTRUTURADOS:
 ${JSON.stringify(d, null, 2)}`;
 }
 
 function modeloLocal(d) {
-  const achados = d.achados_confirmados.length
-    ? d.achados_confirmados.map(a => `• ${a.regiao_simbolica} (${a.horario}, ${a.anel}): ${a.sinal}`).join('\n')
-    : "• Nenhum achado focal confirmado.";
-  return `[LEITURA INTEGRATIVA — texto-modelo local, sem IA]\n\n` +
-    `Queixa: ${d.queixa}\n\n` +
-    `Constituição e tônus:\n${d.constituicao_trama}. ${d.tendencia_sna}. ${d.tipologia}.\n\n` +
-    `Eixos de atenção:\n${achados}\n\n` +
-    `Sugestões de cuidado integrativo:\n1. Práticas de regulação do sistema nervoso (respiração, pausas, descanso).\n2. Observar como os temas acima se relacionam à queixa e aprofundar na sessão.\n\n` +
+  const blocos = d.olhos.map(o => {
+    const ach = o.achados_confirmados.length
+      ? o.achados_confirmados.map(a => `   • ${a.regiao_simbolica || a.orgao} (${a.hora}, ${a.zona}): ${a.sinal} — estágio: ${a.estagio}`).join('\n')
+      : "   • Nenhum achado confirmado.";
+    return `Olho ${o.olho}\n   Biotipo: ${o.biotipo}\n   Trama: ${o.trama_fibras}\n   SNA: ${o.tendencia_sna}\n   Colarete: ${o.colarete}\n   Anel gástrico: ${o.anel_gastrico}\n${ach}`;
+  }).join('\n\n');
+  return `[LEITURA INTEGRATIVA — texto-modelo local, sem IA]\n\nQueixa: ${d.queixa}\n\n${blocos}\n\n` +
+    `Orientações gerais: práticas de regulação do sistema nervoso, atenção à alimentação e ao descanso, e aprofundar na sessão os temas acima.\n\n` +
     `Leitura complementar, não substitui avaliação clínica.`;
 }
 
 async function gerarRelatorioProfundoIA() {
   if (!loaded) return;
-  analisar();
   const box = $('aiSaidaRelatorio'), btn = $('btnIA');
   const key = $('aiApiKey').value.trim();
   const modelo = $('aiModelo').value.trim() || 'gemini-2.5-flash';
-  const d = dadosEstruturados();
+  const comFoto = $('aiEnviarFoto').checked;
+  const olhos = coletarOlhos({ foto: comFoto });
+  const d = dadosEstruturados(olhos);
 
   if (!key) { box.value = modeloLocal(d); return; }
+
+  const parts = [{ text: montarPrompt(d) }];
+  if (comFoto) {
+    olhos.forEach(s => {
+      if (s.foto) {
+        parts.push({ text: `Imagem do olho ${s.olho === 'OD' ? 'direito' : 'esquerdo'}:` });
+        parts.push({ inline_data: { mime_type: 'image/jpeg', data: s.foto.split(',')[1] } });
+      }
+    });
+  }
 
   const rotulo = btn.textContent;
   btn.disabled = true; btn.textContent = '⏳ Gerando leitura...';
@@ -933,14 +1262,14 @@ async function gerarRelatorioProfundoIA() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
       body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: montarPrompt(d) }] }],
-        generationConfig: { temperature: 0.8, maxOutputTokens: 4000 }
+        contents: [{ role: 'user', parts: parts }],
+        generationConfig: { temperature: 0.8, maxOutputTokens: 8000 }
       })
     });
     const j = await resp.json();
     if (!resp.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + resp.status));
-    const parts = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
-    const txt = parts.map(p => p.text || '').join('').trim();
+    const ps = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
+    const txt = ps.map(p => p.text || '').join('').trim();
     if (!txt) throw new Error('resposta vazia da IA');
     box.value = txt;
   } catch (err) {
@@ -953,50 +1282,60 @@ async function gerarRelatorioProfundoIA() {
 /* ---------- relatório ---------- */
 function montarLaudo() {
   const nome = $('pacNome').value || "Avaliado(a)";
-  const olho = $('pacOlho').value || "OE";
   const queixa = $('pacQueixa').value || "-";
-  const layers = [];
-  if ($('layJensen').checked) layers.push("7 Anéis de Jensen");
-  if ($('layRelogio').checked) layers.push("Relógio 12h");
-  if ($('layRaios').checked) layers.push("Grade de Raios 30°");
-  if ($('layAchados').checked) layers.push("Sinais e Marcadores");
-  const conf = achadosConfirmados();
-  const listaTxt = conf.length
-    ? conf.map((a, i) => `  ${i + 1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal}`).join('\n')
-    : "  Nenhum sinal focal confirmado.";
-  const dg = dadosBiometricosGlobal;
+  const olhos = coletarOlhos();
+  const mapa = mapaGPS() ? 'GPS' : 'Jensen';
   const ia = $('aiSaidaRelatorio').value.trim();
+  const porOlho = fn => olhos.length
+    ? olhos.map(s => `  ▸ ${NOME_OLHO[s.olho]}\n${fn(s)}`).join('\n\n')
+    : '  (nenhum olho registrado)';
 
   return `=================================================\n` +
     `LEITURA IRIDOLÓGICA INTEGRATIVA\n` +
     `=================================================\n` +
     `Avaliado(a): ${nome}\n` +
-    `Olho observado: ${olho}\n` +
-    `Queixa principal: ${queixa}\n\n` +
-    `1. MAPAS APLICADOS:\n   - ${layers.join(', ') || '-'}\n\n` +
-    `2. OBSERVAÇÕES CONSTITUCIONAIS:\n` +
-    `   - Relação pupila / íris: ${dg.proporcao || '--'}% (${dg.sna || '--'})\n` +
-    `   - Trama (índice normalizado): ${dg.trama || '--'} — ${dg.constituicao || '--'}\n` +
-    `   - Qualidade da foto: ${dg.qualidade || '--'}\n` +
-    `   - ${dg.tipologia || '--'}\n` +
-    `   - Anéis de tensão: ${dg.anelTensao || '--'}\n\n` +
-    `3. MAPA SIMBÓLICO — ACHADOS CONFIRMADOS:\n${listaTxt}\n\n` +
-    `4. LEITURA INTEGRATIVA:\n${ia ? ia : '   (ainda não gerada)'}\n\n` +
+    `Queixa principal: ${queixa}\n` +
+    `Mapa de zonas: ${mapa}\n\n` +
+    `1. BIOTIPO E HEREDITARIEDADE (CONSTITUIÇÃO)\n` +
+    porOlho(s => `     - Cor da íris: ${s.d.corIris}\n     - Biotipo: ${s.d.biotipoNome} (${s.d.biotipoOrigem})\n     - Tendências a observar: ${s.d.biotipoTema || '-'}\n     - Fibras / trama: ${s.d.constituicao} — índice ${s.d.trama}\n     - Qualidade da foto: ${s.d.qualidade}\n     - ${s.d.tipologia}`) + `\n\n` +
+    `2. ZONA PUPILAR E COLARETE (SISTEMA NERVOSO AUTÔNOMO)\n` +
+    porOlho(s => `     - Relação pupila / íris: ${s.d.proporcao}% — ${s.d.sna}\n     - ${s.d.bpi}\n     - ${s.d.gastrico}\n     - ${s.d.colarete}\n     - Anéis de tensão: ${s.d.anelTensao}`) + `\n\n` +
+    `3. MAPEAMENTO TOPOGRÁFICO E ESTÁGIOS DOS SINAIS (achados confirmados)\n` +
+    porOlho(s => s.achados.length
+      ? s.achados.map((a, i) => `     ${i + 1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal} — estágio: ${a.estagio}`).join('\n')
+      : '     Nenhum sinal focal confirmado.') + `\n\n` +
+    `4. LEITURA INTEGRATIVA E ORIENTAÇÕES\n${ia ? ia : '   (ainda não gerada)'}\n\n` +
     `-------------------------------------------------\n` +
     `Leitura simbólica complementar. Não substitui avaliação clínica.\n`;
 }
 
-function dlLaudo() {
-  if (!loaded) return;
-  analisar();
-  const b = new Blob([montarLaudo()], { type: 'text/plain;charset=utf-8' });
+function baixar(conteudo, tipo, arquivo) {
+  const b = new Blob([conteudo], { type: tipo });
   const a = document.createElement('a');
-  const nome = ($('pacNome').value || 'Leitura').trim().replace(/[^\w\-]+/g, '_');
   a.href = URL.createObjectURL(b);
-  a.download = `Leitura_Integrativa_${nome}.txt`;
+  a.download = arquivo;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
+function nomeArquivo() { return ($('pacNome').value || 'Leitura').trim().replace(/[^\w\-]+/g, '_'); }
+
+function dlLaudo() {
+  if (!loaded) return;
+  baixar(montarLaudo(), 'text/plain;charset=utf-8', `Leitura_Integrativa_${nomeArquivo()}.txt`);
+}
+
+function dlRelatorioHTML() {
+  if (!loaded) return;
+  const olhos = coletarOlhos({ thumb: true });
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const imgs = olhos.map(s => `<figure style="margin:0"><img src="${s.thumb || ''}" style="width:100%;max-width:340px;border-radius:8px"><figcaption>${NOME_OLHO[s.olho]}</figcaption></figure>`).join('');
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Leitura Iridológica Integrativa</title>` +
+    `<style>body{font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 16px;color:#0f172a}.imgs{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}pre{white-space:pre-wrap;font:14px/1.55 system-ui,sans-serif}</style></head>` +
+    `<body><div class="imgs">${imgs}</div><pre>${esc(montarLaudo())}</pre></body></html>`;
+  baixar(html, 'text/html;charset=utf-8', `Leitura_Integrativa_${nomeArquivo()}.html`);
+}
+
+popularSelects();
 </script>
 </body>
 </html>
