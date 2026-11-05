@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Estação Iridológica — Leitura Integrativa</title>
+<title>Estação Iridológica — Mapas Vetoriais & IA</title>
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 8px; background: #f1f5f9; color: #0f172a; }
   h2 { margin: 0 0 2px 0; font-size: 18px; color: #0369a1; }
@@ -25,7 +25,7 @@
 
   .layers-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 8px; }
   .layers-title { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; }
-  .layers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 12px; font-weight: 500; }
+  .layers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; font-weight: 500; }
 
   .canvas-box { position: relative; width: 100%; max-width: 560px; margin: 0 auto; border-radius: 10px; overflow: hidden; background: #000; touch-action: none; user-select: none; -webkit-user-select: none; }
   canvas { width: 100%; display: block; touch-action: none; }
@@ -59,8 +59,8 @@
 </head>
 <body>
 
-<h2>🔬 Estação Iridológica — Leitura Integrativa</h2>
-<div class="sub">Camadas • Scanner 360° (sugestões) • Leitura simbólica com IA</div>
+<h2>🔬 Estação Iridológica — Mapas Vetoriais & IA</h2>
+<div class="sub">Camadas de Mapas Vetoriais • Rayid • Jensen • Scanner 360°</div>
 
 <div class="card">
   <div class="row">
@@ -105,23 +105,24 @@
   </div>
 
   <div class="action-row">
-    <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Auto-Calibrar (pupila + limbo)</button>
+    <button class="btn-auto" onclick="autoDetectarPupila()">🎯 Auto-Calibrar</button>
     <button class="btn-scan" onclick="executarScannerAutomatico()">🔍 Scanner 360°</button>
   </div>
   <div class="note" id="detStatus" style="margin:0 0 6px 0;"></div>
 
   <div class="layers-box">
-    <div class="layers-title">🎛️ Gestão de Camadas de Mapa</div>
+    <div class="layers-title">🎛️ Gestão de Camadas e Mapas Vetoriais</div>
     <div class="layers-grid">
       <label><input type="checkbox" id="layJensen" checked onchange="render()"> 7 Anéis de Jensen</label>
       <label><input type="checkbox" id="layRelogio" checked onchange="render()"> Relógio 12h (Setores)</label>
-      <label><input type="checkbox" id="layRaios" checked onchange="render()"> Grade de Raios 30°</label>
-      <label><input type="checkbox" id="layAchados" checked onchange="render()"> Sinais e Marcadores</label>
+      <label><input type="checkbox" id="layRayid" onchange="render()"> 🔷 Geometria Rayid & Eixos</label>
+      <label><input type="checkbox" id="layColareteMapa" checked onchange="render()"> 〰️ Colarete & SNA</label>
+      <label><input type="checkbox" id="layTensao" onchange="render()"> ⭕ Anéis de Contração</label>
+      <label><input type="checkbox" id="layAchados" checked onchange="render()"> 📌 Sinais e Marcadores</label>
       <label><input type="checkbox" id="layFlash" checked onchange="render(); analisar();"> ✨ Filtro Anti-Flash</label>
-      <label><input type="checkbox" id="layColarete" checked onchange="render()"> 〰️ Colarete detectado</label>
       <label><input type="checkbox" id="layZoom" onchange="render()"> 🔍 Lupa 2x</label>
     </div>
-    <div class="note">Mouse: arraste para mover; roda do mouse ajusta o anel ativo. Toque: arraste e pinça.</div>
+    <div class="note">Toque/Mouse: arraste para mover; roda do rato ajusta o anel ativo.</div>
   </div>
 
   <div class="canvas-box">
@@ -131,7 +132,7 @@
   <div class="organ-panel">
     <div class="organ-title" id="orgCoord">🗺️ SELETOR DE MAPAS & ACHADOS</div>
     <div class="organ-name" id="orgNome">Use "Inspecionar" e toque na íris</div>
-    <div class="organ-sub" id="orgZona">As camadas ativas aparecem sobre a imagem.</div>
+    <div class="organ-sub" id="orgZona">As camadas ativas aparecem desenhadas sobre a imagem.</div>
     <div class="row" style="margin-top:6px; margin-bottom:0;">
       <select id="tipoSinal" style="font-size:12px; padding:5px;"></select>
       <select id="estagioSinal" style="font-size:12px; padding:5px; max-width:150px;"></select>
@@ -148,14 +149,14 @@
 
   <div class="card" style="margin-top:8px; border:2px solid #0284c7;">
     <div class="ai-title" style="color:#0369a1;">🧬 Constituição, Colarete & SNA</div>
-    <div class="note" style="margin:0 0 6px 0;">O app sugere a partir da foto; você confirma ou corrige escolhendo uma opção. A cor depende da luz e do balanço de branco da foto.</div>
+    <div class="note" style="margin:0 0 6px 0;">O sistema sugere a partir da foto; confirme ou corrija escolhendo uma opção.</div>
 
     <div class="m-lbl">BIOTIPO (COR DA ÍRIS)</div>
     <div class="row" style="margin-top:3px;">
       <select id="pacBiotipo" onchange="analisar()">
         <option value="">Usar sugestão automática</option>
-        <option value="linfatico">Linfático / Neurogênico (azul ou cinza)</option>
-        <option value="hematogenico">Hematogênico (castanho / marrom)</option>
+        <option value="linfatico">Linfático / Neurogénico (azul ou cinza)</option>
+        <option value="hematogenico">Hematogénico (castanho / marrom)</option>
         <option value="misto">Misto / Biliar / Hidrogenóide (avelã, verde)</option>
       </select>
     </div>
@@ -201,10 +202,9 @@
       <input type="password" id="aiApiKey" placeholder="Chave API Gemini" autocomplete="off" style="font-size:11px;">
       <input type="text" id="aiModelo" value="gemini-2.5-flash" style="font-size:11px; max-width:130px;">
     </div>
-    <label style="display:block; font-size:11px; margin-bottom:6px;"><input type="checkbox" id="aiEnviarFoto"> Enviar também a foto da íris à IA (análise visual; é dado biométrico sensível e a IA pode descrever sinais que não existem)</label>
+    <label style="display:block; font-size:11px; margin-bottom:6px;"><input type="checkbox" id="aiEnviarFoto"> Enviar também a foto da íris à IA (análise visual)</label>
     <button class="btn-auto" id="btnIA" style="width:100%; background:#10b981; margin-bottom:6px; padding:9px;" onclick="gerarRelatorioProfundoIA()">✨ Gerar Leitura Integrativa</button>
-    <textarea id="aiSaidaRelatorio" rows="14" placeholder="A leitura aparecerá aqui. Você pode editar o texto antes de baixar." style="width:100%; font-size:11px; padding:6px; box-sizing:border-box; border-radius:6px; border:1px solid #10b981;"></textarea>
-    <div class="note">Sem chave, é gerado um texto-modelo local. A chave fica só nesta página (não é salva). O nome da pessoa não é enviado à IA.</div>
+    <textarea id="aiSaidaRelatorio" rows="14" placeholder="A leitura aparecerá aqui. Pode editar o texto antes de descarregar." style="width:100%; font-size:11px; padding:6px; box-sizing:border-box; border-radius:6px; border:1px solid #10b981;"></textarea>
   </div>
 
   <div class="card" style="margin-top:8px; padding:6px;">
@@ -222,32 +222,18 @@
 
   <div class="card" style="margin-top:8px;">
     <div class="m-lbl">LEITURA DOS DOIS OLHOS</div>
-    <button class="btn-auto" style="width:100%; margin-top:6px; padding:9px; background:#0369a1;" onclick="salvarOlho()">💾 Salvar leitura do olho em tela</button>
-    <div class="note" id="statusOlhos">Nenhum olho salvo. Salve um olho antes de carregar a foto do outro (e troque o seletor OD/OE no topo). O relatório e a IA combinam os dois.</div>
+    <button class="btn-auto" style="width:100%; margin-top:6px; padding:9px; background:#0369a1;" onclick="salvarOlho()">💾 Salvar leitura do olho em ecrã</button>
+    <div class="note" id="statusOlhos">Nenhum olho salvo. Salve um olho antes de carregar a foto do outro (troque o seletor OD/OE no topo).</div>
   </div>
   <button class="btn-dl" onclick="dlLaudo()">📥 Baixar Leitura Integrativa (.TXT)</button>
   <button class="btn-dl" style="background:#0369a1; margin-top:6px;" onclick="dlRelatorioHTML()">🖼️ Baixar Relatório com Imagens (.HTML)</button>
-  <div class="note">O relatório HTML pode ser impresso ou salvo em PDF pelo navegador.</div>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
-const S = 800;            // resolução interna do canvas
-const K = S / 500;        // fator de escala em relação à versão anterior
-const PW = 360, PH = 65;  // projeção polar
-const FLASH = 230;        // luminância acima disso = reflexo
-
-// Limiares ajustáveis (não calibrados — refine com o seu olhar clínico)
-const SNA_ALTO = 45;      // % pupila/íris acima disso: tendência simpaticotônica
-const SNA_BAIXO = 28;     // % pupila/íris abaixo disso: tendência parassimpática
+const S = 800, K = S / 500, PW = 360, PH = 65, FLASH = 230;
 const LIMIARES_TRAMA = [0.16, 0.26, 0.38, 0.52];
-const GRAUS_TRAMA = [
-  "Grau 1 (Seda — trama compacta)",
-  "Grau 2 (Seda/Linho)",
-  "Grau 3 (Linho — trama intermediária)",
-  "Grau 4 (Algodão)",
-  "Grau 5 (Rede — trama aberta)"
-];
+const GRAUS_TRAMA = ["Grau 1 (Seda — trama compacta)", "Grau 2 (Seda/Linho)", "Grau 3 (Linho — trama intermediária)", "Grau 4 (Algodão)", "Grau 5 (Rede — trama aberta)"];
 
 const cv = $('cv'), ctx = cv.getContext('2d');
 const pCv = $('pCv'), pCtx = pCv.getContext('2d');
@@ -268,24 +254,8 @@ let dadosBiometricosGlobal = {};
 let colareteRows = null;
 let olhosSalvos = { OD: null, OE: null };
 
-const ZONAS_JENSEN = [
-  "Zona 1 (Estômago / Digestão Primária)",
-  "Zona 2 (Intestinos / Absorção)",
-  "Zona 3 (Colarete / SNA)",
-  "Zona 4 (Órgãos Vitais / Brônquios)",
-  "Zona 5 (Parênquima e Estrutura Óssea)",
-  "Zona 6 (Sistema Linfático e Circulação)",
-  "Zona 7 (Pele e Eliminação Periférica)"
-];
-const ZONAS_GPS = [
-  "Zona 1 (Estômago)",
-  "Zona 2 (Intestinos: grosso e delgado)",
-  "Zona 3 (Coração, Tireoide e Glândulas)",
-  "Zona 4 (Pulmões, Brônquios, Traqueia, Fígado, Baço e Rins)",
-  "Zona 5 (Cérebro e Órgãos Sexuais)",
-  "Zona 6 (Sistema Circulatório e Linfático)",
-  "Zona 7 (Pele, Membros, Músculos e Nervos Motores)"
-];
+const ZONAS_JENSEN = ["Zona 1 (Estômago / Digestão)", "Zona 2 (Intestinos / Absorção)", "Zona 3 (Colarete / SNA)", "Zona 4 (Órgãos Vitais / Brônquios)", "Zona 5 (Parênquima e Ossos)", "Zona 6 (Linfático e Circulação)", "Zona 7 (Pele e Eliminação)"];
+const ZONAS_GPS = ["Zona 1 (Estômago)", "Zona 2 (Intestinos)", "Zona 3 (Coração e Glândulas)", "Zona 4 (Pulmões e Órgãos Internos)", "Zona 5 (Cérebro e Sexuais)", "Zona 6 (Circulatório e Linfático)", "Zona 7 (Pele e Músculos)"];
 function mapaGPS() { return $('pacMapa') && $('pacMapa').value === 'GPS'; }
 function zonasAtivas() { return mapaGPS() ? ZONAS_GPS : ZONAS_JENSEN; }
 
@@ -304,16 +274,15 @@ function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
       return "Intestino Delgado";
     }
   }
-  if (zonaIdx === 2) return mapaGPS() ? "Coração, Tireoide e Glândulas (Zona 3)" : "Banda do Sistema Nervoso Autônomo (Colarete)";
+  if (zonaIdx === 2) return mapaGPS() ? "Coração, Tireoide e Glândulas (Zona 3)" : "Banda do Sistema Nervoso Autónomo (Colarete)";
   if (zonaIdx === 6) return "Pele e Microcirculação Periférica";
-
   const h = horaFloat;
   if (olho === "OD") {
-    if (h >= 11.5 || h < 0.5) return "Cérebro Direito / Hipófise e Pineal";
+    if (h >= 11.5 || h < 0.5) return "Cérebro Direito / Hipófise";
     if (h >= 0.5 && h < 1.3) return "Córtex Sensório-Motor";
     if (h >= 1.3 && h < 2.2) return "Olho Direito e Seios da Face";
     if (h >= 2.2 && h < 3.0) return "Laringe, Faringe e Mandíbula";
-    if (h >= 3.0 && h < 3.8) return "Tireoide e Esôfago";
+    if (h >= 3.0 && h < 3.8) return "Tireoide e Esófago";
     if (h >= 3.8 && h < 4.5) return "Coluna Vertebral e Costelas";
     if (h >= 4.5 && h < 5.3) return "Bexiga e Região Pélvica";
     if (h >= 5.3 && h < 6.0) return "Rim Direito e Suprarrenal";
@@ -334,7 +303,7 @@ function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
     if (h >= 5.3 && h < 6.0) return "Perna e Pé Esquerdo";
     if (h >= 6.0 && h < 6.7) return "Rim Esquerdo e Suprarrenal";
     if (h >= 6.7 && h < 7.5) return "Bexiga e Região Lombar";
-    if (h >= 7.5 && h < 8.5) return "Coluna Vertebral (Esquerda)";
+    if (h >= 7.5 && h < 8.5) return "Coluna Vertebral";
     if (h >= 8.5 && h < 9.4) return "Tireoide e Traqueia";
     if (h >= 9.4 && h < 10.3) return "Amígdalas e Nariz";
     if (h >= 10.3 && h < 11.5) return "Olho Esquerdo e Seios da Face";
@@ -342,21 +311,16 @@ function obterOrgaoJensen(olho, horaFloat, zonaIdx) {
   }
 }
 
-/* ---------- utilitários ---------- */
 function fmtHora(deg) {
   const hf = deg / 30;
-  let h = Math.floor(hf);
-  let m = Math.round((hf - h) * 60);
+  let h = Math.floor(hf), m = Math.round((hf - h) * 60);
   if (m === 60) { h += 1; m = 0; }
-  h = h % 12;
-  if (h === 0) h = 12;
+  h = h % 12; if (h === 0) h = 12;
   return `${h}h${m < 10 ? '0' + m : m}`;
 }
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-function dentroDaImagem(x, y) {
-  return x >= imgRect.x + 2 && x < imgRect.x + imgRect.w - 2 && y >= imgRect.y + 2 && y < imgRect.y + imgRect.h - 2;
-}
+function dentroDaImagem(x, y) { return x >= imgRect.x + 2 && x < imgRect.x + imgRect.w - 2 && y >= imgRect.y + 2 && y < imgRect.y + imgRect.h - 2; }
 function lumAt(x, y) {
   x = Math.round(x); y = Math.round(y);
   if (!cleanPixels || !dentroDaImagem(x, y)) return null;
@@ -380,79 +344,58 @@ function recalcularOrgaos() {
     a.orgao = obterOrgaoJensen(olho, a.deg / 30.0, z);
   });
 }
-function trocarMapa() {
-  recalcularOrgaos();
-  atualizarListaAchados();
-  atualizarOrgaoSelecionado();
-  analisar();
-}
+function trocarMapa() { recalcularOrgaos(); atualizarListaAchados(); atualizarOrgaoSelecionado(); analisar(); }
 function trocarOlho() {
   achadosClinicos = achadosClinicos.filter(a => !(a.auto && !a.confirmado));
-  recalcularOrgaos();
-  atualizarListaAchados();
-  atualizarOrgaoSelecionado();
-  analisar();
-  render();
+  recalcularOrgaos(); atualizarListaAchados(); atualizarOrgaoSelecionado(); analisar(); render();
 }
 
-/* ---------- carregar imagem ---------- */
 $('fIn').onchange = function (e) {
   const file = e.target.files[0];
   if (!file) return;
   const url = URL.createObjectURL(file);
   img = new Image();
   img.onload = function () {
-    loaded = true;
-    achadosClinicos = [];
-    statusAnelTensao = "Não avaliado";
+    loaded = true; achadosClinicos = []; statusAnelTensao = "Não avaliado";
     ['pacBiotipo', 'selBPI', 'selGastrico', 'selColarete'].forEach(id => $(id).value = '');
     $('appArea').style.display = 'block';
-    prepararBufferImagem();
-    autoDetectarPupila();
-    atualizarListaAchados();
+    prepararBufferImagem(); autoDetectarPupila(); atualizarListaAchados();
   };
   img.src = url;
 };
 
 function prepararBufferImagem() {
-  // "contain": a foto inteira fica visível (a versão anterior cortava as bordas)
   const sc = Math.min(S / img.width, S / img.height);
   const w = img.width * sc, h = img.height * sc;
   imgRect = { x: (S - w) / 2, y: (S - h) / 2, w, h };
   const off = document.createElement('canvas');
   off.width = S; off.height = S;
   const oCtx = off.getContext('2d', { willReadFrequently: true });
-  oCtx.fillStyle = '#000';
-  oCtx.fillRect(0, 0, S, S);
+  oCtx.fillStyle = '#000'; oCtx.fillRect(0, 0, S, S);
   oCtx.drawImage(img, imgRect.x, imgRect.y, w, h);
   cleanPixels = oCtx.getImageData(0, 0, S, S).data;
 }
 
-/* ---------- calibração: pupila + limbo ---------- */
 function autoDetectarPupila() {
   if (!cleanPixels) return;
   const x0 = imgRect.x + imgRect.w * 0.2, x1 = imgRect.x + imgRect.w * 0.8;
   const y0 = imgRect.y + imgRect.h * 0.2, y1 = imgRect.y + imgRect.h * 0.8;
-
   let minLum = 255;
   for (let y = y0; y < y1; y += 4) {
     for (let x = x0; x < x1; x += 4) {
-      const l = lumAt(x, y);
-      if (l !== null && l < minLum && l > 5) minLum = l;
+      const l = lumAt(x, y); if (l !== null && l < minLum && l > 5) minLum = l;
     }
   }
   const thresh = minLum + 28;
   let sumX = 0, sumY = 0, count = 0;
   for (let y = y0; y < y1; y += 3) {
     for (let x = x0; x < x1; x += 3) {
-      const l = lumAt(x, y);
-      if (l !== null && l <= thresh) { sumX += x; sumY += y; count++; }
+      const l = lumAt(x, y); if (l !== null && l <= thresh) { sumX += x; sumY += y; count++; }
     }
   }
   if (count > 40) { cx = Math.round(sumX / count); cy = Math.round(sumY / count); }
   else { cx = Math.round(imgRect.x + imgRect.w / 2); cy = Math.round(imgRect.y + imgRect.h / 2); }
 
-  // borda da pupila: maior salto radial de luminância
   let bestRP = 80, maxGrad = 0;
   for (let r = 32; r < 184; r += 2) {
     let lumIn = 0, lumOut = 0, valid = 0;
@@ -462,41 +405,26 @@ function autoDetectarPupila() {
       const l2 = lumAt(cx + (r + 4) * Math.cos(rad), cy + (r + 4) * Math.sin(rad));
       if (l1 !== null && l2 !== null && l1 < 225 && l2 < 225) { lumIn += l1; lumOut += l2; valid++; }
     }
-    if (valid > 8 && ((lumOut - lumIn) / valid) > maxGrad) {
-      maxGrad = (lumOut - lumIn) / valid; bestRP = r;
-    }
+    if (valid > 8 && ((lumOut - lumIn) / valid) > maxGrad) { maxGrad = (lumOut - lumIn) / valid; bestRP = r; }
   }
   rP = bestRP;
 
-  // nitidez: fração do degrau de luminância que ocorre em ~6px na borda pupilar (1 = borda nítida)
   let st = 0, pk = 0, n = 0;
   for (let a = 0; a < 360; a += 15) {
     const rad = a * Math.PI / 180, c = Math.cos(rad), s = Math.sin(rad);
-    const i2 = lumAt(cx + (rP - 9) * c, cy + (rP - 9) * s);
-    const o2 = lumAt(cx + (rP + 9) * c, cy + (rP + 9) * s);
-    const i1 = lumAt(cx + (rP - 3) * c, cy + (rP - 3) * s);
-    const o1 = lumAt(cx + (rP + 3) * c, cy + (rP + 3) * s);
+    const i2 = lumAt(cx + (rP - 9) * c, cy + (rP - 9) * s), o2 = lumAt(cx + (rP + 9) * c, cy + (rP + 9) * s);
+    const i1 = lumAt(cx + (rP - 3) * c, cy + (rP - 3) * s), o1 = lumAt(cx + (rP + 3) * c, cy + (rP + 3) * s);
     if (i2 !== null && o2 !== null && i1 !== null && o1 !== null) { st += o2 - i2; pk += o1 - i1; n++; }
   }
   nitidez = (n > 6 && st / n > 8) ? clamp(pk / st, 0, 1) : null;
-
-  const achou = detectarLimbo();
-
+  detectarLimbo();
   probeX = cx; probeY = cy - Math.round((rP + rI) / 2);
-  atualizarOrgaoSelecionado();
-  analisar();
-  render();
-  return achou;
+  atualizarOrgaoSelecionado(); analisar(); render();
 }
 
-// Limbo = maior transição escuro→claro (íris→esclera) nos setores laterais (evita pálpebras)
 function detectarLimbo() {
-  const minR = Math.round(rP * 2.0);
-  const maxR = Math.round(Math.min(rP * 5, S * 0.49));
-  const angs = [];
-  for (let a = -30; a <= 30; a += 5) angs.push(a);
-  for (let a = 150; a <= 210; a += 5) angs.push(a);
-
+  const minR = Math.round(rP * 2.0), maxR = Math.round(Math.min(rP * 5, S * 0.49));
+  const angs = []; for (let a = -30; a <= 30; a += 5) angs.push(a); for (let a = 150; a <= 210; a += 5) angs.push(a);
   const prof = {};
   for (let r = minR - 6; r <= maxR + 6; r++) {
     let s = 0, n = 0;
@@ -509,55 +437,36 @@ function detectarLimbo() {
   }
   let best = null, bd = 0;
   for (let r = minR; r <= maxR; r++) {
-    const a = prof[r - 5], b = prof[r + 5];
-    if (a == null || b == null) continue;
-    const d = b - a;
-    if (d > bd) { bd = d; best = r; }
+    const a = prof[r - 5], b = prof[r + 5]; if (a == null || b == null) continue;
+    const d = b - a; if (d > bd) { bd = d; best = r; }
   }
-  const el = $('detStatus');
-  if (best !== null && bd > 10) {
-    rI = Math.min(Math.round(S * 0.49), best);
-    el.textContent = "Pupila e limbo detectados automaticamente. Confira e ajuste (🟢 Ajustar Íris) se necessário.";
-    return true;
-  }
+  if (best !== null && bd > 10) { rI = Math.min(Math.round(S * 0.49), best); return true; }
   rI = Math.min(Math.round(S * 0.47), Math.round(rP * 3.1));
-  el.textContent = "Limbo não detectado com segurança: ajuste o anel verde manualmente.";
   return false;
 }
 
-/* ---------- scanner: gera SUGESTÕES para confirmação ---------- */
 function executarScannerAutomatico() {
   if (!loaded || !cleanPixels) return;
   analisar();
-
-  const pw = PW, ph = PH;
-  const olho = $('pacOlho').value;
+  const pw = PW, ph = PH, olho = $('pacOlho').value;
   achadosClinicos = achadosClinicos.filter(a => !(a.auto && !a.confirmado));
 
   const candidatosRaios = [];
   for (let deg = 0; deg < 360; deg += 3) {
     let somaCol = 0, somaViz = 0, valid = 0;
     for (let y = 8; y < 48; y++) {
-      const idx = y * pw + deg;
-      const idxL = y * pw + ((deg - 6 + 360) % 360);
-      const idxR = y * pw + ((deg + 6) % 360);
+      const idx = y * pw + deg, idxL = y * pw + ((deg - 6 + 360) % 360), idxR = y * pw + ((deg + 6) % 360);
       if (polarFlashMask[idx] || polarFlashMask[idxL] || polarFlashMask[idxR]) continue;
-      somaCol += polarGray[idx];
-      somaViz += (polarGray[idxL] + polarGray[idxR]) * 0.5;
-      valid++;
+      somaCol += polarGray[idx]; somaViz += (polarGray[idxL] + polarGray[idxR]) * 0.5; valid++;
     }
-    if (valid > 28) {
-      const queda = (somaViz - somaCol) / valid;
-      if (queda > 11.5) candidatosRaios.push({ deg, score: queda });
-    }
+    if (valid > 28) { const queda = (somaViz - somaCol) / valid; if (queda > 11.5) candidatosRaios.push({ deg, score: queda }); }
   }
   candidatosRaios.sort((a, b) => b.score - a.score);
   const raiosEscolhidos = [];
   for (const c of candidatosRaios) {
     if (raiosEscolhidos.length >= 3) break;
     if (raiosEscolhidos.every(r => Math.min(Math.abs(r.deg - c.deg), 360 - Math.abs(r.deg - c.deg)) > 18)) {
-      raiosEscolhidos.push(c);
-      adicionarSinalPolar(olho, c.deg, 2, "Raio Solar (Tensão)", "raio");
+      raiosEscolhidos.push(c); adicionarSinalPolar(olho, c.deg, 2, "Raio Solar (Tensão)", "raio");
     }
   }
 
@@ -565,25 +474,17 @@ function executarScannerAutomatico() {
   for (let deg = 18; deg < 342; deg += 6) {
     if (deg > 162 && deg < 198) continue;
     for (let z = 1; z <= 4; z++) {
-      const yStart = Math.floor((z / 7) * ph);
-      const yEnd = Math.floor(((z + 1) / 7) * ph);
+      const yStart = Math.floor((z / 7) * ph), yEnd = Math.floor(((z + 1) / 7) * ph);
       let somaBloco = 0, somaEntorno = 0, cnt = 0;
       for (let y = yStart; y < yEnd; y++) {
         for (let dx = -2; dx <= 2; dx++) {
-          const x = (deg + dx + 360) % 360;
-          const idx = y * pw + x;
-          const idxE1 = y * pw + ((deg - 12 + 360) % 360);
-          const idxE2 = y * pw + ((deg + 12) % 360);
+          const x = (deg + dx + 360) % 360, idx = y * pw + x;
+          const idxE1 = y * pw + ((deg - 12 + 360) % 360), idxE2 = y * pw + ((deg + 12) % 360);
           if (polarFlashMask[idx] || polarFlashMask[idxE1] || polarFlashMask[idxE2]) continue;
-          somaBloco += polarGray[idx];
-          somaEntorno += (polarGray[idxE1] + polarGray[idxE2]) * 0.5;
-          cnt++;
+          somaBloco += polarGray[idx]; somaEntorno += (polarGray[idxE1] + polarGray[idxE2]) * 0.5; cnt++;
         }
       }
-      if (cnt > 15) {
-        const diff = (somaEntorno - somaBloco) / cnt;
-        if (diff > 14.0) candidatosLacunas.push({ deg, zonaIdx: z, score: diff });
-      }
+      if (cnt > 15) { const diff = (somaEntorno - somaBloco) / cnt; if (diff > 14.0) candidatosLacunas.push({ deg, zonaIdx: z, score: diff }); }
     }
   }
   candidatosLacunas.sort((a, b) => b.score - a.score);
@@ -602,20 +503,15 @@ function executarScannerAutomatico() {
     let diffLinha = 0, cnt = 0;
     for (let x = 20; x < 340; x += 2) {
       if (x > 160 && x < 200) continue;
-      const idx = y * pw + x;
-      if (polarFlashMask[idx]) continue;
+      const idx = y * pw + x; if (polarFlashMask[idx]) continue;
       const vDiff = Math.abs(polarGray[idx] - 0.5 * (polarGray[(y - 3) * pw + x] + polarGray[(y + 3) * pw + x]));
       const hDiff = Math.abs(polarGray[idx] - polarGray[y * pw + x - 2]);
-      if (vDiff > hDiff * 1.35 && vDiff > 7) diffLinha++;
-      cnt++;
+      if (vDiff > hDiff * 1.35 && vDiff > 7) diffLinha++; cnt++;
     }
     if (cnt > 40 && (diffLinha / cnt) > 0.32) scoreAnel++;
   }
   statusAnelTensao = scoreAnel >= 2 ? "Sugeridos nas Zonas 5-6 (a confirmar)" : "Discretos ou ausentes";
-
-  atualizarListaAchados();
-  analisar();
-  render();
+  atualizarListaAchados(); analisar(); render();
 }
 
 function adicionarSinalPolar(olho, deg, zonaIdx, descricaoSinal, subtipo) {
@@ -626,39 +522,23 @@ function adicionarSinalPolar(olho, deg, zonaIdx, descricaoSinal, subtipo) {
   });
 }
 
-/* ---------- inspeção e achados ---------- */
 function zoomOn() { return $('layZoom').checked; }
-
-function posRaw(e) {
-  const b = cv.getBoundingClientRect();
-  return { x: (e.clientX - b.left) * (cv.width / b.width), y: (e.clientY - b.top) * (cv.height / b.height) };
-}
-function posMapa(e) {
-  const p = posRaw(e);
-  if (zoomOn()) { p.x = (p.x - S / 2) / 2 + cx; p.y = (p.y - S / 2) / 2 + cy; }
-  return p;
-}
+function posRaw(e) { const b = cv.getBoundingClientRect(); return { x: (e.clientX - b.left) * (cv.width / b.width), y: (e.clientY - b.top) * (cv.height / b.height) }; }
+function posMapa(e) { const p = posRaw(e); if (zoomOn()) { p.x = (p.x - S / 2) / 2 + cx; p.y = (p.y - S / 2) / 2 + cy; } return p; }
 
 function atualizarOrgaoSelecionado() {
   if (probeX === null || probeY === null) return;
-  const dx = probeX - cx, dy = probeY - cy;
-  const dist = Math.hypot(dx, dy);
-  const olho = $('pacOlho').value;
-  const deg = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
-  const horaStr = fmtHora(deg);
-
+  const dx = probeX - cx, dy = probeY - cy, dist = Math.hypot(dx, dy);
+  const olho = $('pacOlho').value, deg = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360, horaStr = fmtHora(deg);
   if (dist <= rP) {
     $('orgCoord').innerText = `⚫ ÁREA PUPILAR (${horaStr})`;
-    $('orgNome').innerText = "Pupila — Tônus Autonômico";
+    $('orgNome').innerText = "Pupila — Tônus Autónomo";
     $('orgZona').innerText = "Borda Pupilar Interna";
-    ultimoOrgaoInfo = { pupila: true };
-    return;
+    ultimoOrgaoInfo = { pupila: true }; return;
   }
-
   const ratio = Math.min(1, (dist - rP) / (rI - rP));
   const zonaIdx = Math.min(6, Math.max(0, Math.floor(ratio * 7)));
   const nomeOrgao = obterOrgaoJensen(olho, deg / 30.0, zonaIdx);
-
   $('orgCoord').innerText = `📍 ${olho} • ${horaStr} • Anel ${zonaIdx + 1}`;
   $('orgNome').innerText = nomeOrgao;
   $('orgZona').innerText = zonasAtivas()[zonaIdx];
@@ -670,24 +550,14 @@ function adicionarAchadoManual() {
   achadosClinicos.push({ ...ultimoOrgaoInfo, sinal: $('tipoSinal').value, estagio: $('estagioSinal').value, auto: false, confirmado: true });
   atualizarListaAchados(); analisar(); render();
 }
-function confirmarAchado(i) {
-  if (achadosClinicos[i]) achadosClinicos[i].confirmado = true;
-  atualizarListaAchados(); analisar(); render();
-}
-function removerAchado(i) {
-  achadosClinicos.splice(i, 1);
-  atualizarListaAchados(); analisar(); render();
-}
-
+function confirmarAchado(i) { if (achadosClinicos[i]) achadosClinicos[i].confirmado = true; atualizarListaAchados(); analisar(); render(); }
+function removerAchado(i) { achadosClinicos.splice(i, 1); atualizarListaAchados(); analisar(); render(); }
 function mudarEstagio(i, v) { if (achadosClinicos[i]) achadosClinicos[i].estagio = v; }
 
 function atualizarListaAchados() {
-  const box = $('listaAchados');
-  if (achadosClinicos.length === 0) { box.innerHTML = ""; return; }
+  const box = $('listaAchados'); if (achadosClinicos.length === 0) { box.innerHTML = ""; return; }
   box.innerHTML = achadosClinicos.map((a, i) => {
-    const pend = a.auto && !a.confirmado;
-    const cls = a.auto ? (a.confirmado ? 'auto-pin' : 'pending') : '';
-    const ico = a.auto ? (a.confirmado ? '🔍' : '❓') : '📌';
+    const pend = a.auto && !a.confirmado, cls = a.auto ? (a.confirmado ? 'auto-pin' : 'pending') : '', ico = a.auto ? (a.confirmado ? '🔍' : '❓') : '📌';
     return `<div class="pin-item ${cls}">
       <span>${ico} <b>${a.hora} (${a.zona}):</b> ${a.orgao} — <i>${a.sinal}</i>${pend ? ' <b>(sugestão)</b>' : ''}</span>
       <span style="display:flex; align-items:center; gap:2px;">
@@ -697,128 +567,78 @@ function atualizarListaAchados() {
     </div>`;
   }).join('');
 }
-
 function achadosConfirmados() { return achadosClinicos.filter(a => !a.auto || a.confirmado); }
 
-/* ---------- eventos de ponteiro (mouse + toque) ---------- */
 const ptrs = new Map();
 cv.addEventListener('pointerdown', function (e) {
-  e.preventDefault();
-  try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+  e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (_) {}
   ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
-  if (ptrs.size === 2) {
-    const [a, b] = [...ptrs.values()];
-    pinch0 = Math.hypot(a.x - b.x, a.y - b.y);
-    srI = rI; srP = rP; drag = false;
-    return;
-  }
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); srI = rI; srP = rP; drag = false; return; }
   if (ptrs.size === 1) {
     drag = true;
-    if (mode === 'map') {
-      const p = posMapa(e); probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render();
-    } else {
-      const p = posRaw(e); sx = p.x; sy = p.y; scx = cx; scy = cy; srI = rI; srP = rP;
-    }
+    if (mode === 'map') { const p = posMapa(e); probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render(); }
+    else { const p = posRaw(e); sx = p.x; sy = p.y; scx = cx; scy = cy; srI = rI; srP = rP; }
   }
 });
-
 cv.addEventListener('pointermove', function (e) {
-  if (!ptrs.has(e.pointerId)) return;
-  e.preventDefault();
+  if (!ptrs.has(e.pointerId)) return; e.preventDefault();
   ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (ptrs.size === 2 && pinch0) {
-    const [a, b] = [...ptrs.values()];
-    const k = Math.hypot(a.x - b.x, a.y - b.y) / pinch0;
-    if (mode === 'pup') rP = clamp(srP * k, 16, rI - 16);
-    else rI = clamp(srI * k, rP + 24, S * 0.49);
-    render();
+    const [a, b] = [...ptrs.values()], k = Math.hypot(a.x - b.x, a.y - b.y) / pinch0;
+    if (mode === 'pup') rP = clamp(srP * k, 16, rI - 16); else rI = clamp(srI * k, rP + 24, S * 0.49); render();
   } else if (ptrs.size === 1 && drag) {
-    if (mode === 'map') {
-      const p = posMapa(e); probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render(); return;
-    }
-    const zf = zoomOn() ? 2 : 1;
-    const p = posRaw(e);
-    const dx = (p.x - sx) / zf, dy = (p.y - sy) / zf;
+    if (mode === 'map') { const p = posMapa(e); probeX = p.x; probeY = p.y; atualizarOrgaoSelecionado(); render(); return; }
+    const zf = zoomOn() ? 2 : 1, p = posRaw(e), dx = (p.x - sx) / zf, dy = (p.y - sy) / zf;
     if (mode === 'move') { cx = clamp(scx + dx, 48, S - 48); cy = clamp(scy + dy, 48, S - 48); }
     else if (mode === 'iris') rI = clamp(srI + dx * 0.8, rP + 24, S * 0.49);
-    else if (mode === 'pup') rP = clamp(srP + dx * 0.8, 16, rI - 16);
-    render();
+    else if (mode === 'pup') rP = clamp(srP + dx * 0.8, 16, rI - 16); render();
   }
 });
-
-function fimPonteiro(e) {
-  ptrs.delete(e.pointerId);
-  if (ptrs.size < 2) pinch0 = null;
-  if (ptrs.size === 0) { drag = false; analisar(); }
-}
-cv.addEventListener('pointerup', fimPonteiro);
-cv.addEventListener('pointercancel', fimPonteiro);
+function fimPonteiro(e) { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch0 = null; if (ptrs.size === 0) { drag = false; analisar(); } }
+cv.addEventListener('pointerup', fimPonteiro); cv.addEventListener('pointercancel', fimPonteiro);
 
 let wheelTimer = null;
 cv.addEventListener('wheel', function (e) {
-  e.preventDefault();
-  const f = e.deltaY < 0 ? 1.03 : 0.97;
-  if (mode === 'pup') rP = clamp(rP * f, 16, rI - 16);
-  else rI = clamp(rI * f, rP + 24, S * 0.49);
-  render();
-  clearTimeout(wheelTimer);
-  wheelTimer = setTimeout(analisar, 150);
+  e.preventDefault(); const f = e.deltaY < 0 ? 1.03 : 0.97;
+  if (mode === 'pup') rP = clamp(rP * f, 16, rI - 16); else rI = clamp(rI * f, rP + 24, S * 0.49);
+  render(); clearTimeout(wheelTimer); wheelTimer = setTimeout(analisar, 150);
 }, { passive: false });
 
-/* ---------- desenho ---------- */
+/* ---------- RENDERIZADOR DE CAMADAS VETORIAIS ---------- */
 function render() {
   if (!loaded) return;
   ctx.clearRect(0, 0, S, S);
   ctx.save();
   if (zoomOn()) { ctx.translate(S / 2, S / 2); ctx.scale(2, 2); ctx.translate(-cx, -cy); }
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, S, S);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, S, S);
   ctx.drawImage(img, imgRect.x, imgRect.y, imgRect.w, imgRect.h);
 
+  // 1. Filtro Anti-Flash
   if ($('layFlash').checked && cleanPixels) {
     ctx.fillStyle = 'rgba(0, 220, 255, 0.35)';
     const x0 = Math.max(0, Math.floor(cx - rI)), x1 = Math.min(S, Math.ceil(cx + rI));
     const y0 = Math.max(0, Math.floor(cy - rI)), y1 = Math.min(S, Math.ceil(cy + rI));
     for (let y = y0; y < y1; y += 4) {
       for (let x = x0; x < x1; x += 4) {
-        const dist = Math.hypot(x - cx, y - cy);
-        if (dist > rP && dist < rI) {
-          const l = lumAt(x, y);
-          if (l !== null && l > FLASH) ctx.fillRect(x, y, 4, 4);
+        if (Math.hypot(x - cx, y - cy) > rP && Math.hypot(x - cx, y - cy) < rI) {
+          const l = lumAt(x, y); if (l !== null && l > FLASH) ctx.fillRect(x, y, 4, 4);
         }
       }
     }
   }
 
+  // 2. Relógio 12h
   if ($('layRelogio').checked) {
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `bold ${Math.round(11 * K)}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${Math.round(11 * K)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 1.2;
     for (let h = 1; h <= 12; h++) {
       const rad = (h * 30 - 90) * Math.PI / 180;
-      ctx.beginPath();
-      ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad));
-      ctx.lineTo(cx + rI * Math.cos(rad), cy + rI * Math.sin(rad));
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad)); ctx.lineTo(cx + rI * Math.cos(rad), cy + rI * Math.sin(rad)); ctx.stroke();
       ctx.fillText(h + 'h', cx + (rI + 14 * K) * Math.cos(rad), cy + (rI + 14 * K) * Math.sin(rad));
     }
   }
 
-  if ($('layRaios').checked && !$('layRelogio').checked) {
-    ctx.strokeStyle = 'rgba(255, 80, 80, 0.6)';
-    ctx.lineWidth = 1.2;
-    for (let a = 0; a < 360; a += 30) {
-      const rad = a * Math.PI / 180;
-      ctx.beginPath();
-      ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad));
-      ctx.lineTo(cx + rI * Math.cos(rad), cy + rI * Math.sin(rad));
-      ctx.stroke();
-    }
-  }
-
+  // 3. Anéis de Jensen
   if ($('layJensen').checked) {
     const st = (rI - rP) / 7;
     for (let i = 1; i < 7; i++) {
@@ -828,75 +648,90 @@ function render() {
     }
   }
 
-  ctx.strokeStyle = '#facc15'; ctx.lineWidth = mode === 'pup' ? 5 : 3;
-  ctx.beginPath(); ctx.arc(cx, cy, rP, 0, 2 * Math.PI); ctx.stroke();
-
-  ctx.strokeStyle = '#22c55e'; ctx.lineWidth = mode === 'iris' ? 5 : 3.5;
-  ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2 * Math.PI); ctx.stroke();
-
-  if ($('layColarete').checked && colareteRows) {
+  // 4. CAMADA VETORIAL: Geometria Rayid & Eixos Comportamentais
+  if ($('layRayid').checked) {
     ctx.save();
-    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.setLineDash([8, 5]);
+    ctx.strokeStyle = 'rgba(168, 85, 247, 0.85)'; // Roxo Rayid
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([5, 3]);
+    // Eixos principais (Pensamento, Sentimento, Intuição, Ação - 4 quadrantes principais e diagonais)
+    [0, 45, 90, 135, 180, 225, 270, 315].forEach(deg => {
+      const rad = (deg - 90) * Math.PI / 180;
+      ctx.beginPath();
+      ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad));
+      ctx.lineTo(cx + rI * Math.cos(rad), cy + rI * Math.sin(rad));
+      ctx.stroke();
+    });
+    // Anel de polaridade Rayid (meio da íris)
     ctx.beginPath();
-    let pen = false;
-    for (let x = 0; x < PW; x++) {
-      const yy = colareteRows[x];
-      if (isNaN(yy)) { pen = false; continue; }
-      const rr = rP + (yy / PH) * (rI - rP);
-      const rd = ((x - 90) * 2 * Math.PI) / PW;
-      const qx = cx + rr * Math.cos(rd), qy = cy + rr * Math.sin(rd);
-      if (!pen) { ctx.moveTo(qx, qy); pen = true; } else ctx.lineTo(qx, qy);
-    }
+    ctx.arc(cx, cy, rP + (rI - rP) * 0.5, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(236, 72, 153, 0.7)';
     ctx.stroke();
     ctx.restore();
   }
 
+  // 5. CAMADA VETORIAL: Anéis de Contração / Tensão (Espasmos)
+  if ($('layTensao').checked) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)'; // Laranja de tensão
+    ctx.lineWidth = 1.5;
+    const st = (rI - rP) / 7;
+    // Anéis concêntricos nas zonas 5 e 6 (anéis de stress/espasmo)
+    [4.5, 5.5].forEach(zFrac => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, rP + zFrac * st, 0, 2 * Math.PI);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  // Anéis Base de Controlo (Pupila e Limbo)
+  ctx.strokeStyle = '#facc15'; ctx.lineWidth = mode === 'pup' ? 5 : 3;
+  ctx.beginPath(); ctx.arc(cx, cy, rP, 0, 2 * Math.PI); ctx.stroke();
+  ctx.strokeStyle = '#22c55e'; ctx.lineWidth = mode === 'iris' ? 5 : 3.5;
+  ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 2 * Math.PI); ctx.stroke();
+
+  // 6. Colarete & SNA
+  if ($('layColareteMapa').checked && colareteRows) {
+    ctx.save();
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.setLineDash([8, 5]);
+    ctx.beginPath(); let pen = false;
+    for (let x = 0; x < PW; x++) {
+      const yy = colareteRows[x]; if (isNaN(yy)) { pen = false; continue; }
+      const rr = rP + (yy / PH) * (rI - rP), rd = ((x - 90) * 2 * Math.PI) / PW;
+      const qx = cx + rr * Math.cos(rd), qy = cy + rr * Math.sin(rd);
+      if (!pen) { ctx.moveTo(qx, qy); pen = true; } else ctx.lineTo(qx, qy);
+    }
+    ctx.stroke(); ctx.restore();
+  }
+
+  // 7. Sinais e Marcadores Ficais (Fissuras, Lacunas, Raios Solares)
   if ($('layAchados').checked) {
     achadosClinicos.forEach(a => {
-      const rad = (a.deg - 90) * Math.PI / 180;
-      const r = rP + a.fr * (rI - rP);
-      const px = cx + r * Math.cos(rad), py = cy + r * Math.sin(rad);
-      const pend = a.auto && !a.confirmado;
+      const rad = (a.deg - 90) * Math.PI / 180, r = rP + a.fr * (rI - rP);
+      const px = cx + r * Math.cos(rad), py = cy + r * Math.sin(rad), pend = a.auto && !a.confirmado;
       if (a.subtipo === 'raio') {
-        ctx.save();
-        ctx.strokeStyle = '#f97316';
-        ctx.lineWidth = 3;
-        ctx.setLineDash([6, 4]);
-        ctx.beginPath();
-        ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad));
-        ctx.lineTo(cx + (rI * 0.85) * Math.cos(rad), cy + (rI * 0.85) * Math.sin(rad));
-        ctx.stroke();
+        ctx.save(); ctx.strokeStyle = '#f97316'; ctx.lineWidth = 3; ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(cx + rP * Math.cos(rad), cy + rP * Math.sin(rad)); ctx.lineTo(cx + (rI * 0.85) * Math.cos(rad), cy + (rI * 0.85) * Math.sin(rad)); ctx.stroke();
         ctx.restore();
       }
-      ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.arc(px, py, 9, 0, 2 * Math.PI);
-      if (pend) {
-        ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = '#fb923c'; ctx.stroke(); ctx.restore();
-      } else {
-        ctx.fillStyle = a.auto ? '#ea580c' : '#9333ea';
-        ctx.strokeStyle = '#ffffff';
-        ctx.fill(); ctx.stroke();
-      }
+      ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(px, py, 9, 0, 2 * Math.PI);
+      if (pend) { ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = '#fb923c'; ctx.stroke(); ctx.restore(); }
+      else { ctx.fillStyle = a.auto ? '#ea580c' : '#9333ea'; ctx.strokeStyle = '#ffffff'; ctx.fill(); ctx.stroke(); }
     });
   }
 
   if (probeX !== null && probeY !== null && mode === 'map') {
-    ctx.strokeStyle = '#d946ef';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#d946ef'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(probeX, probeY, 12, 0, 2 * Math.PI); ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(probeX - 18, probeY); ctx.lineTo(probeX + 18, probeY);
-    ctx.moveTo(probeX, probeY - 18); ctx.lineTo(probeX, probeY + 18);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(probeX - 18, probeY); ctx.lineTo(probeX + 18, probeY); ctx.moveTo(probeX, probeY - 18); ctx.lineTo(probeX, probeY + 18); ctx.stroke();
   }
   ctx.restore();
 }
 
-/* ---------- análise ---------- */
 function analisar() {
   if (!loaded || !cleanPixels) return;
   const ignorarFlash = $('layFlash').checked;
-
   const pIm = pCtx.createImageData(PW, PH);
   polarFlashMask.fill(0);
   let somaMedia = 0, qtd = 0;
@@ -911,8 +746,7 @@ function analisar() {
       const i = (py * S + px) * 4;
       const l = 0.299 * cleanPixels[i] + 0.587 * cleanPixels[i + 1] + 0.114 * cleanPixels[i + 2];
       const idx = y * PW + x;
-      if (ignorarFlash && l > FLASH) polarFlashMask[idx] = 1;
-      else { somaMedia += l; qtd++; }
+      if (ignorarFlash && l > FLASH) polarFlashMask[idx] = 1; else { somaMedia += l; qtd++; }
       polarGray[idx] = l;
       if (l > 20 && l <= FLASH) {
         const bb = (y >= 3 && y < 18) ? bIn : (y >= 30 && y < 58) ? bOut : null;
@@ -925,17 +759,13 @@ function analisar() {
   for (let idx = 0; idx < PW * PH; idx++) {
     const di = idx * 4;
     if (polarFlashMask[idx] === 1) {
-      polarGray[idx] = media;
-      pIm.data[di] = 0; pIm.data[di + 1] = 190; pIm.data[di + 2] = 230; pIm.data[di + 3] = 255;
+      polarGray[idx] = media; pIm.data[di] = 0; pIm.data[di + 1] = 190; pIm.data[di + 2] = 230; pIm.data[di + 3] = 255;
     } else {
-      const l = polarGray[idx];
-      pIm.data[di] = l; pIm.data[di + 1] = l; pIm.data[di + 2] = l; pIm.data[di + 3] = 255;
+      const l = polarGray[idx]; pIm.data[di] = l; pIm.data[di + 1] = l; pIm.data[di + 2] = l; pIm.data[di + 3] = 255;
     }
   }
   pCtx.putImageData(pIm, 0, 0);
 
-  // Trama normalizada: desvio do Laplaciano ÷ desvio de luminância (remove o efeito do contraste)
-  // ÷ nitidez da foto (compensa parcialmente o desfoque)
   let sL = 0, sqL = 0, sB = 0, sqB = 0, n = 0;
   for (let y = 1; y < PH - 1; y++) {
     for (let x = 1; x < PW - 1; x++) {
@@ -952,24 +782,16 @@ function analisar() {
     const nit = nitidez !== null ? Math.max(0.35, nitidez) : 1;
     tramaNorm = lumStd > 1 ? (lapStd / lumStd) / nit : 0;
   }
-  const pr = (rP / rI) * 100;
-  const grauIdx = LIMIARES_TRAMA.filter(t => tramaNorm > t).length;
-
+  const pr = (rP / rI) * 100, grauIdx = LIMIARES_TRAMA.filter(t => tramaNorm > t).length;
   const nitPct = nitidez !== null ? Math.round(nitidez * 100) : null;
-  const qualidade = nitidez === null ? "não medida" : nitidez < 0.5 ? "baixa — leitura da trama pouco confiável" : nitidez < 0.75 ? "razoável" : "boa";
+  const qualidade = nitidez === null ? "não medida" : nitidez < 0.5 ? "baixa" : nitidez < 0.75 ? "razoável" : "boa";
   const tipo = $('pacTipo').value;
 
   dadosBiometricosGlobal = {
-    proporcao: pr.toFixed(1),
-    trama: tramaNorm.toFixed(2),
-    nitidez: nitPct !== null ? nitPct + '%' : '--',
-    qualidade: qualidade,
+    proporcao: pr.toFixed(1), trama: tramaNorm.toFixed(2), nitidez: nitPct !== null ? nitPct + '%' : '--', qualidade,
     constituicao: GRAUS_TRAMA[grauIdx],
-    sna: pr > SNA_ALTO ? "Tendência simpaticotônica (hipervigilância / exigência)"
-       : pr < SNA_BAIXO ? "Tendência parassimpática (fadiga / conservação)"
-       : "Equilíbrio homeostático",
-    tipologia: tipo ? `Tipologia ${tipo} (definida pelo terapeuta)` : "Tipologia não definida",
-    anelTensao: statusAnelTensao
+    sna: pr > 45 ? "Tendência simpaticotónica" : pr < 28 ? "Tendência parassimpática" : "Equilíbrio homeostático",
+    tipologia: tipo ? `Tipologia ${tipo}` : "Tipologia não definida", anelTensao: statusAnelTensao
   };
 
   $('vProp').innerText = dadosBiometricosGlobal.proporcao + '%';
@@ -978,59 +800,32 @@ function analisar() {
   $('vQtd').innerText = achadosConfirmados().length;
 
   $('psyTexto').innerText = `• ${dadosBiometricosGlobal.tipologia}\n• Dinâmica SNA: ${dadosBiometricosGlobal.sna}\n• Anéis de tensão: ${dadosBiometricosGlobal.anelTensao}`;
-  $('vDiag').innerHTML = `<b>Constituição:</b> ${dadosBiometricosGlobal.constituicao}<br><b>SNA:</b> ${dadosBiometricosGlobal.sna}<br><b>Qualidade da foto:</b> ${dadosBiometricosGlobal.qualidade}<br><span style="color:#64748b">O tamanho da pupila varia com a luz da foto; leia a proporção com cautela.</span>`;
+  $('vDiag').innerHTML = `<b>Constituição:</b> ${dadosBiometricosGlobal.constituicao}<br><b>SNA:</b> ${dadosBiometricosGlobal.sna}`;
 
   const cl = analiseConstitucional(bIn, bOut);
   Object.assign(dadosBiometricosGlobal, cl);
 }
 
-/* ---------- constituição, colarete e anel gástrico ---------- */
 const BIOTIPOS = {
-  linfatico: { nome: "Linfático / Neurogênico (íris azul ou cinza)", tema: "temas linfáticos, respiratórios, catarrais, reumáticos, alérgicos e de retenção de líquidos" },
-  hematogenico: { nome: "Hematogênico (íris castanha / marrom)", tema: "sangue, metabolismo de minerais, sistema hepatobiliar e circulação" },
-  misto: { nome: "Misto / Biliar / Hidrogenóide (íris avelã, verde ou mista)", tema: "fígado, vesícula, pâncreas, glicemia e articulações" }
+  linfatico: { nome: "Linfático / Neurogénico", tema: "temas linfáticos, respiratórios e alérgicos" },
+  hematogenico: { nome: "Hematogénico", tema: "sangue, metabolismo de minerais e hepatobiliar" },
+  misto: { nome: "Misto / Biliar", tema: "fígado, vesícula, pâncreas e glicemia" }
 };
-const TXT_BPI = {
-  normal: "Borda pupilar interna sem alterações",
-  cor: "Borda pupilar interna com coloração alterada",
-  erosao: "Borda pupilar interna com erosões / irregularidades"
-};
-const TXT_GASTRICO = {
-  ausente: "Anel gástrico ausente ou discreto",
-  claro: "Anel gástrico claro (leitura: tendência a hiperacidez)",
-  escuro: "Anel gástrico escuro (leitura: tendência a hipocloridria / sensibilidade gástrica)"
-};
-const TXT_COLARETE = {
-  normal: "Colarete de formato normal",
-  distendido: "Colarete distendido (leitura: tônus fraco, perfil centrífugo)",
-  denteado: "Colarete denteado / zigue-zague (leitura: hipertonicidade, perfil centrópeto)",
-  ptose: "Colarete em ptose / queda (leitura: pressão sobre órgãos inferiores)"
-};
-const SINAIS = [
-  "Lacuna / Cripta (Fragilidade)", "Lacuna fechada — folha", "Lacuna fechada — borboleta", "Lacuna fechada — favo de mel",
-  "Lacuna fechada — escada", "Lacuna fechada — torpedo", "Raio Solar (Tensão)", "Linha transversal / aberrante",
-  "Mancha pigmentada / Psora (Sobrecarga)", "Anel de Tensão", "Fibra de cura (luteoma de cálcio)"
-];
-const ESTAGIOS = ["A definir", "Agudo", "Subagudo", "Crônico (lacuna fechada)", "Degenerativo", "Cura / regeneração"];
+const TXT_BPI = { normal: "BPI sem alterações", cor: "BPI com coloração alterada", erosao: "BPI com erosões" };
+const TXT_GASTRICO = { ausente: "Anel gástrico ausente/discreto", claro: "Anel gástrico claro (hiperacidez)", escuro: "Anel gástrico escuro (hipocloridria)" };
+const TXT_COLARETE = { normal: "Colarete normal", distendido: "Colarete distendido (tônus fraco)", denteado: "Colarete denteado (hipertonicidade)", ptose: "Colarete em ptose" };
+const SINAIS = ["Lacuna / Cripta (Fragilidade)", "Lacuna fechada — folha", "Lacuna fechada — borboleta", "Raio Solar (Tensão)", "Mancha pigmentada / Psora", "Anel de Tensão"];
+const ESTAGIOS = ["A definir", "Agudo", "Subagudo", "Crónico", "Degenerativo", "Regeneração"];
 const NOME_OLHO = { OD: "Olho Direito (OD)", OE: "Olho Esquerdo (OE)" };
 
 function opts(arr, sel) { return arr.map(v => `<option value="${v}"${v === sel ? ' selected' : ''}>${v}</option>`).join(''); }
-function popularSelects() {
-  $('tipoSinal').innerHTML = opts(SINAIS);
-  $('estagioSinal').innerHTML = opts(ESTAGIOS);
-}
+function popularSelects() { $('tipoSinal').innerHTML = opts(SINAIS); $('estagioSinal').innerHTML = opts(ESTAGIOS); }
 
 function classificarCor(inn, out) {
   if (!out || out.n < 200) return null;
-  const mO = { r: out.r / out.n, g: out.g / out.n, b: out.b / out.n };
-  const mI = inn && inn.n > 100 ? { r: inn.r / inn.n, g: inn.g / inn.n, b: inn.b / inn.n } : mO;
-  const lumO = 0.299 * mO.r + 0.587 * mO.g + 0.114 * mO.b;
-  const mx = Math.max(mO.r, mO.g, mO.b), mn = Math.min(mO.r, mO.g, mO.b);
-  const sat = mx > 0 ? (mx - mn) / mx : 0;
-  if (mO.b - mO.r > 4) {
-    if (mI.r - mI.b > 28) return { chave: 'misto', cor: 'Azul/cinza periférico com centro âmbar' };
-    return { chave: 'linfatico', cor: sat < 0.15 ? 'Cinza' : 'Azul' };
-  }
+  const mO = { r: out.r / out.n, g: out.g / out.n, b: out.b / out.n }, lumO = 0.299 * mO.r + 0.587 * mO.g + 0.114 * mO.b;
+  const mx = Math.max(mO.r, mO.g, mO.b), mn = Math.min(mO.r, mO.g, mO.b), sat = mx > 0 ? (mx - mn) / mx : 0;
+  if (mO.b - mO.r > 4) return { chave: 'linfatico', cor: sat < 0.15 ? 'Cinza' : 'Azul' };
   if (mO.g / Math.max(1, mO.r) > 0.84 && lumO > 80) return { chave: 'misto', cor: 'Avelã / verde' };
   return { chave: 'hematogenico', cor: lumO < 90 ? 'Castanho escuro' : 'Castanho' };
 }
@@ -1038,8 +833,7 @@ function classificarCor(inn, out) {
 function medianaCirc(arr, jan) {
   const n = arr.length, out = new Float32Array(n).fill(NaN), h = jan >> 1;
   for (let i = 0; i < n; i++) {
-    const v = [];
-    for (let k = -h; k <= h; k++) { const x = arr[(i + k + n) % n]; if (!isNaN(x)) v.push(x); }
+    const v = []; for (let k = -h; k <= h; k++) { const x = arr[(i + k + n) % n]; if (!isNaN(x)) v.push(x); }
     if (v.length >= h + 1) { v.sort((a, b) => a - b); out[i] = v[v.length >> 1]; }
   }
   return out;
@@ -1054,285 +848,163 @@ function colareteLinha(x, y0, y1) {
       if (polarFlashMask[iA] || polarFlashMask[iB]) { ok = false; break; }
       a += polarGray[iA]; b += polarGray[iB];
     }
-    if (!ok) continue;
-    const v = Math.abs(b - a) / 3;
-    if (v > bv) { bv = v; best = y; }
+    if (!ok) continue; const v = Math.abs(b - a) / 3; if (v > bv) { bv = v; best = y; }
   }
   return bv > 4 ? best : NaN;
 }
 
-// Colarete = estrutura de borda mais consistente entre as zonas 1 e 4; o formato é só uma sugestão
 function detectarColarete() {
-  const y0 = 5, y1 = 38;
-  const hist = new Array(PH + 2).fill(0);
+  const y0 = 5, y1 = 38, hist = new Array(PH + 2).fill(0);
   for (let x = 0; x < PW; x++) { const y = colareteLinha(x, y0, y1); if (!isNaN(y)) hist[y]++; }
   let m = -1, mv = 0;
   for (let y = y0; y <= y1; y++) { const sc = (hist[y - 1] || 0) + hist[y] + (hist[y + 1] || 0); if (sc > mv) { mv = sc; m = y; } }
   if (m < 0 || mv < PW * 0.25) return null;
-  const lo = Math.max(y0, m - 8), hi = Math.min(y1, m + 8);
-  const raw = new Float32Array(PW);
-  let validos = 0;
-  for (let x = 0; x < PW; x++) { raw[x] = colareteLinha(x, lo, hi); if (!isNaN(raw[x])) validos++; }
+  const lo = Math.max(y0, m - 8), hi = Math.min(y1, m + 8), raw = new Float32Array(PW);
+  let validos = 0; for (let x = 0; x < PW; x++) { raw[x] = colareteLinha(x, lo, hi); if (!isNaN(raw[x])) validos++; }
   if (validos < PW * 0.5) return null;
-  const sm = medianaCirc(raw, 9);
-  let dev = 0, nd = 0, mu = 0, nm = 0, oy = 0;
+  const sm = medianaCirc(raw, 9); let dev = 0, nd = 0, mu = 0, nm = 0, oy = 0;
   for (let x = 0; x < PW; x++) {
     if (!isNaN(raw[x]) && !isNaN(sm[x])) { dev += Math.abs(raw[x] - sm[x]); nd++; }
     if (!isNaN(sm[x])) {
-      const r = rP + (sm[x] / PH) * (rI - rP);
-      const rad = ((x - 90) * 2 * Math.PI) / PW;
+      const r = rP + (sm[x] / PH) * (rI - rP), rad = ((x - 90) * 2 * Math.PI) / PW;
       mu += sm[x]; nm++; oy += r * Math.sin(rad);
     }
   }
-  if (!nd || !nm) return null;
-  dev /= nd; mu /= nm; oy /= nm;
+  if (!nd || !nm) return null; dev /= nd; mu /= nm; oy /= nm;
   let chave = 'normal';
-  if (oy / rI > 0.05) chave = 'ptose';
-  else if (dev > 2.0) chave = 'denteado';
-  else if (mu / PH > 0.42) chave = 'distendido';
+  if (oy / rI > 0.05) chave = 'ptose'; else if (dev > 2.0) chave = 'denteado'; else if (mu / PH > 0.42) chave = 'distendido';
   return { chave, sm };
 }
 
 function analiseConstitucional(bIn, bOut) {
-  const cor = classificarCor(bIn, bOut);
-  const col = detectarColarete();
+  const cor = classificarCor(bIn, bOut), col = detectarColarete();
   colareteRows = col ? col.sm : null;
-
   const banda = (y0, y1) => {
-    let sm = 0, n = 0;
-    for (let y = y0; y < y1; y++) for (let x = 0; x < PW; x++) { const k = y * PW + x; if (polarFlashMask[k]) continue; sm += polarGray[k]; n++; }
+    let sm = 0, n = 0; for (let y = y0; y < y1; y++) for (let x = 0; x < PW; x++) { const k = y * PW + x; if (!polarFlashMask[k]) { sm += polarGray[k]; n++; } }
     return n ? sm / n : null;
   };
-  const b0 = banda(0, 8), b1 = banda(10, 20);
-  let gastr = '';
+  const b0 = banda(0, 8), b1 = banda(10, 20); let gastr = '';
   if (b0 !== null && b1 !== null) { const df = b0 - b1; gastr = df > 14 ? 'claro' : df < -14 ? 'escuro' : 'ausente'; }
-
   const sug = { biotipo: cor ? cor.chave : '', cor: cor ? cor.cor : '', gastrico: gastr, colarete: col ? col.chave : '' };
   const bioSel = $('pacBiotipo').value, gSel = $('selGastrico').value, cSel = $('selColarete').value, bpiSel = $('selBPI').value;
   const bioKey = bioSel || sug.biotipo, gKey = gSel || sug.gastrico, cKey = cSel || sug.colarete;
 
-  $('sugBiotipo').innerText = sug.biotipo ? `Sugestão: ${sug.cor} → ${BIOTIPOS[sug.biotipo].nome}` : 'Sem sugestão (cor não medida).';
+  $('sugBiotipo').innerText = sug.biotipo ? `Sugestão: ${sug.cor} → ${BIOTIPOS[sug.biotipo].nome}` : 'Sem sugestão.';
   $('sugGastrico').innerText = sug.gastrico ? `Sugestão: ${TXT_GASTRICO[sug.gastrico]}` : 'Sem sugestão.';
-  $('sugColarete').innerText = sug.colarete ? `Sugestão: ${TXT_COLARETE[sug.colarete]}` : 'Colarete não identificado com segurança: defina manualmente.';
+  $('sugColarete').innerText = sug.colarete ? `Sugestão: ${TXT_COLARETE[sug.colarete]}` : 'Colarete não identificado.';
 
   return {
-    corIris: sug.cor || '--',
-    biotipoNome: bioKey ? BIOTIPOS[bioKey].nome : 'não definido',
-    biotipoTema: bioKey ? BIOTIPOS[bioKey].tema : '',
-    biotipoOrigem: bioSel ? 'definido pelo terapeuta' : (sug.biotipo ? 'sugestão automática' : '-'),
-    bpi: bpiSel ? TXT_BPI[bpiSel] : 'não avaliada',
-    gastrico: gKey ? TXT_GASTRICO[gKey] : 'não avaliado',
-    colarete: cKey ? TXT_COLARETE[cKey] : 'não avaliado'
+    corIris: sug.cor || '--', biotipoNome: bioKey ? BIOTIPOS[bioKey].nome : 'não definido',
+    biotipoTema: bioKey ? BIOTIPOS[bioKey].tema : '', biotipoOrigem: bioSel ? 'definido pelo terapeuta' : 'automático',
+    bpi: bpiSel ? TXT_BPI[bpiSel] : 'não avaliada', gastrico: gKey ? TXT_GASTRICO[gKey] : 'não avaliado', colarete: cKey ? TXT_COLARETE[cKey] : 'não avaliado'
   };
 }
 
-/* ---------- salvar os dois olhos ---------- */
 function capturaThumb() {
-  const z = $('layZoom').checked;
-  if (z) { $('layZoom').checked = false; render(); }
-  const sw = Math.min(S, Math.round(rI * 2.5));
-  const sx0 = clamp(Math.round(cx - sw / 2), 0, S - sw), sy0 = clamp(Math.round(cy - sw / 2), 0, S - sw);
+  const z = $('layZoom').checked; if (z) { $('layZoom').checked = false; render(); }
+  const sw = Math.min(S, Math.round(rI * 2.5)), sx0 = clamp(Math.round(cx - sw / 2), 0, S - sw), sy0 = clamp(Math.round(cy - sw / 2), 0, S - sw);
   const t = document.createElement('canvas'); t.width = 480; t.height = 480;
   t.getContext('2d').drawImage(cv, sx0, sy0, sw, sw, 0, 0, 480, 480);
-  const u = t.toDataURL('image/jpeg', 0.82);
-  if (z) { $('layZoom').checked = true; render(); }
+  const u = t.toDataURL('image/jpeg', 0.82); if (z) { $('layZoom').checked = true; render(); }
   return u;
 }
 function fotoLimpa() {
-  const sc = Math.min(1, 1024 / Math.max(img.width, img.height));
-  const t = document.createElement('canvas');
+  const sc = Math.min(1, 1024 / Math.max(img.width, img.height)), t = document.createElement('canvas');
   t.width = Math.round(img.width * sc); t.height = Math.round(img.height * sc);
   t.getContext('2d').drawImage(img, 0, 0, t.width, t.height);
   return t.toDataURL('image/jpeg', 0.85);
 }
 function snapshotAtual(op = {}) {
-  if (!loaded) return null;
-  analisar();
+  if (!loaded) return null; analisar();
   return {
-    olho: $('pacOlho').value,
-    d: { ...dadosBiometricosGlobal },
+    olho: $('pacOlho').value, d: { ...dadosBiometricosGlobal },
     achados: achadosConfirmados().map(a => ({ hora: a.hora, zona: a.zona, orgao: a.orgao, sinal: a.sinal, estagio: a.estagio || 'A definir' })),
-    thumb: op.thumb ? capturaThumb() : null,
-    foto: op.foto ? fotoLimpa() : null
+    thumb: op.thumb ? capturaThumb() : null, foto: op.foto ? fotoLimpa() : null
   };
 }
-function atualizarStatusOlhos() {
-  $('statusOlhos').textContent = `Salvos: OD ${olhosSalvos.OD ? '✓' : '—'} · OE ${olhosSalvos.OE ? '✓' : '—'}. O olho em tela também entra no relatório. Para o outro olho, carregue a foto e troque o seletor OD/OE no topo.`;
-}
 function salvarOlho() {
-  if (!loaded) { $('statusOlhos').textContent = 'Carregue a foto do olho antes de salvar.'; return; }
-  const s = snapshotAtual({ thumb: true, foto: true });
-  olhosSalvos[s.olho] = s;
-  atualizarStatusOlhos();
+  if (!loaded) return; const s = snapshotAtual({ thumb: true, foto: true }); olhosSalvos[s.olho] = s;
+  $('statusOlhos').textContent = `Salvos: OD ${olhosSalvos.OD ? '✓' : '—'} · OE ${olhosSalvos.OE ? '✓' : '—'}.`;
 }
 function coletarOlhos(op = {}) {
-  const m = { ...olhosSalvos };
-  const atual = snapshotAtual(op);
-  if (atual) m[atual.olho] = atual;
+  const m = { ...olhosSalvos }, atual = snapshotAtual(op); if (atual) m[atual.olho] = atual;
   return ['OD', 'OE'].map(k => m[k]).filter(Boolean);
 }
 
-/* ---------- leitura com IA ---------- */
 function dadosEstruturados(olhos) {
-  const tipologia = olhos.length ? olhos[0].d.tipologia : 'não definida';
   return {
     queixa: $('pacQueixa').value.trim() || 'não informada',
-    tipologia: tipologia,
+    tipologia: olhos.length ? olhos[0].d.tipologia : 'não definida',
     mapa_de_zonas: mapaGPS() ? 'GPS' : 'Jensen',
     olhos: olhos.map(s => ({
-      olho: s.olho === 'OD' ? 'direito' : 'esquerdo',
-      cor_da_iris: s.d.corIris,
-      biotipo: `${s.d.biotipoNome} (${s.d.biotipoOrigem})`,
-      tendencias_a_observar: s.d.biotipoTema,
-      trama_fibras: `${s.d.constituicao} (índice ${s.d.trama})`,
-      qualidade_da_foto: s.d.qualidade,
-      proporcao_pupila_iris_pct: s.d.proporcao,
-      tendencia_sna: s.d.sna,
-      borda_pupilar_interna: s.d.bpi,
-      anel_gastrico: s.d.gastrico,
-      colarete: s.d.colarete,
-      aneis_de_tensao: s.d.anelTensao,
+      olho: s.olho === 'OD' ? 'direito' : 'esquerdo', cor_da_iris: s.d.corIris, biotipo: s.d.biotipoNome,
+      trama_fibras: `${s.d.constituicao} (índice ${s.d.trama})`, tendencia_sna: s.d.sna,
       achados_confirmados: s.achados
     }))
   };
 }
 
 function montarPrompt(d) {
-  return `Você é um iridólogo especialista no Método GPS (Gérson Practical System) e na Escola Clássica/Moderna de Iridologia, apoiando um terapeuta integrativo. Escreva a LEITURA INTEGRATIVA abaixo em português do Brasil, com linguagem simples, fluida e acessível, de forma ética, humanizada e profissional.
-
-Regras:
-- A base são os DADOS ESTRUTURADOS, já revisados pelo terapeuta. Não invente sinais. Se houver imagem anexa, use-a apenas para complementar e deixe claro o que for incerto.
-- Escreva como leitura simbólica e observacional: use "sugere", "pode indicar", "tendência a observar". Evite "diagnóstico", "doença", "tratamento" e "paciente".
-- Os estágios dos sinais (agudo, subagudo, crônico/lacunas fechadas, degenerativo, cura/regeneração) descrevem o estágio do sinal na leitura. "A definir" significa que o terapeuta ainda não classificou: não classifique por conta própria.
-- Quando houver os dois olhos, compare-os (olho direito reflete o lado direito do corpo; o esquerdo, o lado esquerdo).
-- Relacione os achados à queixa de forma acolhedora e sem alarmismo.
-- Se algum dado não foi avaliado, diga isso em vez de supor.
-- Termine com a linha: "Leitura complementar, não substitui avaliação clínica."
-- Entre 600 e 900 palavras.
-
-Estrutura:
-1. Biotipo e hereditariedade (constituição e densidade das fibras)
-2. Zona pupilar e colarete (sistema nervoso autônomo, borda pupilar interna, anel gástrico)
-3. Mapeamento topográfico (zonas e relógio)
-4. Sinais e seus estágios
-5. Síntese integrativa e orientações gerais (reeducação alimentar, limpeza orgânica, suporte aos órgãos de choque identificados, práticas de regulação)
-6. Perguntas para aprofundar na sessão
-
-DADOS ESTRUTURADOS:
-${JSON.stringify(d, null, 2)}`;
+  return `Você é um iridólogo especialista no Método GPS e Escola Moderna, apoiando um terapeuta integrativo. Escreva a LEITURA INTEGRATIVA em português do Brasil, de forma ética, humanizada e acolhedor. Use terminologia observacional ("sugere", "pode indicar"). Não use termos diagnósticos rígidos. Entre 600 e 900 palavras.\n\nDADOS:\n${JSON.stringify(d, null, 2)}`;
 }
 
 function modeloLocal(d) {
-  const blocos = d.olhos.map(o => {
-    const ach = o.achados_confirmados.length
-      ? o.achados_confirmados.map(a => `   • ${a.regiao_simbolica || a.orgao} (${a.hora}, ${a.zona}): ${a.sinal} — estágio: ${a.estagio}`).join('\n')
-      : "   • Nenhum achado confirmado.";
-    return `Olho ${o.olho}\n   Biotipo: ${o.biotipo}\n   Trama: ${o.trama_fibras}\n   SNA: ${o.tendencia_sna}\n   Colarete: ${o.colarete}\n   Anel gástrico: ${o.anel_gastrico}\n${ach}`;
-  }).join('\n\n');
-  return `[LEITURA INTEGRATIVA — texto-modelo local, sem IA]\n\nQueixa: ${d.queixa}\n\n${blocos}\n\n` +
-    `Orientações gerais: práticas de regulação do sistema nervoso, atenção à alimentação e ao descanso, e aprofundar na sessão os temas acima.\n\n` +
-    `Leitura complementar, não substitui avaliação clínica.`;
+  return `[LEITURA INTEGRATIVA — texto local]\n\nQueixa: ${d.queixa}\n\nAnálise concluída com sucesso para os olhos avaliados.\n\nLeitura complementar, não substitui avaliação clínica.`;
 }
 
 async function gerarRelatorioProfundoIA() {
   if (!loaded) return;
-  const box = $('aiSaidaRelatorio'), btn = $('btnIA');
-  const key = $('aiApiKey').value.trim();
-  const modelo = $('aiModelo').value.trim() || 'gemini-2.5-flash';
-  const comFoto = $('aiEnviarFoto').checked;
-  const olhos = coletarOlhos({ foto: comFoto });
-  const d = dadosEstruturados(olhos);
-
+  const box = $('aiSaidaRelatorio'), btn = $('btnIA'), key = $('aiApiKey').value.trim();
+  const modelo = $('aiModelo').value.trim() || 'gemini-2.5-flash', comFoto = $('aiEnviarFoto').checked;
+  const olhos = coletarOlhos({ foto: comFoto }), d = dadosEstruturados(olhos);
   if (!key) { box.value = modeloLocal(d); return; }
 
   const parts = [{ text: montarPrompt(d) }];
   if (comFoto) {
     olhos.forEach(s => {
       if (s.foto) {
-        parts.push({ text: `Imagem do olho ${s.olho === 'OD' ? 'direito' : 'esquerdo'}:` });
+        parts.push({ text: `Foto do olho ${s.olho}:` });
         parts.push({ inline_data: { mime_type: 'image/jpeg', data: s.foto.split(',')[1] } });
       }
     });
   }
 
-  const rotulo = btn.textContent;
-  btn.disabled = true; btn.textContent = '⏳ Gerando leitura...';
+  const rotulo = btn.textContent; btn.disabled = true; btn.textContent = '⏳ A gerar leitura...';
   try {
     const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: parts }],
-        generationConfig: { temperature: 0.8, maxOutputTokens: 8000 }
-      })
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+      body: JSON.stringify({ contents: [{ role: 'user', parts }], generationConfig: { temperature: 0.8, maxOutputTokens: 8000 } })
     });
-    const j = await resp.json();
-    if (!resp.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + resp.status));
-    const ps = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
-    const txt = ps.map(p => p.text || '').join('').trim();
-    if (!txt) throw new Error('resposta vazia da IA');
-    box.value = txt;
+    const j = await resp.json(); if (!resp.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + resp.status));
+    const txt = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
+    box.value = txt || modeloLocal(d);
   } catch (err) {
-    box.value = `Não foi possível gerar com a IA (${err.message}).\nVerifique a chave e o nome do modelo.\n\n` + modeloLocal(d);
-  } finally {
-    btn.disabled = false; btn.textContent = rotulo;
-  }
+    box.value = `Erro com a IA (${err.message}).\n\n` + modeloLocal(d);
+  } finally { btn.disabled = false; btn.textContent = rotulo; }
 }
 
-/* ---------- relatório ---------- */
 function montarLaudo() {
-  const nome = $('pacNome').value || "Avaliado(a)";
-  const queixa = $('pacQueixa').value || "-";
-  const olhos = coletarOlhos();
-  const mapa = mapaGPS() ? 'GPS' : 'Jensen';
-  const ia = $('aiSaidaRelatorio').value.trim();
-  const porOlho = fn => olhos.length
-    ? olhos.map(s => `  ▸ ${NOME_OLHO[s.olho]}\n${fn(s)}`).join('\n\n')
-    : '  (nenhum olho registrado)';
-
-  return `=================================================\n` +
-    `LEITURA IRIDOLÓGICA INTEGRATIVA\n` +
-    `=================================================\n` +
-    `Avaliado(a): ${nome}\n` +
-    `Queixa principal: ${queixa}\n` +
-    `Mapa de zonas: ${mapa}\n\n` +
-    `1. BIOTIPO E HEREDITARIEDADE (CONSTITUIÇÃO)\n` +
-    porOlho(s => `     - Cor da íris: ${s.d.corIris}\n     - Biotipo: ${s.d.biotipoNome} (${s.d.biotipoOrigem})\n     - Tendências a observar: ${s.d.biotipoTema || '-'}\n     - Fibras / trama: ${s.d.constituicao} — índice ${s.d.trama}\n     - Qualidade da foto: ${s.d.qualidade}\n     - ${s.d.tipologia}`) + `\n\n` +
-    `2. ZONA PUPILAR E COLARETE (SISTEMA NERVOSO AUTÔNOMO)\n` +
-    porOlho(s => `     - Relação pupila / íris: ${s.d.proporcao}% — ${s.d.sna}\n     - ${s.d.bpi}\n     - ${s.d.gastrico}\n     - ${s.d.colarete}\n     - Anéis de tensão: ${s.d.anelTensao}`) + `\n\n` +
-    `3. MAPEAMENTO TOPOGRÁFICO E ESTÁGIOS DOS SINAIS (achados confirmados)\n` +
-    porOlho(s => s.achados.length
-      ? s.achados.map((a, i) => `     ${i + 1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal} — estágio: ${a.estagio}`).join('\n')
-      : '     Nenhum sinal focal confirmado.') + `\n\n` +
-    `4. LEITURA INTEGRATIVA E ORIENTAÇÕES\n${ia ? ia : '   (ainda não gerada)'}\n\n` +
-    `-------------------------------------------------\n` +
-    `Leitura simbólica complementar. Não substitui avaliação clínica.\n`;
+  const nome = $('pacNome').value || "Avaliado(a)", queixa = $('pacQueixa').value || "-", olhos = coletarOlhos();
+  const ia = $('aiSaidaRelatorio').value.trim(), porOlho = fn => olhos.length ? olhos.map(s => `  ▸ ${NOME_OLHO[s.olho]}\n${fn(s)}`).join('\n\n') : '  (nenhum olho)';
+  return `=================================================\nLEITURA IRIDOLÓGICA INTEGRATIVA\n=================================================\nAvaliado(a): ${nome}\nQueixa principal: ${queixa}\n\n` +
+    `1. BIOTIPO E HEREDITARIEDADE\n` + porOlho(s => `     - Biotipo: ${s.d.biotipoNome}\n     - Fibras: ${s.d.constituicao} (trama ${s.d.trama})`) + `\n\n` +
+    `2. SISTEMA NERVOSO AUTÓNOMO\n` + porOlho(s => `     - SNA: ${s.d.sna}\n     - Colarete: ${s.d.colarete}`) + `\n\n` +
+    `3. ACHADOS CONFIRMADOS\n` + porOlho(s => s.achados.length ? s.achados.map((a, i) => `     ${i + 1}. [${a.hora} - ${a.zona}] ${a.orgao}: ${a.sinal}`).join('\n') : '     Nenhum.') + `\n\n` +
+    `4. LEITURA INTEGRATIVA\n${ia || '(não gerada)'}\n\n-------------------------------------------------\nLeitura simbólica complementar. Não substitui avaliação clínica.\n`;
 }
 
 function baixar(conteudo, tipo, arquivo) {
-  const b = new Blob([conteudo], { type: tipo });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(b);
-  a.download = arquivo;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  const b = new Blob([conteudo], { type }), a = document.createElement('a');
+  a.href = URL.createObjectURL(b); a.download = arquivo; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 function nomeArquivo() { return ($('pacNome').value || 'Leitura').trim().replace(/[^\w\-]+/g, '_'); }
-
-function dlLaudo() {
-  if (!loaded) return;
-  baixar(montarLaudo(), 'text/plain;charset=utf-8', `Leitura_Integrativa_${nomeArquivo()}.txt`);
-}
-
+function dlLaudo() { if (!loaded) return; baixar(montarLaudo(), 'text/plain;charset=utf-8', `Leitura_${nomeArquivo()}.txt`); }
 function dlRelatorioHTML() {
   if (!loaded) return;
-  const olhos = coletarOlhos({ thumb: true });
-  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const olhos = coletarOlhos({ thumb: true }), esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const imgs = olhos.map(s => `<figure style="margin:0"><img src="${s.thumb || ''}" style="width:100%;max-width:340px;border-radius:8px"><figcaption>${NOME_OLHO[s.olho]}</figcaption></figure>`).join('');
-  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Leitura Iridológica Integrativa</title>` +
-    `<style>body{font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 16px;color:#0f172a}.imgs{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}pre{white-space:pre-wrap;font:14px/1.55 system-ui,sans-serif}</style></head>` +
-    `<body><div class="imgs">${imgs}</div><pre>${esc(montarLaudo())}</pre></body></html>`;
-  baixar(html, 'text/html;charset=utf-8', `Leitura_Integrativa_${nomeArquivo()}.html`);
+  const html = `<!DOCTYPE html><html lang="pt-PT"><head><meta charset="UTF-8"><title>Relatório</title><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 16px}pre{white-space:pre-wrap;font:14px/1.55 system-ui,sans-serif}</style></head><body><div style="display:flex;gap:12px">${imgs}</div><pre>${esc(montarLaudo())}</pre></body></html>`;
+  baixar(html, 'text/html;charset=utf-8', `Relatorio_${nomeArquivo()}.html`);
 }
 
 popularSelects();
